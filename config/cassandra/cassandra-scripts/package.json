@@ -1,0 +1,11 @@
+{
+  "name": "risk-gateway-cassandra-migration",
+  "version": "2.0.0",
+  "description": "Cassandra migration script for risk gateway service",
+  "main": "do-migration.sh",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "cassandra-schema-setup": "^2.0.4"
+  }
+}

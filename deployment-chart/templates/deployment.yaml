@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ template "name" . }}-deployment
+    namespace: {{ .Values.Namespace }}
+    labels:
+      app: {{ template "name" . }}
+spec:
+  replicas: {{ .Values.Replicas }}
+  strategy:
+    type: {{ .Values.UpdateStrategy }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0%
+  selector:
+    matchLabels:
+        app: {{ template "name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        SECRET_MANAGER: {{ .Values.SecretManager }}
+      annotations:
+        prometheus.io/scrape: "true"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - {{ template "name" . }}
+            topologyKey: "kubernetes.io/hostname"
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - {{ template "name" . }}
+              topologyKey: "failure-domain.beta.kubernetes.io/zone"
+      imagePullSecrets:
+      - name: {{ .Values.ImagePullSecret }}
+      containers:
+      - name: {{ template "name" . }}
+        image: {{ .Values.DockerImage }}
+        imagePullPolicy: {{ .Values.ImagePullPolicy }}
+        env:
+{{ toYaml .Values.EnvironmentVariables | indent 12 }}
+        ports:
+        - name: client
+          protocol: TCP
+          containerPort: {{ .Values.ClientPort }}
+        resources:
+          requests:
+            cpu: {{ .Values.Cpu }}
+            memory: {{ .Values.Memory }}
+        # ReadinessProbe: indicates whether the container is ready to service requests.
+        # If the ReadinessProbe fails, the endpoints controller will remove the
+        # pod’s IP address from the endpoints of all services that match the pod.
+        # The default state of Readiness before the initial delay is Failure.
+        #
+        # Checks every 2 seconds, after 15 second initial wait
+        # Fails after 3 probes => failureThreshold * periodSeconds = 6s
+        # It means that after 6s the Service doesn't send more traffic to the pod
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: {{ .Values.HealthCheckPath }}
+            port: {{ .Values.ClientPort }}
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 2
+          successThreshold: 1
+          timeoutSeconds: 2
+        # LivenessProbe: indicates whether the container is live, i.e. running.
+        # If the LivenessProbe fails, the kubelet will kill the container and
+        # the container will be subjected to its RestartPolicy.
+        # The default state of Liveness before the initial delay is Success
+        #
+        # Checks every 10 seconds, after 15 second initial wait
+        # Fails after 3 probes => failureThreshold * periodSeconds = 30s
+        # Timeout is 3s (3000ms)
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.HealthCheckPath }}
+            port: {{ .Values.ClientPort }}
+            scheme: HTTP
+          periodSeconds: 10
+          initialDelaySeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 3

@@ -1,0 +1,74 @@
+{
+  "name": "risk-gateway",
+  "version": "1.0.0",
+  "description": "Micro gateway for risk analyses",
+  "repository": {
+    "type": "git",
+    "url": "git@git.zooz.co:PaymentsOS/risk/risk-gateway.git"
+  },
+  "main": "server.js",
+  "scripts": {
+    "lint": "eslint src/",
+    "test": "nyc mocha test/unit/*/*.test.js",
+    "test:integration": "mocha test/integration/*.test.js --timeout 10000",
+    "test:system": "mocha test/system/*.test.js --timeout 10000",
+    "start": "source loadEnv-local.sh system-tests; nodemon --inspect src/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "bunyan": "^1.8.12",
+    "cassandra-helper": "^1.0.4",
+    "envboss": "^1.0.3",
+    "http-graceful-shutdown": "^2.3.2",
+    "http-status-codes": "^1.4.0",
+    "idempotency-handler": "^0.1.8",
+    "koa": "^2.12.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-express": "^1.1.0",
+    "koa-router": "^7.4.0",
+    "logger-helper": "^4.5.2",
+    "prom-client": "^12.0.0",
+    "prometheus-api-metrics": "^2.2.6"
+  },
+  "devDependencies": {
+    "eslint": "^7.2.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "mocha": "^8.0.1",
+    "node-mocks-http": "^1.8.0",
+    "nyc": "^14.1.1",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.8",
+    "should": "^13.2.3",
+    "sinon": "^9.0.2",
+    "supertest": "^4.0.2"
+  },
+  "nyc": {
+    "report-dir": "./coverage",
+    "lines": 100,
+    "statements": 100,
+    "functions": 100,
+    "branches": 100,
+    "include": [
+      "src"
+    ],
+    "exclude": [
+      "src/app.js",
+      "src/server.js",
+      "src/service/logger.js",
+      "src/service/shutdown.js",
+      "src/middlewares/logger.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "cache": true,
+    "all": true
+  }
+}
