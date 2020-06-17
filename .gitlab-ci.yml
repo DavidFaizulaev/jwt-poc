@@ -1,0 +1,288 @@
+image: docker-registry.zooz.co:4567/cd/ci-runners:official-node-12
+
+stages:
+  - test
+  - build
+  - integration-tests
+  - deploy-review
+  - system-tests
+  - deploy-dev
+  - deploy-qa
+  - deploy-mars
+  - deploy-prod
+  - release
+
+services:
+  - docker:dind
+
+variables:
+  PROJECT_TYPE: node
+  DOCKER_DRIVER: overlay2
+  DOCKER_NETWORK_DRIVER: "host"
+  DOCKER_TLS_CERTDIR: ""
+  NAMESPACE: apps
+  DEPLOYMENT_TYPE: deployment
+  DOCKER_HOST: tcp://localhost:2375
+
+include:
+  - project: paymentsos/quality-clan/gitlab-quality-template
+    file: template.yaml
+    ref: v2
+
+before_script:
+  - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+  - source config/loadEnv.sh
+
+# ------- Tests ------- #
+.test_template: &test_definition
+  tags:
+    - eks-dev-apps
+  variables:
+    ENVIRONMENT: sandbox
+  artifacts:
+    when: always
+    name: $CI_JOB_STAGE-$CI_JOB_NAME-$CI_PIPELINE_ID
+    expire_in: 3 days
+    paths:
+      - coverage/
+      - logs/
+  except:
+    - tags
+
+.cache_modules:
+  tags:
+    - eks-dev-apps
+  stage: .pre
+  before_script: []
+  after_script: []
+  script:
+    - npm ci --cache .npm --no-audit --prefer-cache
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .npm/
+  artifacts:
+    expire_in: 1 days
+    paths:
+      - node_modules
+    when: on_success
+
+code_quality:
+  variables:
+    SOURCE_DIR: src
+  stage: test
+  only:
+    changes:
+      - src/**/*
+
+# ------- Build ------- #
+build:app:
+  tags:
+    - eks-dev-apps
+  stage: build
+  dependencies: []
+  script:
+    - docker build --network host -t $APP_IMAGE .
+    - docker push $APP_IMAGE
+  except:
+    - tags
+
+cassandra-model:
+  tags:
+    - eks-dev-apps
+  stage: build
+  dependencies: []
+  script:
+    - docker build --network host -t $CASSANDRA_MIGRATION_IMAGE ./config/cassandra
+    - docker push $CASSANDRA_MIGRATION_IMAGE
+  except:
+    - schedules
+
+# -------------- Integration tests dev -------------- #
+test:integration:
+  <<: *test_definition
+  stage: integration-tests
+  variables:
+    CLUSTER: dev
+    ENVIRONMENT: sandbox
+  script:
+    - npm run test:integration
+  only:
+    - master
+    - branches
+  except:
+    - tags
+
+# -------------- System tests qa -------------- #
+test:system:qa:
+  <<: *test_definition
+  stage: system-tests
+  variables:
+    CLUSTER: qa
+    ENVIRONMENT: sandbox
+  script:
+    - npm run test:system
+  only:
+    - branches
+    - master
+    - triggers
+
+# -------------- k8s Deployments -------------- #
+.deploy-template: &deploy-template-ref
+  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v9-latest
+  script:
+    - DEPLOYMENT_TYPE=job k8s-deploy --helm-path=$PWD/cassandra-migration-chart --display-values=true
+    - k8s-deploy --helm-path=$PWD/deployment-chart --display-values=true --status-check-timeout=180
+  only:
+    - master
+    - tags
+  except:
+    - schedules
+
+deploy:review:k8s:
+  <<: *deploy-template-ref
+  tags:
+    - eks-dev-apps
+  stage: deploy-review
+  variables:
+    ENVIRONMENT: sandbox
+    ENV: config
+  environment:
+    name: review/$CI_BUILD_REF_SLUG
+    on_stop: deploy:review:stop:k8s
+  only:
+    - branches
+  except:
+    - master
+    - tags
+
+deploy:review:stop:k8s:
+  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v9-latest
+  tags:
+    - eks-dev-apps
+  stage: deploy-review
+  variables:
+    ENVIRONMENT: sandbox
+    ENV: config
+    NAMESPACE: apps
+    GIT_STRATEGY: none
+  environment:
+    name: review/$CI_BUILD_REF_SLUG
+    action: stop
+  before_script:
+    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.zooz.co/PaymentsOSProcessors/Credorax.git
+    - cd risk-gateway
+  script:
+    - export CHART_NAME=$(echo review-risk-gateway-$CI_COMMIT_REF_SLUG | cut -c1-55)
+    - k8s-clear --resources=services,deployments
+  only:
+    - branches
+  when: manual
+  except:
+    - master
+    - tags
+
+deploy:dev:sandbox:k8s:
+  <<: *deploy-template-ref
+  tags:
+    - eks-dev-apps
+  stage: deploy-dev
+  variables:
+    ENVIRONMENT: sandbox
+    ENV: config
+  only:
+    - master
+
+deploy:dev:live:k8s:
+  <<: *deploy-template-ref
+  tags:
+    - eks-dev-apps
+  stage: deploy-dev
+  variables:
+    ENVIRONMENT: live
+    ENV: config
+  only:
+    - master
+
+deploy:qa:sandbox:k8s:
+  <<: *deploy-template-ref
+  tags:
+    - eks-qa-apps
+  stage: deploy-qa
+  variables:
+    ENVIRONMENT: sandbox
+    ENV: config
+  only:
+    - master
+
+deploy:qa:live:k8s:
+  <<: *deploy-template-ref
+  tags:
+    - eks-qa-apps
+  stage: deploy-qa
+  variables:
+    ENVIRONMENT: live
+    ENV: config
+  only:
+    - master
+
+deploy:mars:sandbox:k8s:
+  <<: *deploy-template-ref
+  tags:
+    - eks-mars-pci
+  stage: deploy-mars
+  variables:
+    ENVIRONMENT: sandbox
+    ENV: config
+  only:
+    - master
+
+deploy:mars:live:k8s:
+  <<: *deploy-template-ref
+  tags:
+    - eks-mars-pci
+  stage: deploy-mars
+  variables:
+    ENVIRONMENT: live
+    ENV: config
+  only:
+    - master
+
+deploy:prd:sandbox:k8s:
+  <<: *deploy-template-ref
+  tags:
+    - eks-prd-apps
+  stage: deploy-prod
+  variables:
+    ENVIRONMENT: sandbox
+    ENV: config
+  only:
+    - tags
+  when: manual
+
+deploy:prd:live:k8s:
+  <<: *deploy-template-ref
+  tags:
+    - eks-prd-apps
+  stage: deploy-prod
+  variables:
+    ENVIRONMENT: live
+    ENV: config
+  only:
+    - tags
+  when: manual
+
+# -------------- Release -------------- #
+release:
+  image: docker-registry.zooz.co:4567/paymentsos/quality-clan/tagz:v2-latest
+  tags:
+    - eks-dev-apps
+  stage: release
+  dependencies: []
+  script:
+    - npm i -g tagz@2 --registry=http://npm.zooz.co:8083
+    - tagz --release-image $APP_IMAGE --tagged-image-path /tags
+  only:
+    - master
+  when: manual

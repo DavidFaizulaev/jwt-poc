@@ -1,0 +1,24 @@
+DockerImage: $CASSANDRA_MIGRATION_IMAGE
+Replicas: 2
+Cpu: '0.1'
+Memory: 128Mi
+Namespace: apps
+UpdateStrategy: RollingUpdate
+ImagePullSecret: regcred
+ImagePullPolicy: $PULL_POLICY
+HealthCheckPath: /health
+VirtualServicePrefix: $CHART_NAME
+EnvironmentVariables:
+  - name: CASSANDRA_KEYSPACE
+    value: $CASSANDRA_KEYSPACE
+  - name: CASSANDRA_ADDRESSES
+    valueFrom:
+      configMapKeyRef:
+        name: centralized-config
+        key: CASSANDRA_ADDRESS
+  - name: CASSANDRA_REPLICATION_FACTOR
+    value: $CASSANDRA_REPLICATION_FACTOR
+  - name: SECRET_MANAGER_PROJECT_NAMES
+    value: $SECRET_MANAGER_PROJECT_NAME
+  - name: CASSANDRA_LOCAL_DATA_CENTER
+    value: $CASSANDRA_LOCAL_DATA_CENTER

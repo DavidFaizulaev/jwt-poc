@@ -1,0 +1,16 @@
+.idea/*
+.history
+.DS_Store
+.vscode/*
+node_modules/*
+*.zip
+npm-debug.log
+coverage/
+*.bak
+**/node_modules/**
+*history*
+.nyc_output
+logs
+dist
+.eslintcache
+.env

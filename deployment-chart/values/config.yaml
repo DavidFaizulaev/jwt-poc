@@ -1,0 +1,42 @@
+DockerImage: $APP_IMAGE
+Replicas: $INSTANCES
+ClientPort: 3000
+Cpu: $CPUS
+Memory: $MEMORY
+Namespace: apps
+UpdateStrategy: RollingUpdate
+ImagePullSecret: regcred
+ImagePullPolicy: Always
+HealthCheckPath: /health
+VirtualServicePrefix: $CHART_NAME
+VirtualServiceMetadataName: $VIRTUAL_SERVICE_METADATA_NAME
+VirtualServiceUriPrefix: $VIRTUAL_SERVICE_URI_PREFIX
+VirtualServiceDestinationHost: $VIRTUAL_SERVICE_DESTINATION_HOST
+SecretManager: 'enable'
+EnableMetrics: 'true'
+EnvironmentVariables:
+  - name: LOG_LEVEL
+    value: info
+  - name: PORT
+    value: '3000'
+  - name: BUILD
+    value: $BUILD
+  - name: ENVIRONMENT
+    value: $ENVIRONMENT
+  - name: CLUSTER
+    value: $CLUSTER
+  - name: APP_NAME
+    value: $APP_NAME
+  - name: CASSANDRA_KEYSPACE
+    value: $CASSANDRA_KEYSPACE
+  - name: CASSANDRA_REPLICATION_FACTOR
+    value: $CASSANDRA_REPLICATION_FACTOR
+  - name: SECRETS_FILE_PATH
+    value: $SECRETS_FILE_PATH
+  - name: SECRET_MANAGER_PROJECT_NAMES
+    value: $SECRET_MANAGER_PROJECT_NAME
+  - name: CASSANDRA_ADDRESSES
+    valueFrom:
+      configMapKeyRef:
+        name: centralized-config
+        key: CASSANDRA_ADDRESS
