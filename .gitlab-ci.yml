@@ -5,8 +5,8 @@ stages:
   - build
   - integration-tests
   - deploy-review
-  - system-tests
   - deploy-dev
+  - system-tests
   - deploy-qa
   - deploy-mars
   - deploy-prod
@@ -171,7 +171,7 @@ deploy:review:stop:k8s:
     action: stop
   before_script:
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.zooz.co/PaymentsOSProcessors/Credorax.git
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.zooz.co/PaymentsOS/risk/risk-gateway.git
     - cd risk-gateway
   script:
     - export CHART_NAME=$(echo review-risk-gateway-$CI_COMMIT_REF_SLUG | cut -c1-55)
