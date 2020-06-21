@@ -25,11 +25,13 @@ function setCommonEnvVars() {
     export DOCKER_URI=$(getDockerUri)
     export CASSANDRA_KEYSPACE=$(getKeyspace)
     export CASSANDRA_MIGRATION_IMAGE=$(getCassandraImage)
+    export KONG_CONFIGURATIONS_AS_JOB_K8S_MIGRATION=docker-registry.zooz.co:4567/paymentsos/api-gateway/utilities/kong-admin-node-client/release:v4-latest
 
     export CASSANDRA_REPLICATION_FACTOR=3
     export SECRETS_FILE_PATH="/var/share/secrets/vault_secrets/secrets.json"
     export SECRET_MANAGER_PROJECT_NAME=riskgateway
     export CASSANDRA_LOCAL_DATA_CENTER=eu-central
+    export PULL_POLICY=Always
 
     export KEEP_ALIVE_TIMEOUT=120000
 
@@ -158,24 +160,6 @@ function reportEnvVars() {
     echo "KEEP_ALIVE_TIMEOUT: $KEEP_ALIVE_TIMEOUT"
 }
 
-function loadCustomScripts() {
-    echo "************************************************"
-    echo "*        Loading custom scripts"
-    echo "************************************************"
-    for file in $(find "config/custom" -type f);do
-        source $file
-    done
-}
-
-function loadServices() {
-    echo "************************************************"
-    echo "*        Loading services related variables"
-    echo "************************************************"
-    for file in $(find "config/services" -type f);do
-        source $file
-    done
-}
-
 function loadClusterVars() {
     echo "************************************************"
     echo "*        Loading cluster specific variables"
@@ -207,9 +191,7 @@ function setChartName() {
 }
 
 setLocalEnvVars
-loadCustomScripts
 setCommonEnvVars
 setChartName
 setVirtualServiceVariables
 loadClusterVars
-loadServices

@@ -4,12 +4,13 @@ stages:
   - test
   - build
   - integration-tests
+  - deploy-review-kong
   - deploy-review
   - deploy-dev
   - system-tests
   - deploy-qa
   - deploy-mars
-  - deploy-prod
+  - deploy-prd
   - release
 
 services:
@@ -139,6 +140,38 @@ test:system:qa:
   except:
     - schedules
 
+.kong-deploy-template: &deploy-kong-template-ref
+  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v9-latest
+  variables:
+    ENV: config
+    ENVIRONMENT: kong
+  script:
+    - source ./config/kong/set-kong-centralized-config-variables.sh
+    - source ./config/kong/loadKongVariables.sh
+    - DEPLOYMENT_TYPE=job k8s-deploy --helm-path=$PWD/kong-deployment-chart --display-values=true --status-check-timeout=180
+  except:
+    - schedules
+
+.clear-kong-template: &clear-kong-template-ref
+  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v9-latest
+  variables:
+    ENV: remove
+    ENVIRONMENT: kong
+    GIT_STRATEGY: none
+  before_script:
+    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.zooz.co/PaymentsOS/api-gateway/micro-gateways/authentications-callbacks.git
+    - cd authentications-callbacks
+    - source config/loadEnv.sh
+  script:
+    - source ./config/kong/set-kong-centralized-config-variables.sh
+    - source ./config/kong/loadKongVariables.sh
+    - export CHART_NAME=$(echo review-authentications-callbacks-$CI_COMMIT_REF_SLUG | cut -c1-55)
+    - DEPLOYMENT_TYPE=job k8s-deploy --helm-path=$PWD/kong-deployment-chart --display-values=true --status-check-timeout=180
+  when: manual
+  only:
+    - branches
+
 deploy:review:k8s:
   <<: *deploy-template-ref
   tags:
@@ -152,6 +185,20 @@ deploy:review:k8s:
     on_stop: deploy:review:stop:k8s
   only:
     - branches
+  except:
+    - master
+    - tags
+
+deploy:review:kong:
+  <<: *deploy-kong-template-ref
+  tags:
+    - eks-dev-apps
+  stage: deploy-review-kong
+  only:
+    - branches
+  environment:
+    name: review/kong/$CI_BUILD_REF_SLUG
+    on_stop: deploy:review:kong:stop
   except:
     - master
     - tags
@@ -179,6 +226,20 @@ deploy:review:stop:k8s:
   only:
     - branches
   when: manual
+  except:
+    - master
+    - tags
+
+deploy:review:kong:stop:
+  <<: *clear-kong-template-ref
+  tags:
+    - eks-dev-apps
+  stage: deploy-review-kong
+  only:
+    - branches
+  environment:
+    name: review/kong/$CI_BUILD_REF_SLUG
+    action: stop
   except:
     - master
     - tags
@@ -253,7 +314,7 @@ deploy:prd:sandbox:k8s:
   <<: *deploy-template-ref
   tags:
     - eks-prd-apps
-  stage: deploy-prod
+  stage: deploy-prd
   variables:
     ENVIRONMENT: sandbox
     ENV: config
@@ -265,7 +326,7 @@ deploy:prd:live:k8s:
   <<: *deploy-template-ref
   tags:
     - eks-prd-apps
-  stage: deploy-prod
+  stage: deploy-prd
   variables:
     ENVIRONMENT: live
     ENV: config
