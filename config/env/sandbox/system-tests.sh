@@ -11,3 +11,4 @@ export APP_URL=http://internal.eks-dev.zooz.co/$SERVICE_NAME
 echo PORT: $PORT
 echo SHUTDOWN_TIMEOUT: $SHUTDOWN_TIMEOUT
 echo APP_URL: $APP_URL
+export CLUSTER=qa

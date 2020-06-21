@@ -4,13 +4,17 @@ stages:
   - test
   - build
   - integration-tests
-  - deploy-review-kong
   - deploy-review
+  - deploy-review-kong
   - deploy-dev
+  - deploy-dev-kong
   - system-tests
   - deploy-qa
+  - deploy-qa-kong
   - deploy-mars
+  - deploy-mars-kong
   - deploy-prd
+  - deploy-prd-kong
   - release
 
 services:
@@ -160,8 +164,8 @@ test:system:qa:
     GIT_STRATEGY: none
   before_script:
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.zooz.co/PaymentsOS/api-gateway/micro-gateways/authentications-callbacks.git
-    - cd authentications-callbacks
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.zooz.co/PaymentsOS/risk/risk-gateway.git
+    - cd risk-gateway
     - source config/loadEnv.sh
   script:
     - source ./config/kong/set-kong-centralized-config-variables.sh
@@ -266,6 +270,14 @@ deploy:dev:live:k8s:
   only:
     - master
 
+deploy:dev:kong:
+  <<: *deploy-kong-template-ref
+  tags:
+    - eks-dev-apps
+  stage: deploy-dev-kong
+  only:
+    - master
+
 deploy:qa:sandbox:k8s:
   <<: *deploy-template-ref
   tags:
@@ -285,6 +297,14 @@ deploy:qa:live:k8s:
   variables:
     ENVIRONMENT: live
     ENV: config
+  only:
+    - master
+
+deploy:qa:kong:
+  <<: *deploy-kong-template-ref
+  tags:
+    - eks-qa-apps
+  stage: deploy-qa-kong
   only:
     - master
 
@@ -310,6 +330,14 @@ deploy:mars:live:k8s:
   only:
     - master
 
+deploy:mars:kong:
+  <<: *deploy-kong-template-ref
+  tags:
+    - eks-mars-apps
+  stage: deploy-mars-kong
+  only:
+    - master
+
 deploy:prd:sandbox:k8s:
   <<: *deploy-template-ref
   tags:
@@ -330,6 +358,15 @@ deploy:prd:live:k8s:
   variables:
     ENVIRONMENT: live
     ENV: config
+  only:
+    - tags
+  when: manual
+
+deploy:prd:kong:
+  <<: *deploy-kong-template-ref
+  tags:
+    - eks-prd-apps
+  stage: deploy-prd-kong
   only:
     - tags
   when: manual
