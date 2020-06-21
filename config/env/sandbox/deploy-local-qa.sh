@@ -22,3 +22,4 @@ export IAM_SERVICE_URL=http://internal.eks-qa.zooz.co/iam-api
 export AUDIT_STORAGE_URL=http://audit-storage.audit.dcos-internal.qa-fra-apps.zooz.co
 export LOAD_BALANCER_UPDATE_PERIOD=1
 export SHUTDOWN_GRACE_TIMEOUT=1
+export CLUSTER=qa

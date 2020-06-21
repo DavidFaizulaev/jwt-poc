@@ -10,3 +10,4 @@ export K8S_SERVICE_URL=http://internal.eks-dev.zooz.co/$VIRTUAL_SERVICE_URI_PREF
 echo MEMORY=$$MEMORY
 echo CPUS=$CPUS
 echo INSTANCES=$INSTANCES
+export CLUSTER=dev

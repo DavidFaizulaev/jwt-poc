@@ -1,5 +1,5 @@
 # Deployment
-echo Loading Deploy mars stage environment variables
+echo Loading Deploy prd stage environment variables
 # Kong configuration variables
 export KONG_CONFIG_SECRET_PROJECT=svckongpcigateways
-export CLUSTER=mars
+export CLUSTER=prd
