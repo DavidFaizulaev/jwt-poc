@@ -19,7 +19,7 @@ function loadKongConfig() {
         export RISK_SANDBOX_URL=http://sandbox-risk-gateway-service
     fi
 
-    if [[ $CI_JOB_NAME == *"-kong-stop" ]]; then
+    if [[ $CI_JOB_NAME == *":kong:stop" ]]; then
         export IAM_PASSWORD=T3st0X!2bzo
         export IAM_USERNAME=first.admin@zooz.com
         export CONFIGURATION=$(node $PWD/config/kong/remove-api-from-kong.js)

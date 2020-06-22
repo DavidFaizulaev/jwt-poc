@@ -103,6 +103,18 @@ cassandra-model:
   except:
     - schedules
 
+# -------------- Unit tests -------------- #
+test:unit:
+  <<: *test_definition
+  stage: test
+  script:
+    - npm test
+  only:
+    - master
+    - branches
+  except:
+    - tags
+
 # -------------- Integration tests dev -------------- #
 test:integration:
   <<: *test_definition
