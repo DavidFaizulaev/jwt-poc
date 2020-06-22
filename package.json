@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "bunyan": "^1.8.12",
     "cassandra-helper": "^1.0.4",
@@ -24,10 +25,11 @@
     "http-graceful-shutdown": "^2.3.2",
     "http-status-codes": "^1.4.0",
     "idempotency-handler": "^0.1.8",
-    "koa": "^2.12.1",
+    "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-express": "^1.1.0",
     "koa-router": "^7.4.0",
+    "lodash": "^4.17.15",
     "logger-helper": "^4.5.2",
     "prom-client": "^12.0.0",
     "prometheus-api-metrics": "^2.2.6"

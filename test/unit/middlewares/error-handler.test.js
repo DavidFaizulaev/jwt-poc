@@ -1,7 +1,6 @@
 const sinon = require('sinon');
 const should = require('should');
-
-const errorHandler = require('../../../src/middlewares/errorHandler');
+const errorHandler = require('../../../src/middlewares/error-handler');
 
 const Koa = require('koa');
 const { context } = new Koa();
