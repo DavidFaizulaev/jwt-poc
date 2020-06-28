@@ -19,9 +19,9 @@
   "dependencies": {
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
-    "bunyan": "^1.8.12",
+    "bunyan": "^1.8.13",
     "cassandra-helper": "^1.0.4",
-    "envboss": "^1.0.3",
+    "envboss": "^1.1.0",
     "http-graceful-shutdown": "^2.3.2",
     "http-status-codes": "^1.4.0",
     "idempotency-handler": "^0.1.8",
@@ -32,7 +32,7 @@
     "lodash": "^4.17.15",
     "logger-helper": "^4.5.2",
     "prom-client": "^12.0.0",
-    "prometheus-api-metrics": "^2.2.6"
+    "prometheus-api-metrics": "^2.2.7"
   },
   "devDependencies": {
     "eslint": "^7.2.0",
