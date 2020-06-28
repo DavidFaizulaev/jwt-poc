@@ -7,3 +7,4 @@ export INSTANCES=2
 echo MEMORY=$$MEMORY
 echo CPUS=$CPUS
 echo INSTANCES=$INSTANCES
+export CLUSTER=prd
