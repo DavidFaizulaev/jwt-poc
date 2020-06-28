@@ -8,9 +8,9 @@ stages:
   - deploy-review-kong
   - deploy-dev
   - deploy-dev-kong
-  - system-tests
   - deploy-qa
   - deploy-qa-kong
+  - system-tests
   - deploy-mars
   - deploy-mars-kong
   - deploy-prd
