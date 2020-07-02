@@ -11,6 +11,7 @@ stages:
   - deploy-qa
   - deploy-qa-kong
   - system-tests
+  - end-2-end-tests
   - deploy-mars
   - deploy-mars-kong
   - deploy-prd
@@ -28,6 +29,7 @@ variables:
   NAMESPACE: apps
   DEPLOYMENT_TYPE: deployment
   DOCKER_HOST: tcp://localhost:2375
+  ADVISORY_EXCEPTIONS: 1523
 
 include:
   - project: paymentsos/quality-clan/gitlab-quality-template
@@ -144,10 +146,24 @@ test:system:qa:
     - master
     - triggers
 
+# -------------- end-2-end tests qa -------------- #
+test:end-2-end:qa:
+  <<: *test_definition
+  stage: end-2-end-tests
+  variables:
+    CLUSTER: qa
+    ENVIRONMENT: sandbox
+  script:
+    - npm run test:e2e
+  only:
+    - branches
+    - master
+
 # -------------- k8s Deployments -------------- #
 .deploy-template: &deploy-template-ref
   image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v9-latest
   script:
+    - source ./config/set-centralized-config-variables.sh
     - DEPLOYMENT_TYPE=job k8s-deploy --helm-path=$PWD/cassandra-migration-chart --display-values=true
     - k8s-deploy --helm-path=$PWD/deployment-chart --display-values=true --status-check-timeout=180
   only:
@@ -191,7 +207,7 @@ test:system:qa:
 deploy:review:k8s:
   <<: *deploy-template-ref
   tags:
-    - eks-dev-apps
+    - eks-qa-apps
   stage: deploy-review
   variables:
     ENVIRONMENT: sandbox
@@ -208,7 +224,7 @@ deploy:review:k8s:
 deploy:review:kong:
   <<: *deploy-kong-template-ref
   tags:
-    - eks-dev-apps
+    - eks-qa-apps
   stage: deploy-review-kong
   only:
     - branches

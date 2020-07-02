@@ -5,6 +5,7 @@ export SECRETS_FILE_PATH=''
 export PORT=3000
 export SHUTDOWN_TIMEOUT=10000
 export APP_URL=http://127.0.0.1
+export PAYMENT_STORAGE_URL='http://payments.com'
 
 # Cassandra
 export CASSANDRA_ADDRESSES=$DOCKER_IP:9042

@@ -1,5 +1,4 @@
 const request = require('axios');
-const { get } = require('lodash');
 const { HttpMetricsCollector } = require('prometheus-api-metrics');
 const logger = require('./logger');
 const { SOUTHBOUND_BUCKETS, DEFAULT_REQUEST_RETRIES } = require('./config');
@@ -26,8 +25,7 @@ async function performRequest(options, retriesLeft) {
     const requestTimeStamp = Date.now();
     let response;
     try {
-        const method = get(options, 'method').toLowerCase();
-        response = await request[method](options);
+        response = await request(options);
         HttpMetricsCollector.collect(response);
     } catch (error) {
         handleError(options, error, requestTimeStamp);

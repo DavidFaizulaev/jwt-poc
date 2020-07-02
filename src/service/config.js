@@ -30,7 +30,11 @@ const environmentVariables = createEnvObject({
     // Cassandra
     CASSANDRA_KEYSPACE: { mandatory },
     CASSANDRA_ADDRESSES: { mandatory },
-    CASSANDRA_REPLICATION_FACTOR: { mandatory }
+    CASSANDRA_REPLICATION_FACTOR: { mandatory },
+
+    // Services urls
+    PAYMENT_STORAGE_URL: { mandatory }
+
 });
 
 environmentVariables.CASSANDRA_USERNAME = cassandraUserName;
