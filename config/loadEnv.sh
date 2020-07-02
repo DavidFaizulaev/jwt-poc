@@ -35,6 +35,12 @@ function setCommonEnvVars() {
 
     export KEEP_ALIVE_TIMEOUT=120000
 
+    if [ $ENVIRONMENT = "live" ]; then
+        export CONFIG_MAP_ENVIRONMENT="LIVE";
+    else
+        export CONFIG_MAP_ENVIRONMENT="TEST";
+    fi
+
     reportEnvVars
 }
 
@@ -158,6 +164,8 @@ function reportEnvVars() {
     echo "SECRETS_FILE_PATH: $SECRETS_FILE_PATH"
     echo "K8S_SERVICE_URL: $K8S_SERVICE_URL"
     echo "KEEP_ALIVE_TIMEOUT: $KEEP_ALIVE_TIMEOUT"
+    echo "CONFIG_MAP_ENVIRONMENT: $CONFIG_MAP_ENVIRONMENT"
+    echo "PAYMENT_STORAGE_URL: $PAYMENT_STORAGE_URL"
 }
 
 function loadClusterVars() {

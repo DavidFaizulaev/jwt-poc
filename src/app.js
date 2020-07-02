@@ -5,6 +5,7 @@ const { requestLogger } = require('./middlewares/request-logger');
 const { handleError } = require('./middlewares/error-handler');
 const { init } = require('./initialization/init');
 const infraRoutes = require('./routes/service-infra');
+const serviceRoutes = require('./routes/service');
 const config = require('./service/config');
 
 module.exports = async () => {
@@ -22,5 +23,6 @@ module.exports = async () => {
 
     // routers
     app.use(infraRoutes.routes());
+    app.use(serviceRoutes.routes());
     return app;
 };

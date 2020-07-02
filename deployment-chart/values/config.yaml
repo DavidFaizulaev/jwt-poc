@@ -40,3 +40,9 @@ EnvironmentVariables:
       configMapKeyRef:
         name: centralized-config
         key: CASSANDRA_ADDRESS
+  - name: PAYMENT_STORAGE_URL
+    valueFrom:
+      configMapKeyRef:
+        name: centralized-config
+        key: $PAYMENT_STORAGE_KEY
+
