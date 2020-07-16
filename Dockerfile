@@ -12,6 +12,7 @@ RUN npm install --only=production
 # Copy package.json
 COPY src /src/app/
 COPY config /src/config
+COPY docs /src/docs
 
 
 # Create an app user so our program doesn't run as root.

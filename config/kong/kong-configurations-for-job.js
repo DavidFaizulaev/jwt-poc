@@ -3,7 +3,8 @@ const MANDATORY_VARS = [
     'APPS_STORAGE_URL_TEST',
     'IAM_SERVICE_URL',
     'RISK_LIVE_URL',
-    'RISK_SANDBOX_URL'
+    'RISK_SANDBOX_URL',
+    'CLUSTER'
 ];
 
 const missingFields = MANDATORY_VARS.filter((currVar) => {
@@ -31,31 +32,8 @@ const configurations = {
                         {
                             name: 'authentication',
                             config: {
-                                iam: {
-                                    consider_environment: true,
-                                    permission: 'payment.create',
-                                    require_account_id_header: true
-                                },
                                 apps: {
                                     key_type: 'private'
-                                },
-                                audit: {
-                                    resource_type: 'payment',
-                                    action_type: 'authentication',
-                                    extract_app_id: {
-                                        source: 'request_headers',
-                                        field_name: 'app-id'
-                                    },
-                                    extract_fields: {
-                                        url: [
-                                            { audit_name: 'payment_id', field_name: 'paymentId' }
-                                        ],
-                                        body: {
-                                            response: [
-                                                { audit_name: 'authentication_id', field_name: 'id' }
-                                            ]
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -70,28 +48,8 @@ const configurations = {
                         {
                             name: 'authentication',
                             config: {
-                                iam: {
-                                    consider_environment: true,
-                                    permission: 'payment.get',
-                                    extended_data_permission: 'personal-data.get',
-                                    require_account_id_header: true,
-                                    pass_authorization_header_to_upstream: true
-                                },
                                 apps: {
                                     key_type: 'private'
-                                },
-                                audit: {
-                                    resource_type: 'payment',
-                                    action_type: 'get_payment',
-                                    extract_app_id: {
-                                        source: 'request_headers',
-                                        field_name: 'app_id'
-                                    },
-                                    extract_fields: {
-                                        url: [
-                                            { audit_name: 'payment_id', field_name: 'paymentId' }
-                                        ]
-                                    }
                                 }
                             }
                         }
@@ -106,13 +64,6 @@ const configurations = {
                         {
                             name: 'authentication',
                             config: {
-                                iam: {
-                                    consider_environment: true,
-                                    permission: 'payment.get',
-                                    extended_data_permission: 'personal-data.get',
-                                    require_account_id_header: true,
-                                    pass_authorization_header_to_upstream: true
-                                },
                                 apps: {
                                     key_type: 'private'
                                 }

@@ -10,7 +10,6 @@ stages:
   - deploy-dev-kong
   - deploy-qa
   - deploy-qa-kong
-  - system-tests
   - end-2-end-tests
   - deploy-mars
   - deploy-mars-kong
@@ -46,6 +45,7 @@ before_script:
     - eks-dev-apps
   variables:
     ENVIRONMENT: sandbox
+    CLUSTER: dev
   artifacts:
     when: always
     name: $CI_JOB_STAGE-$CI_JOB_NAME-$CI_PIPELINE_ID
@@ -118,33 +118,38 @@ test:unit:
     - tags
 
 # -------------- Integration tests dev -------------- #
-test:integration:
+test:integration-ps:
   <<: *test_definition
   stage: integration-tests
-  variables:
-    CLUSTER: dev
-    ENVIRONMENT: sandbox
   script:
-    - npm run test:integration
+    - npm run test:integration-ps
   only:
     - master
     - branches
   except:
     - tags
 
-# -------------- System tests qa -------------- #
-test:system:qa:
+test:integration-fss:
   <<: *test_definition
-  stage: system-tests
-  variables:
-    CLUSTER: qa
-    ENVIRONMENT: sandbox
+  stage: integration-tests
   script:
-    - npm run test:system
+    - npm run test:integration-fss
   only:
-    - branches
     - master
-    - triggers
+    - branches
+  except:
+    - tags
+
+test:integration-apps:
+  <<: *test_definition
+  stage: integration-tests
+  script:
+    - npm run test:integration-apps-storage
+  only:
+    - master
+    - branches
+  except:
+    - tags
 
 # -------------- end-2-end tests qa -------------- #
 test:end-2-end:qa:

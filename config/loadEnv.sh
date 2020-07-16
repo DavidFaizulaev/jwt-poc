@@ -27,9 +27,11 @@ function setCommonEnvVars() {
     export CASSANDRA_MIGRATION_IMAGE=$(getCassandraImage)
     export KONG_CONFIGURATIONS_AS_JOB_K8S_MIGRATION=docker-registry.zooz.co:4567/paymentsos/api-gateway/utilities/kong-admin-node-client/release:v4-latest
 
+    export FEEDZAI_SERVICE_NAME=review-feedzai-fake-feedzai-mock
+
     export CASSANDRA_REPLICATION_FACTOR=3
     export SECRETS_FILE_PATH="/var/share/secrets/vault_secrets/secrets.json"
-    export SECRET_MANAGER_PROJECT_NAME=riskgateway
+    export SECRET_MANAGER_PROJECT_NAME=riskanalysisgateway
     export CASSANDRA_LOCAL_DATA_CENTER=eu-central
     export PULL_POLICY=Always
 
@@ -162,7 +164,6 @@ function reportEnvVars() {
     echo "VIRTUAL_SERVICE_URI_PREFIX: $VIRTUAL_SERVICE_URI_PREFIX"
     echo "VIRTUAL_SERVICE_DESTINATION_HOST: $VIRTUAL_SERVICE_DESTINATION_HOST"
     echo "SECRETS_FILE_PATH: $SECRETS_FILE_PATH"
-    echo "K8S_SERVICE_URL: $K8S_SERVICE_URL"
     echo "KEEP_ALIVE_TIMEOUT: $KEEP_ALIVE_TIMEOUT"
     echo "CONFIG_MAP_ENVIRONMENT: $CONFIG_MAP_ENVIRONMENT"
     echo "PAYMENT_STORAGE_URL: $PAYMENT_STORAGE_URL"

@@ -19,7 +19,7 @@ APP_URL_INTERNAL=$TEMP_APP_URL_INTERNAL
 export APP_NAME=$BRANCH_NAME
 export RISK_LIVE_URL=$APP_URL_INTERNAL
 export RISK_SANDBOX_URL=$APP_URL_INTERNAL
-export IAM_URL=http://iam-api.identity-access-management.dcos-internal.qa-fra-apps.zooz.co
+export IAM_URL=http://internal.eks-qa.zooz.co/iam-api
 
 SCRIPT_PATH=$(dirname $BASH_SOURCE)
 
