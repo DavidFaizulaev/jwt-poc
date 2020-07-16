@@ -5,7 +5,7 @@ const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR, getStatusText } = httpSta
 const NOT_FOUND_ERROR_MESSAGE = getStatusText(NOT_FOUND);
 const { InputValidationError } = require('express-ajv-swagger-validation');
 const { HDR_X_ZOOZ_REQUEST_ID } = require('../service/common');
-const logger = require('../service/logger');
+const { logger } = require('../service/logger');
 
 module.exports.handleError = async function (ctx, next) {
     try {
@@ -23,16 +23,17 @@ const _handleError = function (error, ctx) {
     let moreInfo;
     let statusCode;
     let errorType = 'unexpectedError';
+    const errorStatus = error.statusCode || error.status;
 
-    if (error.status === BAD_REQUEST) {
+    if (errorStatus === BAD_REQUEST) {
         statusCode = BAD_REQUEST;
         details = error.details || error.message;
         errorType = getStatusText(BAD_REQUEST);
-    } else if (error.status) {
-        statusCode = error.status;
+    } else if (errorStatus) {
+        statusCode = errorStatus;
         details = error.details || error.message;
         moreInfo = error.more_info;
-        errorType = getStatusText(error.status);
+        errorType = getStatusText(errorStatus);
     } else if (error instanceof InputValidationError) {
         // validation errors
         statusCode = BAD_REQUEST;

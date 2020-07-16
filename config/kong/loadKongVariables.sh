@@ -6,7 +6,7 @@ function isReview() {
 function loadKongConfig() {
     echo "Loading kong configurations..."
 
-    export SERVICES_IAM_SECRET_PATH=secret/serviceiam/riskgateway
+    export SERVICES_IAM_SECRET_PATH=secret/serviceiam/riskanalysisgateway
 
     if [[ $(isReview) == true ]]; then
         export CHART_NAME=$(echo review-$SERVICE_NAME-$CI_COMMIT_REF_SLUG | cut -c1-55)

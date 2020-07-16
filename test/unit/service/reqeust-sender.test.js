@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const should = require('should');
 const nock = require('nock');
 const requestSender = require('../../../src/service/request-sender');
-const logger = require('../../../src/service/logger');
+const { requestLogger } = require('../../../src/service/logger');
 
 describe('Request sender tests', () => {
     let sandbox, loggerInfo, loggerError;
@@ -15,8 +15,8 @@ describe('Request sender tests', () => {
 
     before(() => {
         sandbox = sinon.createSandbox();
-        loggerInfo = sandbox.spy(logger, 'info');
-        loggerError = sandbox.spy(logger, 'error');
+        loggerInfo = sandbox.spy(requestLogger, 'info');
+        loggerError = sandbox.spy(requestLogger, 'error');
     });
 
     afterEach(function () {
@@ -48,8 +48,6 @@ describe('Request sender tests', () => {
             const response = await requestSender.sendRequest(requestOptions);
             response.status.should.eql(200);
             nockService.isDone().should.eql(true);
-            loggerError.callCount.should.eql(1);
-            loggerError.args[0][1].should.eql('Request failed. Attempt number 1 of 3.');
             loggerInfo.callCount.should.eql(1);
         });
         it('On response with status 5xx, should retry twice, and on successful response stop', async () => {
@@ -62,8 +60,6 @@ describe('Request sender tests', () => {
             const response = await requestSender.sendRequest(requestOptions);
             response.status.should.eql(200);
             nockService.isDone().should.eql(true);
-            loggerError.callCount.should.eql(2);
-            loggerError.args[1][1].should.eql('Request failed. Attempt number 2 of 3.');
             loggerInfo.callCount.should.eql(1);
         });
         it('On response with status 5xx, should retry 3 times', async () => {
@@ -71,12 +67,15 @@ describe('Request sender tests', () => {
                 .get('/')
                 .times(3)
                 .reply(500, {});
-            const response = await requestSender.sendRequest(requestOptions);
-            response.status.should.eql(500);
-            nockService.isDone().should.eql(true);
-            loggerError.callCount.should.eql(3);
-            loggerError.args[2][1].should.eql('Request failed. Attempt number 3 of 3.');
-            loggerInfo.callCount.should.eql(0);
+            try {
+                await requestSender.sendRequest(requestOptions);
+                throw new Error('Error should have been thrown.');
+            } catch (error) {
+                error.response.status.should.eql(500);
+                nockService.isDone().should.eql(true);
+                loggerError.callCount.should.eql(1);
+                loggerInfo.callCount.should.eql(0);
+            }
         });
     });
 
@@ -84,6 +83,7 @@ describe('Request sender tests', () => {
         it('On response with status different than 5xx, should be sent once', async () => {
             const nockService = nock(url)
                 .get('/')
+                .times(3)
                 .replyWithError('ESOCKETTIMEDOUT')
             try {
                 await requestSender.sendRequest(requestOptions);

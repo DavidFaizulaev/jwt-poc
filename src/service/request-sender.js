@@ -1,15 +1,13 @@
-const request = require('axios');
-const { HttpMetricsCollector } = require('prometheus-api-metrics');
-const logger = require('./logger');
-const { SOUTHBOUND_BUCKETS, DEFAULT_REQUEST_RETRIES } = require('./config');
-
-HttpMetricsCollector.init({ durationBuckets: SOUTHBOUND_BUCKETS });
+const axios = require('axios');
+const axiosTimingPlugin = require('axios-timing-plugin');
+axiosTimingPlugin(axios);
+const requestRetry = require('axios-retry');
+const { get } = require('lodash');
+const { requestLogger } = require('./logger');
+const { DEFAULT_REQUEST_RETRIES } = require('./config');
 
 async function sendRequest(options) {
     const requestDefaultOptions = {
-        validateStatus: function (status) {
-            return true;
-        },
         responseType: 'json',
         retries: DEFAULT_REQUEST_RETRIES
     };
@@ -19,46 +17,25 @@ async function sendRequest(options) {
     return performRequest(requestDefaultOptions, requestDefaultOptions.retries);
 }
 
-async function performRequest(options, retriesLeft) {
-    retriesLeft--;
-    logger.trace(`Sending request to ${options.url}`);
-    const requestTimeStamp = Date.now();
+async function performRequest(options) {
+    requestLogger.trace(`Sending request to ${options.url}`);
     let response;
     try {
-        response = await request(options);
-        HttpMetricsCollector.collect(response);
+        const client = axios.create({ baseURL: options.url });
+        await requestRetry(client, {
+            retries: DEFAULT_REQUEST_RETRIES,
+            retryCondition: function (error) {
+                return (get(error, 'response.status') >= 500 || !error.response);
+            }
+        });
+        response = await client(options);
     } catch (error) {
-        handleError(options, error, requestTimeStamp);
+        requestLogger.error({ error }, `Callout to ${options.targetName}`);
+        throw error;
     }
 
-    if (response.status >= 500) {
-        logger.error(response, `Request failed. Attempt number ${options.retries - retriesLeft} of ${options.retries}.`);
-        if (retriesLeft > 0) {
-            return performRequest(options, retriesLeft);
-        } else {
-            return response;
-        }
-    }
-
-    logger.info(response, `Callout to ${options.targetName}`);
+    requestLogger.info({ response }, `Callout to ${options.targetName}`);
     return response;
-}
-
-function handleError(options, error, requestTimeStamp) {
-    const responseTimeStamp = Date.now();
-    logger.error({
-        error: error.message,
-        request: {
-            'utc-timestamp': requestTimeStamp,
-            method: options.method,
-            url: options.url,
-            headers: options.headers,
-            body: options.data,
-            elapsed: responseTimeStamp - requestTimeStamp
-        }
-    }, `Error during request to ${options.targetName}`);
-
-    throw error;
 }
 
 module.exports = {

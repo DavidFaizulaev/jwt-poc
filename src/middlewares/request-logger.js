@@ -1,4 +1,4 @@
-const logger = require('../service/logger');
+const { logger } = require('../service/logger');
 const northboundLogger = logger.child({ type: 'northbound' });
 const { HDR_X_ZOOZ_REQUEST_ID } = require('../service/common');
 const LOG_MESSAGE = 'Incoming message';

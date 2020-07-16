@@ -4,7 +4,8 @@ const chance = new Chance();
 
 module.exports = {
     prepareTestEnvironment: prepareTestEnvironment,
-    generateGenericAddress: generateGenericAddress
+    generateGenericAddress: generateGenericAddress,
+    preparePaymentMethodToken: preparePaymentMethodToken
 };
 
 async function prepareTestEnvironment(paymentsOsClient, paymentsOSsdkClient, configurations) {
@@ -21,8 +22,8 @@ async function prepareTestEnvironment(paymentsOsClient, paymentsOSsdkClient, con
         provider_id: providerId,
         configuration_data: {
             name: 'merchant_key',
-            tenant_id: 'feedzai123', //It was added because the test failed otherwise, must be checked
-            region: 'Latam', //It was added because the test failed otherwise, must be checked
+            tenant_id: 'payu',
+            region: 'latam',
             isRequired: true,
             isHidden: false,
             description: 'key used to identify the merchant in the fraud system'
@@ -39,7 +40,8 @@ async function prepareTestEnvironment(paymentsOsClient, paymentsOSsdkClient, con
     const getAppKeysResponse = await paymentsOSsdkClient.getApplicationKeys({
         app_name: createApplicationResponse.body.id,
         account_id: createMerchantResponse.merchant_id,
-        session_token: createMerchantResponse.session_token });
+        session_token: createMerchantResponse.session_token
+    });
     const data = {
         merchant: createMerchantResponse,
         configurations: createConfigurationResponse.body,
@@ -60,9 +62,8 @@ async function preparePaymentMethodToken(paymentsOSsdkClient) {
         billing_address: genericAddress
     };
     const tokenResponse = await paymentsOSsdkClient.createToken({ request_body: createPaymentMethodToken });
-    const paymentMethodToken = tokenResponse.body.token;
 
-    return paymentMethodToken;
+    return tokenResponse.body;
 }
 
 function generateGenericAddress(paymentsOSsdkClient) {

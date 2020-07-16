@@ -1,6 +1,6 @@
 const _app = require('./app');
 const gracefulShutdown = require('./service/shutdown');
-const logger = require('./service/logger');
+const { logger } = require('./service/logger');
 const { PORT } = require('./service/config');
 
 _app().then(app => {

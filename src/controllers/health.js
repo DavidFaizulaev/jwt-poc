@@ -1,6 +1,5 @@
-const { BUILD, APP_NAME, CASSANDRA_KEYSPACE } = require('../service/config');
-const idempotencyHandler = require('idempotency-handler');
-const logger = require('../service/logger');
+const { BUILD, APP_NAME } = require('../service/config');
+const { logger } = require('../service/logger');
 
 module.exports = {
     health: health
@@ -8,7 +7,6 @@ module.exports = {
 
 async function health(ctx){
     try {
-        await idempotencyHandler.checkCassandraConnectivity(CASSANDRA_KEYSPACE);
         ctx.status = 200;
         ctx.body = { status: 'UP', build: BUILD };
     } catch (error) {
