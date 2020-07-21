@@ -1,4 +1,4 @@
-const riskModel = require('../modles/risk-model');
+const riskModel = require('../models/risk-model');
 const { CREATED, OK } = require('http-status-codes');
 
 module.exports = {

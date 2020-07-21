@@ -17,6 +17,7 @@ module.exports = {
 };
 
 async function createRisk(ctx) {
+    let paymentMethodResource;
     const { request, headers, params } = ctx;
     const merchantId = headers[HDR_X_ZOOZ_ACCOUNT_ID];
 
@@ -24,12 +25,15 @@ async function createRisk(ctx) {
     const paymentResource = paymentStorageResponse.data;
     validatePaymentState(paymentResource);
 
-    let paymentMethod = get(request, 'body.payment_method');
-    validateExpirationDate(paymentMethod);
-    paymentMethod = await fssIntegration.handlePaymentMethodToken(merchantId, paymentMethod, headers);
+    const paymentMethod = get(request, 'body.payment_method');
+
+    if (paymentMethod) {
+        validateExpirationDate(paymentMethod);
+        paymentMethodResource = await fssIntegration.handlePaymentMethodToken(merchantId, paymentMethod, headers);
+    }
 
     const providerConfigurationId = await appsIntegration.getDefaultProviderId(headers[HDR_X_ZOOZ_APP_NAME], headers);
-    const riskResponse = await fraudService.createRisk(paymentResource, request.body, headers, providerConfigurationId, paymentMethod);
+    const riskResponse = await fraudService.createRisk(paymentResource, request.body, headers, providerConfigurationId, paymentMethodResource);
     return riskResponse;
 }
 
@@ -37,7 +41,7 @@ async function getRiskAnalyses(ctx) {
     const { params, headers } = ctx;
     const result = await psIntegration.getRiskAnalyses(params, headers);
     return result.data;
-};
+}
 
 async function getRiskAnalysesById(ctx) {
     const { params, headers } = ctx;

@@ -28,7 +28,6 @@ variables:
   NAMESPACE: apps
   DEPLOYMENT_TYPE: deployment
   DOCKER_HOST: tcp://localhost:2375
-  ADVISORY_EXCEPTIONS: 1523
 
 include:
   - project: paymentsos/quality-clan/gitlab-quality-template
