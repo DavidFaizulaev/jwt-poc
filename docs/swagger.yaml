@@ -666,6 +666,7 @@ components:
             The type of alternative payment method selected by the customer
             to pay. Possible values - `credit_card`, `bank_transfer`, `cash`, `ewallet`, `debit_redirect`, `loyalty`.
           type: string
+          enum: ['credit_card']
     credit_card_request:
       description: An object representing a tokenized payment method in a request.
       type: object

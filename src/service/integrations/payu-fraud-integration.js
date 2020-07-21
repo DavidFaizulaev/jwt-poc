@@ -167,6 +167,7 @@ function getCreditCardStructure(paymentMethod, headers, context) {
 
 function buildRequestBody(paymentResource, requestBody, providerConfigurationId, paymentMethod) {
     const copiedRequestBody = cloneDeep(requestBody);
+
     copiedRequestBody.payment_method = paymentMethod;
 
     if (!isUntokenizedCreditCardRequest(paymentMethod)) {
