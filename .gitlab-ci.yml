@@ -365,7 +365,7 @@ deploy:mars:live:k8s:
 deploy:mars:kong:
   <<: *deploy-kong-template-ref
   tags:
-    - eks-mars-apps
+    - eks-mars-pci
   stage: deploy-mars-kong
   only:
     - master
@@ -373,7 +373,7 @@ deploy:mars:kong:
 deploy:prd:sandbox:k8s:
   <<: *deploy-template-ref
   tags:
-    - eks-prd-apps
+    - eks-prd-pci-apps
   stage: deploy-prd
   variables:
     ENVIRONMENT: sandbox
@@ -385,7 +385,7 @@ deploy:prd:sandbox:k8s:
 deploy:prd:live:k8s:
   <<: *deploy-template-ref
   tags:
-    - eks-prd-apps
+    - eks-prd-pci-apps
   stage: deploy-prd
   variables:
     ENVIRONMENT: live
@@ -397,11 +397,42 @@ deploy:prd:live:k8s:
 deploy:prd:kong:
   <<: *deploy-kong-template-ref
   tags:
-    - eks-prd-apps
+    - eks-prd-pci-apps
   stage: deploy-prd-kong
   only:
     - tags
   when: manual
+
+# -------------- Dashboards --------------- #
+.k8s-dashboard-template: &k8s-dashboards-ref
+  image: docker-registry.zooz.co:4567/payu-clan-sre/monitoring-projects/tools/hub-euler-executer/releases:1.0.16
+  tags:
+    - eks-dev-apps
+  before_script:
+    - echo "override before_script"
+  script:
+    - EULER_DEFINITION=$PWD/monitoring-dashboards/k8s-grafana-config.json FOLDER=risk-gateway build-dashboards
+  when: manual
+  except:
+    - schedules
+  only:
+    - master
+
+deploy-mars-dashboards:
+  <<: *k8s-dashboards-ref
+  stage: deploy-mars
+  variables:
+    ENV: eks-mars-pci
+
+deploy-prd-dashboards:
+  <<: *k8s-dashboards-ref
+  tags:
+    - eks-prd-pci-apps
+  stage: deploy-prd
+  variables:
+    ENV: eks-prd-pci
+  only:
+    - tags
 
 # -------------- Release -------------- #
 release:
