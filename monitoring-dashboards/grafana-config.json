@@ -1,0 +1,15 @@
+{
+  "apps": ["live-risk-gateway", "sandbox-risk-gateway"],
+  "dashboards": [
+    {
+      "type": "general-service-metrics"
+    },
+    {
+      "type": "node-service-metrics"
+    },
+    {
+      "type": "api-metrics"
+    }
+  ],
+  "serviceName": "risk-gateway"
+}

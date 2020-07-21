@@ -14,7 +14,7 @@ async function sendRequest(options) {
 
     Object.assign(requestDefaultOptions, options);
 
-    return performRequest(requestDefaultOptions, requestDefaultOptions.retries);
+    return performRequest(requestDefaultOptions);
 }
 
 async function performRequest(options) {
