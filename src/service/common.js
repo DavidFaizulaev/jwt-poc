@@ -21,10 +21,22 @@ module.exports = {
     // Conflict errors
     PAYMENT_CONFLICT: 'Please check the current state of the payment.',
     PAYMENT_CONFLICT_DESCRIPTION: 'There was conflict with payment resource current state.',
+    // payment method token state errors
+    TOKEN_USED_ERROR: 'This token has already been used in a successful payment. Make sure the customer has given his consent to use his details again.',
+    TOKEN_NOT_EXIST_ERROR: 'Token does not exist.',
+    TOKEN_PENDING_ERROR: 'Token under status pending cannot be used, please activate the token in order to use it',
+    TOKEN_FAILED_ERROR: 'Token cannot be used as token activation failed',
+    TOKEN_CANCELED_ERROR: 'This token cannot be used as it was cancelled by the merchant',
 
     // FSS
     CREDIT_CARD_FSS_PAYMENT_METHOD_NAME: 'CreditCard',
     UNTOKENIZED_PAYMENT_METHOD_NAME: 'untokenized',
     TOKENIZED_PAYMENT_METHOD_NAME: 'tokenized',
-    CREDIT_CARD_PAYMENT_METHOD_NAME: 'credit_card'
+    CREDIT_CARD_PAYMENT_METHOD_NAME: 'credit_card',
+    // payment method token states
+    EXPIRED_STATE_NAME: 'expired',
+    USED_STATE_NAME: 'used',
+    PENDING_STATE_NAME: 'pending',
+    FAILED_STATE_NAME: 'failed',
+    CANCELED_STATE_NAME: 'canceled'
 };

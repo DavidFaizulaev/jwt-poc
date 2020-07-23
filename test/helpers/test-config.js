@@ -16,5 +16,6 @@ module.exports = {
             isHidden: false,
             description: 'key used to identify the merchant in the fraud system'
         }]
-    }
+    },
+    TOKEN_STATE_MACHINE_URL: process.env.TOKEN_STATE_MACHINE_URL
 };
