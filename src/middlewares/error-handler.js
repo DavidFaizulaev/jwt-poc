@@ -28,6 +28,7 @@ const _handleError = function (error, ctx) {
     if (errorStatus === BAD_REQUEST) {
         statusCode = BAD_REQUEST;
         details = error.details || error.message;
+        moreInfo = error.more_info;
         errorType = getStatusText(BAD_REQUEST);
     } else if (errorStatus) {
         statusCode = errorStatus;
@@ -66,6 +67,6 @@ const _handleError = function (error, ctx) {
 function buildResponseBody(details, moreInfo) {
     return {
         details: details ? [details.toString()] : undefined,
-        moreInfo
+        message: moreInfo
     };
 }

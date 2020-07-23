@@ -12,7 +12,7 @@ describe('Integration test - Apps storage', function() {
     let testApp, server;
     let merchantId, requestOptions, paymentId, serviceUrl;
 
-    const requestBody =  {
+    const requestBody = {
         transaction_type: 'charge',
         payment_method: {
             type: 'untokenized',
@@ -20,7 +20,8 @@ describe('Integration test - Apps storage', function() {
             holder_name: 'Dina Yakovlev',
             expiration_date: '12/20',
             last_4_digits: '1234',
-            bin_number: '123456'
+            bin_number: '123456',
+            card_number: '21321312321'
         },
         session_id: 'session_id',
         device_id: 'device_id',
@@ -39,6 +40,43 @@ describe('Integration test - Apps storage', function() {
         },
         provider_specific_data: {
             data: 'val'
+        }
+    };
+
+    const createPaymentMethodTokenResponse = {
+        created_timestamp: 1595502986106,
+        payment_method_token: 'e7a3c9bf-7907-4f13-8652-c2507c48492a',
+        billing_address: {
+            first_name: 'John',
+            last_name: 'Doe',
+            address_line_1: 'My first address',
+            address_line_2: 'My second address line',
+            address_line_3: 'My third address line',
+            city: 'My City',
+            state: 'IL',
+            country: 'ILS',
+            zip_code: '02025',
+            phone_number: '972551234567'
+        },
+        last_used: '2020-07-23T11:16:26.106Z',
+        payment_method_details: {
+            payment_method_type: 'CreditCard',
+            card_holder_name: 'Mr Nobody',
+            expiration_date: '12/2025',
+            last_4_digits: '0007',
+            is_luhn_valid: true,
+            bin_details: {
+                bin: '522345',
+                card_vendor_name: 'MASTERCARD',
+                card_issuer_name: 'BANCARD, S.A.',
+                card_type_name: 'CREDIT',
+                card_level_name: 'STANDARD',
+                card_country_code: 'PRY'
+            }
+        },
+        payment_method_state: {
+            current_state: 'valid',
+            possible_next_events: []
         }
     };
 
@@ -77,6 +115,10 @@ describe('Integration test - Apps storage', function() {
         nock(PAYMENT_STORAGE_URL)
             .get(`/payments/${paymentId}`)
             .reply(200, { payment_state: { current_state: 'payment_initial' } });
+
+        nock(FSS_URL)
+            .post(`/merchants/${merchantId}/payment-methods`)
+            .reply(200, createPaymentMethodTokenResponse);
     });
 
     describe('Errors from apps storage', function () {
