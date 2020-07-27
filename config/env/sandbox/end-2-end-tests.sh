@@ -1,5 +1,4 @@
 # External Services:
-export SECRETS_FILE_PATH=''
 export PAYMENTS_OS_BASE_URL=https://api-qa.paymentsos.com
 export EXTERNAL_ENVIRONMENT=test
 export ORIGIN_URL=https://control-qa.paymentsos.com/

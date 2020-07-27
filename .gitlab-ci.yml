@@ -154,11 +154,18 @@ test:integration-apps:
 test:end-2-end:qa:
   <<: *test_definition
   stage: end-2-end-tests
+  image: docker-registry.zooz.co:4567/cd/ci-runners/runners:gitlab-node-12-docker-comopose-install-kubectl
+  tags:
+    - eks-qa-apps
   variables:
     CLUSTER: qa
     ENVIRONMENT: sandbox
   script:
     - npm run test:e2e
+    - DEPLOYMENT_NAME=$(kubectl get pods -n apps | grep $CHART_NAME | awk '{print $1}')
+    - echo $DEPLOYMENT_NAME
+    - kubectl logs $DEPLOYMENT_NAME -n apps -c $CHART_NAME > ./logs/$CHART_NAME.log
+    - $(npm bin)/data-sentry -f ./logs/data-sentry-values.txt -d ./logs/$CHART_NAME.log
   only:
     - branches
     - master
@@ -202,7 +209,6 @@ test:end-2-end:qa:
   script:
     - source ./config/kong/set-kong-centralized-config-variables.sh
     - source ./config/kong/loadKongVariables.sh
-    - export CHART_NAME=$(echo review-authentications-callbacks-$CI_COMMIT_REF_SLUG | cut -c1-55)
     - DEPLOYMENT_TYPE=job k8s-deploy --helm-path=$PWD/kong-deployment-chart --display-values=true --status-check-timeout=180
   when: manual
   only:
@@ -256,8 +262,8 @@ deploy:review:stop:k8s:
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.zooz.co/PaymentsOS/risk/risk-gateway.git
     - cd risk-gateway
+    - source config/loadEnv.sh
   script:
-    - export CHART_NAME=$(echo review-risk-gateway-$CI_COMMIT_REF_SLUG | cut -c1-55)
     - k8s-clear --resources=services,deployments
   only:
     - branches
