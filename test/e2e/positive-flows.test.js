@@ -3,12 +3,15 @@ const { cloneDeep } = require('lodash');
 const bunyan = require('bunyan');
 const paymentsOSClient = require('paymentsos-client').paymentsOSClient;
 const paymentsOSsdkClient = require('payments-os-sdk');
+const { SensitiveFieldValues } = require('sensitive-field-values');
+const fs = require('fs');
 const { PAYMENTS_OS_BASE_URL, EXTERNAL_ENVIRONMENT, ORIGIN_URL, API_VERSION, RISK_PROVIDER_CONFIGURATION, PAYMENTS_OS_BASE_URL_FOR_TESTS } = require('../helpers/test-config');
 const environmentPreparations = require('../helpers/environment-preparations');
 const testsCommonFunctions = require('../helpers/tests-common-functions');
 const commonSnips = require('../helpers/snips');
 
 const { fullRiskRequestBody } = commonSnips;
+const sensitiveFieldValues = new SensitiveFieldValues();
 
 const createLogger = () => {
     return bunyan.createLogger({
@@ -91,6 +94,8 @@ describe('Create risk analyses flows', function () {
                 'fingerprint', 'created', 'token', 'token_type', 'billing_address', 'bin_number', 'card_type', 'country_code', 'expiration_date',
                 'issuer', 'level', 'vendor');
             expect(createRiskResponse.body.result).to.eql({ status: 'Succeed' });
+
+            sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
         });
         it('Should get risk resource by id', async function () {
             const response = await paymentsOSsdkClient.getRiskAnalysesByRiskAnalysesId({
@@ -109,6 +114,8 @@ describe('Create risk analyses flows', function () {
             expect(response.body).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(response.body.payment_method).to.have.all.keys('expiration_date', 'type', 'holder_name', 'last_4_digits', 'pass_luhn_validation', 'fingerprint', 'created', 'source_type');
             expect(response.body.result).to.eql({ status: 'Succeed' });
+
+            sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(fullRiskRequestBody);
         });
         it('Should successfully get all risk resources', async function () {
             const response = await paymentsOSsdkClient.getAllRiskAnalyses({ payment_id: paymentObject.id });
@@ -139,6 +146,8 @@ describe('Create risk analyses flows', function () {
             expect(response.body).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(response.body.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'pass_luhn_validation', 'last_4_digits');
             expect(response.body.result).to.eql({ status: 'Succeed' });
+
+            sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
         });
         it('Should successfully create risk resource without sending session_id', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
@@ -150,6 +159,8 @@ describe('Create risk analyses flows', function () {
             expect(response.body).to.have.all.keys('payment_method', 'transaction_type', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(response.body.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'pass_luhn_validation', 'last_4_digits');
             expect(response.body.result).to.eql({ status: 'Succeed' });
+
+            sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
         });
         it('Should successfully create risk resource without sending device_id', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
@@ -161,6 +172,8 @@ describe('Create risk analyses flows', function () {
             expect(response.body).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'provider_data', 'created', 'id', 'result');
             expect(response.body.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'pass_luhn_validation', 'last_4_digits');
             expect(response.body.result).to.eql({ status: 'Succeed' });
+
+            sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
         });
         it('Should successfully create risk resource without sending merchant', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
@@ -172,6 +185,8 @@ describe('Create risk analyses flows', function () {
             expect(response.body).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(response.body.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
             expect(response.body.result).to.eql({ status: 'Succeed' });
+
+            sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
         });
         it.skip('Should successfully create risk resource without sending payment method', async function () {
             // flow not yet supported by feedzai
@@ -184,6 +199,19 @@ describe('Create risk analyses flows', function () {
             expect(response.body).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(response.body.payment_method).to.have.all.keys('credit_card', 'type', 'source_type');
             expect(response.body.result).to.eql({ status: 'Succeed' });
+
+            sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
+        });
+    });
+    describe('Data sentry prep', function () {
+        it('Storing sensitive values for data sentry', async function () {
+            let sensitiveValuesArray = Array.from(sensitiveFieldValues.getSensitiveFieldValues());
+            sensitiveValuesArray = [...sensitiveValuesArray].join('\n');
+
+            if (!await fs.existsSync('logs')){
+                fs.mkdirSync('logs');
+            }
+            await fs.appendFileSync('logs/data-sentry-values.txt', sensitiveValuesArray, 'utf8');
         });
     });
 });

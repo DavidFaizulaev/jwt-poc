@@ -42,8 +42,6 @@ function setCommonEnvVars() {
     else
         export CONFIG_MAP_ENVIRONMENT="TEST";
     fi
-
-    reportEnvVars
 }
 
 function getKeyspace() {
@@ -192,6 +190,8 @@ function isLocalApp() {
 }
 
 function setChartName() {
+    echo "setChartName"
+    echo $(isReview)
     if [[ $(isReview) == true ]]; then
         export CHART_NAME=$(echo review-$SERVICE_NAME-$CI_COMMIT_REF_SLUG | cut -c1-55)
     else
@@ -204,3 +204,4 @@ setCommonEnvVars
 setChartName
 setVirtualServiceVariables
 loadClusterVars
+reportEnvVars
