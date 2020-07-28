@@ -94,10 +94,10 @@ describe('Create risk analyses resource negative tests', function () {
             await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
             throw new Error('Should have thrown error');
         } catch (error) {
-            expect(error.statusCode).to.eql(400);
-            expect(error.message).to.eql('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
-            expect(error.error.category).to.eql('api_request_error');
-            expect(error.error.description).to.eql('One or more request parameters are invalid.');
+            expect(error.statusCode).to.equal(400);
+            expect(error.message).to.equal('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
+            expect(error.error.category).to.equal('api_request_error');
+            expect(error.error.description).to.equal('One or more request parameters are invalid.');
         }
     });
     it('Should return bad request response when to create risk analyses with invalid payment method source_type', async function () {
@@ -107,10 +107,10 @@ describe('Create risk analyses resource negative tests', function () {
             await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
             throw new Error('Should have thrown error');
         } catch (error) {
-            expect(error.statusCode).to.eql(400);
-            expect(error.message).to.eql('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
-            expect(error.error.category).to.eql('api_request_error');
-            expect(error.error.description).to.eql('One or more request parameters are invalid.');
+            expect(error.statusCode).to.equal(400);
+            expect(error.message).to.equal('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
+            expect(error.error.category).to.equal('api_request_error');
+            expect(error.error.description).to.equal('One or more request parameters are invalid.');
         }
     });
     it('Should return bad request response when to create risk analyses with merchant_country_code exceeding 3 chars', async function () {
@@ -120,10 +120,10 @@ describe('Create risk analyses resource negative tests', function () {
             await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
             throw new Error('Should have thrown error');
         } catch (error) {
-            expect(error.statusCode).to.eql(400);
-            expect(error.message).to.eql('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
-            expect(error.error.category).to.eql('api_request_error');
-            expect(error.error.description).to.eql('One or more request parameters are invalid.');
+            expect(error.statusCode).to.equal(400);
+            expect(error.message).to.equal('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
+            expect(error.error.category).to.equal('api_request_error');
+            expect(error.error.description).to.equal('One or more request parameters are invalid.');
         }
     });
     it('Should return not found response when trying to create risk analyses with non-existing payment id', async function () {
@@ -131,10 +131,22 @@ describe('Create risk analyses resource negative tests', function () {
             await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRiskRequestBody, payment_id: uuid.v4() });
             throw new Error('Should have thrown error');
         } catch (error) {
-            expect(error.statusCode).to.eql(404);
-            expect(error.message).to.eql('404 - {"category":"api_request_error","description":"The resource was not found."}');
-            expect(error.error.category).to.eql('api_request_error');
-            expect(error.error.description).to.eql('The resource was not found.');
+            expect(error.statusCode).to.equal(404);
+            expect(error.message).to.equal('404 - {"category":"api_request_error","description":"The resource was not found."}');
+            expect(error.error.category).to.equal('api_request_error');
+            expect(error.error.description).to.equal('The resource was not found.');
+        }
+    });
+    it('Should return bad request response when send malformed json', async function () {
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({ request_body: 'malformed json', payment_id: paymentObject.id });
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            expect(error.message).to.equal('400 - {"more_info":"Request body must be valid json","category":"api_request_error","description":"One or more request parameters are invalid."}');
+            expect(error.error.category).to.equal('api_request_error');
+            expect(error.error.description).to.equal('One or more request parameters are invalid.');
+            expect(error.error.more_info).to.equal('Request body must be valid json');
         }
     });
 });
