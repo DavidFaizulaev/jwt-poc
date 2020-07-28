@@ -4,7 +4,7 @@ const nock = require('nock');
 const uuid = require('uuid');
 const serviceRequestSender = require('../helpers/service-request-sender');
 
-const { FSS_URL, PAYMENT_STORAGE_URL } = require('../../src/service/config');
+const { FSS_URL, PAYMENT_STORAGE_URL, RESULT_MAPPING_URL, COUNTRIES_SERVICE_URL, CURRENCIES_LOOKUP_URL } = require('../../src/service/config');
 
 const app = require('../../src/app');
 
@@ -45,6 +45,14 @@ describe('Integration test - Payment storage', function() {
     nock(FSS_URL)
         .post('/login')
         .reply(200, { permanent_token: 'permanent_token' });
+
+    nock(RESULT_MAPPING_URL).get('/categories').reply(200, {});
+    nock(COUNTRIES_SERVICE_URL).get('/countries').reply(200, {});
+    nock(CURRENCIES_LOOKUP_URL).get('/currencies').reply(200, [
+        {
+            decimal_digits: 2,
+            code: 'PLN'
+        }]);
 
     before(async function () {
         testApp = (await app()).callback();

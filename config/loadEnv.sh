@@ -36,6 +36,10 @@ function setCommonEnvVars() {
     export PULL_POLICY=Always
 
     export KEEP_ALIVE_TIMEOUT=120000
+    export MAX_RETRIES=3
+    export TARGET_TIMEOUT=5000
+    export CACHE_REFRESH_INTERVAL_SECONDS=43200
+    export MAX_ACTIONS_TO_EXPAND_IN_PAYMENT=100
 
     if [ $ENVIRONMENT = "live" ]; then
         export CONFIG_MAP_ENVIRONMENT="LIVE";

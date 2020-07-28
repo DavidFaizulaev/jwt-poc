@@ -10,11 +10,11 @@
   "scripts": {
     "lint": "eslint src/",
     "test": "nyc mocha test/unit/*/*.test.js",
-    "test:integration-fss": "mocha test/integration/fss-integration.test.js --timeout 10000",
-    "test:integration-apps-storage": "mocha test/integration/apps-storage-integration.test.js --timeout 10000",
-    "test:integration-ps": "mocha test/integration/ps-integration.test.js --timeout 10000",
-    "test:system": "mocha test/system/*.test.js --timeout 10000",
-    "test:e2e": "mocha test/e2e/*.test.js --timeout 10000",
+    "test:integration-fss": "mocha test/integration/fss-integration.test.js",
+    "test:integration-apps-storage": "mocha test/integration/apps-storage-integration.test.js",
+    "test:integration-ps": "mocha test/integration/ps-integration.test.js",
+    "test:system": "mocha test/system/*.test.js",
+    "test:e2e": "mocha test/e2e/*.test.js",
     "start": "source loadEnv-local.sh system-tests; nodemon --inspect src/server.js"
   },
   "author": "",
@@ -26,6 +26,7 @@
     "body-parser": "^1.19.0",
     "bunyan": "^1.8.14",
     "cassandra-helper": "^1.0.4",
+    "entities-mapper-v130": "^3.10.0",
     "envboss": "^1.1.0",
     "express-ajv-swagger-validation": "^1.2.3",
     "fss-integration": "^3.1.2",
@@ -44,6 +45,7 @@
     "uuid": "^8.3.0"
   },
   "devDependencies": {
+    "api-contract-validator": "^2.1.0",
     "chai": "^4.2.0",
     "chance": "^1.1.6",
     "data-sentry": "^3.0.1",
