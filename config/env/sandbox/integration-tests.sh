@@ -19,6 +19,15 @@ export SERVICE_IAM_PASSWORD=password
 export FRAUD_SERVICE_URL=http://{SERVICE_NAME}.com
 export APPS_STORAGE_URL=http://apps-storage-url.com
 
+export BASE_API_PAYMENTSOS_URL=BASE_API_PAYMENTSOS_URL
+export RESULT_MAPPING_URL=http://fake-url.v2.results-mapping.$QA_DCOS_URL
+export COUNTRIES_SERVICE_URL=http://fake.country-lookup.$QA_DCOS_URL
+export CURRENCIES_LOOKUP_URL=http://fake.currencies-lookup.$QA_DCOS_URL
+export PROVIDER_CONFIGURATIONS_URL=http://fake.provider-configurations.$QA_DCOS_URL
+export TARGET_TIMEOUT=5000
+export CACHE_REFRESH_INTERVAL_SECONDS=43200
+export MAX_ACTIONS_TO_EXPAND_IN_PAYMENT=100
+
 echo PORT: $PORT
 echo SHUTDOWN_TIMEOUT: $SHUTDOWN_TIMEOUT
 echo SERVICE_URL: $APP_URL

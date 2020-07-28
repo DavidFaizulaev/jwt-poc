@@ -59,4 +59,35 @@ EnvironmentVariables:
       configMapKeyRef:
         name: centralized-config
         key: $PAYMENT_STORAGE_KEY
-
+  - name: RESULT_MAPPING_URL
+    valueFrom:
+      configMapKeyRef:
+        name: centralized-config
+        key: RESULTS_MAPPING_URL
+  - name: COUNTRIES_SERVICE_URL
+    valueFrom:
+      configMapKeyRef:
+        name: centralized-config
+        key: COUNTRY_LOOKUP_URL
+  - name: CURRENCIES_LOOKUP_URL
+    valueFrom:
+      configMapKeyRef:
+        name: centralized-config
+        key: CURRENCIES_LOOKUP_URL
+  - name: BASE_API_PAYMENTSOS_URL
+    valueFrom:
+      configMapKeyRef:
+        name: centralized-config
+        key: BASE_API_PAYMENTSOS_URL
+  - name: PROVIDER_CONFIGURATIONS_URL
+    valueFrom:
+      configMapKeyRef:
+        name: centralized-config
+        key: PCS_URL
+  - name: TARGET_TIMEOUT
+    value: $TARGET_TIMEOUT
+  - name: CACHE_REFRESH_INTERVAL_SECONDS
+    value: $CACHE_REFRESH_INTERVAL_SECONDS
+  - name: MAX_ACTIONS_TO_EXPAND_IN_PAYMENT
+    value: $MAX_ACTIONS_TO_EXPAND_IN_PAYMENT
+    

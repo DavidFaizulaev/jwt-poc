@@ -97,7 +97,7 @@ describe('payment method token validation tests', function () {
     describe('Fail creating risk resource due to invalid token states', function () {
         it('Should fail to create risk resource when using used payment method token', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
-            copiedRequestBody.payment_method = { token: TESTING_TOKENS.USED };
+            copiedRequestBody.payment_method = { token: TESTING_TOKENS.USED, type: 'tokenized' };
             try {
                 await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
                 throw new Error('should gone to catch');
@@ -112,7 +112,7 @@ describe('payment method token validation tests', function () {
         });
         it('Should fail to create risk resource when using expired payment method token', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
-            copiedRequestBody.payment_method = { token: TESTING_TOKENS.EXPIRED };
+            copiedRequestBody.payment_method = { token: TESTING_TOKENS.EXPIRED, type: 'tokenized' };
             try {
                 await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
                 throw new Error('should gone to catch');
@@ -127,7 +127,7 @@ describe('payment method token validation tests', function () {
         });
         it('Should fail to create risk resource when using pending payment method token', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
-            copiedRequestBody.payment_method = { token: TESTING_TOKENS.PENDING };
+            copiedRequestBody.payment_method = { token: TESTING_TOKENS.PENDING, type: 'tokenized' };
             try {
                 await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
                 throw new Error('should gone to catch');
@@ -142,7 +142,7 @@ describe('payment method token validation tests', function () {
         });
         it('Should fail to create risk resource when using failed payment method token', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
-            copiedRequestBody.payment_method = { token: TESTING_TOKENS.FAILED };
+            copiedRequestBody.payment_method = { token: TESTING_TOKENS.FAILED, type: 'tokenized' };
             try {
                 await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
                 throw new Error('should gone to catch');
@@ -157,7 +157,7 @@ describe('payment method token validation tests', function () {
         });
         it('Should fail to create risk resource when using cancelled payment method token', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
-            copiedRequestBody.payment_method = { token: TESTING_TOKENS.CANCELED };
+            copiedRequestBody.payment_method = { token: TESTING_TOKENS.CANCELED, type: 'tokenized' };
             try {
                 await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
                 throw new Error('should gone to catch');

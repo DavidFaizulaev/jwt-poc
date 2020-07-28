@@ -50,7 +50,17 @@ const environmentVariables = createEnvObject({
     FRAUD_SERVICE_URL: { mandatory },
 
     // Apps
-    APPS_STORAGE_URL: { mandatory }
+    APPS_STORAGE_URL: { mandatory },
+
+    // entities mapper
+    RESULT_MAPPING_URL: { mandatory },
+    COUNTRIES_SERVICE_URL: { mandatory },
+    CURRENCIES_LOOKUP_URL: { mandatory },
+    BASE_API_PAYMENTSOS_URL: { mandatory },
+    PROVIDER_CONFIGURATIONS_URL: { mandatory },
+    TARGET_TIMEOUT: { mandatory },
+    CACHE_REFRESH_INTERVAL_SECONDS: { mandatory },
+    MAX_ACTIONS_TO_EXPAND_IN_PAYMENT: { mandatory }
 });
 
 environmentVariables.CASSANDRA_USERNAME = cassandraUserName;

@@ -368,20 +368,9 @@ components:
         type: string
 
     tokenized_response:
-      description: An object representing a tokenized payment method in a request.
-      allOf:
-        - $ref: '#/components/schemas/tokenized_credit_card_response'
-      required:
-        - token_type
-      properties:
-        token_type:
-          $ref: '#/components/schemas/token_type'
-
-    tokenized_credit_card_response:
       description: An object representing a tokenized payment method returned in a response.
       type: object
       required:
-        - type
         - token_type
         - token
         - fingerprint
@@ -401,9 +390,6 @@ components:
             The token representing the payment method (created using the
             create token request).
           type: string
-        type:
-          description: |
-            The type of payment method. Possible value: `tokenized`.
         country_code:
           description: The country where the credit card was issued, in <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3" target="_blank">ISO 3166-1 alpha-3 </a> format.
           externalDocs:
@@ -445,7 +431,6 @@ components:
           type: string
         created:
           type: string
-          format: timestamp
         customer:
           type: string
           description: The href link to the customer associated with this payment method.
@@ -463,28 +448,14 @@ components:
             Uniquely identifies this particular card number. You can use this
             attribute to check whether two tokens represent the same card
             number.
-        href:
-          type: string
-          description: >-
-            The href link to the associated Payment Method. Note - The href is
-            only included here for a payment method that is associated with a
-            customer.
-          pattern: >-
-            ^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w
-            \.-]*)*\/?$
 
 
 
     untokenized_credit_card_response:
       description: An object representing a tokenized payment method returned in a response.
       required:
-        - type
         - source_type
-        - holder_name
       properties:
-        type:
-          type: string
-          enum: ['untokenized']
         source_type:
           type: string
           enum: ['credit_card']
@@ -530,17 +501,11 @@ components:
         created:
           type: string
         fingerprint:
+          type: string
           description: >-
             Uniquely identifies this particular card number. You can use this
             attribute to check whether two tokens represent the same card
             number.
-        href:
-          description: |
-            The href link to the associated Payment Method. Note - The href is only included here for a payment method that is associated with a customer.
-          type: string
-          pattern: >-
-            ^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w
-            \.-]*)*\/?$
 
     error_model:
       required:
@@ -624,6 +589,14 @@ components:
         payment_method:
           type: object
           description: This represents the Payment Method selected by the customer to pay.
+          required:
+            - type
+          properties:
+            type:
+                description: |
+                  The type of payment method. Possible value: `tokenized`.
+                type: string
+                enum: ['untokenized', 'tokenized']
           oneOf:
             - $ref: '#/components/schemas/untokenized_request'
             - $ref: '#/components/schemas/tokenized_request'
@@ -644,23 +617,15 @@ components:
             The token representing the payment method, (created using the
             create token request).
           type: string
-        type:
-          description: |
-            The type of payment method. Possible value: `tokenized`.
-          type: string
     untokenized_request:
       description: An object representing an untokenized payment method in a request.
       type: object
+      required:
+        - source_type
       anyOf:
         - $ref: '#/components/schemas/credit_card_request'
         - $ref: '#/components/schemas/partial_credit_card_request'
-      required:
-        - type
-        - source_type
       properties:
-        type:
-          description: |
-            The type of payment method. Possible value: `untokenized`.
         source_type:
           description: |
             The type of alternative payment method selected by the customer
@@ -670,9 +635,6 @@ components:
     credit_card_request:
       description: An object representing a tokenized payment method in a request.
       type: object
-      required:
-        - holder_name
-        - card_number
       properties:
         holder_name:
           description: "Name of the credit card holder."
@@ -700,10 +662,6 @@ components:
     partial_credit_card_request:
       description: An object representing a tokenized payment method in a request.
       type: object
-      required:
-        - holder_name
-        - bin_number
-        - last_4_digits
       properties:
         holder_name:
           description: "Name of the credit card holder."
@@ -797,6 +755,8 @@ components:
         payment_method:
           description: This represents the Payment Method selected by the customer to pay.
           type: object
+          required:
+            - type
           properties:
             href:
               description: |
@@ -805,6 +765,11 @@ components:
               pattern: >-
                 ^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w
                 \.-]*)*\/?$
+            type:
+              description: |
+                The type of payment method. Possible value: `tokenized`.
+              type: string
+              enum: ['untokenized', 'tokenized']
           oneOf:
             - $ref: '#/components/schemas/tokenized_response'
             - $ref: '#/components/schemas/untokenized_credit_card_response'
@@ -812,16 +777,9 @@ components:
           $ref: '#/components/schemas/provider_configuration'
         provider_data:
           $ref: '#/components/schemas/provider_data'
-        originating_purchase_country:
-          description: >-
-            Country where the customer was located when making the purchase.
-            (This is derived from the ip_address.) The country code is in <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3" target="_blank">ISO 3166-1 alpha-3</a> format.
-          type: string
         ip_address:
           type: string
           description: The IP address of the customer making the payment.
-        additional_details:
-          $ref: '#/components/schemas/additional_details'
     result:
       description: Result of the transaction.
       type: object
