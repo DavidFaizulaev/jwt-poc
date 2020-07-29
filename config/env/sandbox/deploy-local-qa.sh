@@ -16,7 +16,7 @@ export FSS_URL=http://internal.eks-qa.zooz.co/sandbox-fss
 export PAYMENT_STORAGE_URL=http://internal.eks-qa.zooz.co/production-payment-storage
 export APPS_STORAGE_URL=http://internal.eks-qa.zooz.co/apps-storage-api-sandbox
 export FRAUD_SERVICE_URL=http://internal.eks-qa.zooz.co/{SERVICE_NAME}
-export FEEDZAI_SERVICE_NAME=review-feedzai-fake-feedzai-mock
+export FEEDZAI_SERVICE_NAME=payu-fraud-mock
 
 export KONG_CONFIG_SECRET_PROJECT=svckongaccountsgateways
 export KONG_ADMIN_URL=http://internal.eks-qa.zooz.co/accounts-api-gateway/admin

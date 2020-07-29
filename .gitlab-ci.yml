@@ -172,10 +172,10 @@ test:end-2-end:qa:
 
 # -------------- k8s Deployments -------------- #
 .deploy-template: &deploy-template-ref
-  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v9-latest
+  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v10-latest
   script:
     - source ./config/set-centralized-config-variables.sh
-    - DEPLOYMENT_TYPE=job k8s-deploy --helm-path=$PWD/cassandra-migration-chart --display-values=true
+    # - DEPLOYMENT_TYPE=job k8s-deploy --helm-path=$PWD/cassandra-migration-chart --display-values=true
     - k8s-deploy --helm-path=$PWD/deployment-chart --display-values=true --status-check-timeout=180
   only:
     - master
@@ -184,7 +184,7 @@ test:end-2-end:qa:
     - schedules
 
 .kong-deploy-template: &deploy-kong-template-ref
-  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v9-latest
+  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v10-latest
   variables:
     ENV: config
     ENVIRONMENT: kong
@@ -196,7 +196,7 @@ test:end-2-end:qa:
     - schedules
 
 .clear-kong-template: &clear-kong-template-ref
-  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v9-latest
+  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v10-latest
   variables:
     ENV: remove
     ENVIRONMENT: kong
@@ -246,7 +246,7 @@ deploy:review:kong:
     - tags
 
 deploy:review:stop:k8s:
-  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v9-latest
+  image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v10-latest
   tags:
     - eks-dev-apps
   stage: deploy-review
