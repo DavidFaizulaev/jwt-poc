@@ -4,6 +4,7 @@ const uuid = require('uuid');
 const bunyan = require('bunyan');
 const paymentsOSClient = require('paymentsos-client').paymentsOSClient;
 const paymentsOSsdkClient = require('payments-os-sdk');
+const axios = require('axios');
 const { PAYMENTS_OS_BASE_URL, EXTERNAL_ENVIRONMENT, ORIGIN_URL, API_VERSION, RISK_PROVIDER_CONFIGURATION, PAYMENTS_OS_BASE_URL_FOR_TESTS } = require('../helpers/test-config');
 const environmentPreparations = require('../helpers/environment-preparations');
 const testsCommonFunctions = require('../helpers/tests-common-functions');
@@ -147,6 +148,60 @@ describe('Create risk analyses resource negative tests', function () {
             expect(error.error.category).to.equal('api_request_error');
             expect(error.error.description).to.equal('One or more request parameters are invalid.');
             expect(error.error.more_info).to.equal('Request body must be valid json');
+        }
+    });
+    it('Should return 400 with when request is sent without private key', async () => {
+        try {
+            const createRiskRequestComplete = {
+                data: fullRiskRequestBody,
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': API_VERSION,
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    accept: 'application/json'
+                },
+                responseType: 'json',
+                method: 'POST'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('Missing private_key header');
+        }
+    });
+    it('Should return 400 with when request is sent without private key but with authorization session token', async () => {
+        try {
+            const createRiskRequestComplete = {
+                data: fullRiskRequestBody,
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    authorization: `Bearer ${testsEnvs.merchant.session_token}`,
+                    'x-zooz-account-id': testsEnvs.merchant.merchant_id,
+                    'Content-Type': 'application/json',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': API_VERSION,
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    accept: 'application/json'
+                },
+                responseType: 'json',
+                method: 'POST'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('Missing private_key header');
         }
     });
 });

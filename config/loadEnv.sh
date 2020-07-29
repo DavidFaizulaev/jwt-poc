@@ -27,7 +27,7 @@ function setCommonEnvVars() {
     export CASSANDRA_MIGRATION_IMAGE=$(getCassandraImage)
     export KONG_CONFIGURATIONS_AS_JOB_K8S_MIGRATION=docker-registry.zooz.co:4567/paymentsos/api-gateway/utilities/kong-admin-node-client/release:v4-latest
 
-    export FEEDZAI_SERVICE_NAME=feedzai
+    export FEEDZAI_SERVICE_NAME=payu-fraud
 
     export CASSANDRA_REPLICATION_FACTOR=3
     export SECRETS_FILE_PATH="/var/share/secrets/vault_secrets/secrets.json"
