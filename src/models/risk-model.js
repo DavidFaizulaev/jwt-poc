@@ -1,7 +1,7 @@
-const { get } = require('lodash');
+const { get, pick } = require('lodash');
 const entitiesMapper = require('entities-mapper-v130').Payment;
 const {
-    HDR_X_ZOOZ_ACCOUNT_ID, HDR_X_ZOOZ_APP_NAME
+    HDR_X_ZOOZ_ACCOUNT_ID, HDR_X_ZOOZ_REQUEST_ID, X_ZOOZ_ACCESS_ENVIRONMENT, HDR_X_ZOOZ_APP_NAME
 } = require('../service/common');
 const fssIntegration = require('../service/integrations/fss-integration');
 const fraudService = require('../service/integrations/payu-fraud-integration');
@@ -33,7 +33,8 @@ async function createRisk(ctx) {
     const providerConfigurationId = await appsIntegration.getDefaultProviderId(headers[HDR_X_ZOOZ_APP_NAME], headers);
     const riskResponse = await fraudService.createRisk(paymentResource, request.body, headers, providerConfigurationId, paymentMethod);
 
-    const mappedRiskAnalysisResource = await entitiesMapper.mapRiskAnalysis(riskResponse, headers);
+    const reqHeaders = pick(headers, [HDR_X_ZOOZ_REQUEST_ID, X_ZOOZ_ACCESS_ENVIRONMENT, HDR_X_ZOOZ_ACCOUNT_ID, HDR_X_ZOOZ_APP_NAME]);
+    const mappedRiskAnalysisResource = await entitiesMapper.mapRiskAnalysis(riskResponse, reqHeaders);
     return mappedRiskAnalysisResource;
 }
 
@@ -54,6 +55,7 @@ async function getRiskAnalysesById(ctx) {
     const { params, headers } = ctx;
     const getRiskResponse = await psIntegration.getRiskAnalysis(params, headers);
 
-    const mappedRiskAnalysisResource = await entitiesMapper.mapRiskAnalysis(getRiskResponse.data, headers);
+    const reqHeaders = pick(headers, [HDR_X_ZOOZ_REQUEST_ID, X_ZOOZ_ACCESS_ENVIRONMENT, HDR_X_ZOOZ_ACCOUNT_ID, HDR_X_ZOOZ_APP_NAME]);
+    const mappedRiskAnalysisResource = await entitiesMapper.mapRiskAnalysis(getRiskResponse.data, reqHeaders);
     return mappedRiskAnalysisResource;
 }

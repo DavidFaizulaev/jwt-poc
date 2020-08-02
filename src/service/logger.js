@@ -24,7 +24,16 @@ const logger = loggerHelper.createLogger({
     level: LOG_LEVEL
 });
 
+const entitiesMapperLogger = loggerHelper.createLogger({
+    maskOptions,
+    name: `${APP_NAME}-entities-mapper`,
+    cluster: CLUSTER,
+    build: BUILD,
+    level: LOG_LEVEL
+});
+
 module.exports = {
     logger,
-    requestLogger
+    requestLogger,
+    entitiesMapperLogger
 };
