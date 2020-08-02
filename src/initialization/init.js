@@ -1,6 +1,6 @@
 const entitiesMapper = require('entities-mapper-v130').Payment;
 const fssIntegration = require('../service/integrations/fss-integration');
-const { logger } = require('../service/logger');
+const { logger, entitiesMapperLogger } = require('../service/logger');
 const config = require('../service/config');
 const swagger = require('express-ajv-swagger-validation');
 const { SWAGGER_PATH } = require('../service/common');
@@ -25,11 +25,11 @@ async function init() {
             currenciesLookupUrl: config.CURRENCIES_LOOKUP_URL,
             currenciesLookupTimeoutMillis: config.TARGET_TIMEOUT,
             currenciesLookupRefreshIntervalSeconds: config.CACHE_REFRESH_INTERVAL_SECONDS,
-            providerConfigurationsUrl: config.PROVIDER_CONFIGURATIONS_URL,
+            providerConfigurationsUrl: `${config.PROVIDER_CONFIGURATIONS_URL}/v1`,
             providerConfigurationsTimeoutMillis: config.TARGET_TIMEOUT,
             maxActionsToExpandInPayment: config.MAX_ACTIONS_TO_EXPAND_IN_PAYMENT,
             baseApiPaymentsOsUrl: config.BASE_API_PAYMENTSOS_URL,
-            logger,
+            logger: entitiesMapperLogger,
             context: { x_zooz_request_id: 'init' }
         });
     } catch (error) {

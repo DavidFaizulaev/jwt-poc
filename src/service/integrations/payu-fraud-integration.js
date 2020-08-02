@@ -38,7 +38,7 @@ async function createRisk(paymentResource, requestBody, headers, providerConfigu
 }
 
 function buildRequestUrl(paymentId) {
-    const baseUrl = FRAUD_SERVICE_URL.replace('{SERVICE_NAME}', `${ENVIRONMENT}-${FEEDZAI_SERVICE_NAME}`);
+    const baseUrl = FRAUD_SERVICE_URL.replace('{SERVICE_NAME}', `risk-${ENVIRONMENT}-${FEEDZAI_SERVICE_NAME}`);
     return `${baseUrl}/payments/${paymentId}/risk-analyses`;
 }
 

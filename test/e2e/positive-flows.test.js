@@ -93,7 +93,7 @@ describe('Create risk analyses flows', function () {
             expect(createRiskResponse.statusCode).to.equal(201);
 
             const createRiskAnalysesResource = createRiskResponse.body;
-            expect(createRiskAnalysesResource).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data',
+            expect(createRiskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'transaction_type', 'session_id', 'device_id', 'provider_data',
                 'created', 'id', 'result');
             expect(createRiskAnalysesResource.payment_method).to.have.all.keys('type', 'holder_name', 'last_4_digits', 'pass_luhn_validation',
                 'fingerprint', 'created', 'token', 'token_type', 'billing_address', 'bin_number', 'card_type', 'country_code', 'expiration_date',
@@ -115,7 +115,7 @@ describe('Create risk analyses flows', function () {
             expect(response.statusCode).to.equal(200);
             const riskAnalysesResource = response.body;
             expect(riskAnalysesResource.id).to.equal(createRiskResponse.body.id);
-            expect(riskAnalysesResource).to.have.all.keys('created', 'payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'id', 'result');
+            expect(riskAnalysesResource).to.have.all.keys('created', 'payment_method', 'provider_configuration', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'id', 'result');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
             testsCommonFunctions.validateApiSchema(200, riskAnalysesResource);
@@ -123,7 +123,7 @@ describe('Create risk analyses flows', function () {
         it('Should successfully create risk resource with untokenized payment method', async function () {
             createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRiskRequestBody, payment_id: paymentObject.id });
             expect(createRiskResponse.statusCode).to.equal(201);
-            expect(createRiskResponse.body).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
+            expect(createRiskResponse.body).to.have.all.keys('payment_method', 'provider_configuration', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(createRiskResponse.body.payment_method).to.have.all.keys('expiration_date', 'type', 'holder_name', 'last_4_digits', 'pass_luhn_validation', 'fingerprint', 'created', 'source_type');
             expect(createRiskResponse.body.result).to.eql({ status: 'Succeed' });
 
@@ -158,7 +158,7 @@ describe('Create risk analyses flows', function () {
             expect(createRiskResponse.statusCode).to.equal(201);
 
             const riskAnalysesResource = createRiskResponse.body;
-            expect(riskAnalysesResource).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
+            expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'pass_luhn_validation', 'last_4_digits');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
@@ -174,7 +174,7 @@ describe('Create risk analyses flows', function () {
             expect(createRiskResponse.statusCode).to.equal(201);
 
             const riskAnalysesResource = createRiskResponse.body;
-            expect(riskAnalysesResource).to.have.all.keys('payment_method', 'transaction_type', 'device_id', 'provider_data', 'created', 'id', 'result');
+            expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'transaction_type', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'pass_luhn_validation', 'last_4_digits');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
@@ -190,7 +190,7 @@ describe('Create risk analyses flows', function () {
             expect(createRiskResponse.statusCode).to.equal(201);
 
             const riskAnalysesResource = createRiskResponse.body;
-            expect(riskAnalysesResource).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'provider_data', 'created', 'id', 'result');
+            expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'transaction_type', 'session_id', 'provider_data', 'created', 'id', 'result');
             expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'pass_luhn_validation', 'last_4_digits');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
@@ -206,7 +206,7 @@ describe('Create risk analyses flows', function () {
             expect(createRiskResponse.statusCode).to.equal(201);
 
             const riskAnalysesResource = createRiskResponse.body;
-            expect(riskAnalysesResource).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
+            expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 

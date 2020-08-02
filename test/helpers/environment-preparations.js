@@ -13,7 +13,7 @@ async function prepareTestEnvironment(paymentsOsClient, paymentsOSsdkClient, con
     const providerId = await paymentsOSsdkClient.getProviderId({
         provider_type: 'risk_provider',
         processor: 'processor',
-        provider_name: 'PayU-Fraud',
+        provider_name: 'PayU-Risk',
         session_token: createMerchantResponse.session_token
     });
     const createConfigurationResponse = await paymentsOSsdkClient.createConfiguration({
@@ -88,7 +88,7 @@ async function createMerchantConfiguration(paymentsOsClient, paymentsOSsdkClient
     const merchantConfiguration = {
         merchant_name: chance.name(),
         user_email: chance.email(),
-        user_password: chance.email(),
+        user_password: `${chance.email()}@#$QC19`,
         domain: chance.domain(),
         session_token: ''
     };

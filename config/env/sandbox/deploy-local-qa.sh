@@ -16,7 +16,12 @@ export FSS_URL=http://internal.eks-qa.zooz.co/sandbox-fss
 export PAYMENT_STORAGE_URL=http://internal.eks-qa.zooz.co/production-payment-storage
 export APPS_STORAGE_URL=http://internal.eks-qa.zooz.co/apps-storage-api-sandbox
 export FRAUD_SERVICE_URL=http://internal.eks-qa.zooz.co/{SERVICE_NAME}
-export FEEDZAI_SERVICE_NAME=payu-fraud-mock
+export FEEDZAI_SERVICE_NAME=payu-risk
+export RESULT_MAPPING_URL=http://results-mapping.v2.results-mapping.dcos.apps.qa.fra.zooz.internal
+export COUNTRIES_SERVICE_URL=http://internal.eks-qa.zooz.co/country-lookup
+export CURRENCIES_LOOKUP_URL=http://internal.eks-qa.zooz.co/currencies-lookup
+export BASE_API_PAYMENTSOS_URL=https://api-qa.paymentsos.com
+export PROVIDER_CONFIGURATIONS_URL=http://internal.eks-qa.zooz.co/provider-configurations
 
 export KONG_CONFIG_SECRET_PROJECT=svckongaccountsgateways
 export KONG_ADMIN_URL=http://internal.eks-qa.zooz.co/accounts-api-gateway/admin
