@@ -122,7 +122,7 @@ describe('Integration test - Apps storage', function() {
 
         nock(PAYMENT_STORAGE_URL)
             .get(`/payments/${paymentId}`)
-            .reply(200, { payment_state: { current_state: 'payment_initial' } });
+            .reply(200, { payment_state: { current_state: 'payment_initial' }, application_id: 'app_name', merchant_id: merchantId });
 
         nock(FSS_URL)
             .post(`/merchants/${merchantId}/payment-methods`)

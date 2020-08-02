@@ -1,2 +1,2 @@
-APP_URL_INTERNAL=http://38968623c691.ngrok.io BRANCH_NAME=mzmz ./config/local/deploy-local-qa-with-kong.sh
+APP_URL_INTERNAL=http://32c79613972b.ngrok.io BRANCH_NAME=tamara ./config/local/deploy-local-qa-with-kong.sh
 ###

@@ -17,6 +17,7 @@ module.exports = {
     // Payment states
     NOT_VALID_STATE: 'not_valid',
     INITIAL_STATE: 'payment_initial',
+    AUTHORIZED: 'authorized',
 
     // Conflict errors
     PAYMENT_CONFLICT: 'Please check the current state of the payment.',
@@ -27,6 +28,8 @@ module.exports = {
     TOKEN_PENDING_ERROR: 'Token under status pending cannot be used, please activate the token in order to use it',
     TOKEN_FAILED_ERROR: 'Token cannot be used as token activation failed',
     TOKEN_CANCELED_ERROR: 'This token cannot be used as it was cancelled by the merchant',
+    // Payment Not found error
+    APP_ID_OF_PAYMENT_NOT_FOUND: 'App_id that is related to the payment was not found',
 
     // FSS
     CREDIT_CARD_FSS_PAYMENT_METHOD_NAME: 'CreditCard',

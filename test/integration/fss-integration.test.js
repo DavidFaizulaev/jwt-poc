@@ -68,6 +68,7 @@ describe('Integration test - FSS', function() {
     });
 
     beforeEach(function () {
+        const appId = uuid.v4();
         merchantId = uuid.v4();
         paymentId = uuid.v4();
         requestOptions = {
@@ -76,13 +77,14 @@ describe('Integration test - FSS', function() {
             body: requestBody,
             headers: {
                 'x-zooz-request-id': uuid.v4(),
-                'x-zooz-account-id': merchantId
+                'x-zooz-account-id': merchantId,
+                'x-zooz-app-name': appId
             }
         };
 
         nock(PAYMENT_STORAGE_URL)
             .get(`/payments/${paymentId}`)
-            .reply(200, { payment_state: { current_state: 'payment_initial' } });
+            .reply(200, { payment_state: { current_state: 'payment_initial' }, application_id: appId, merchant_id: merchantId });
     });
 
     describe('Errors from fss', function () {
