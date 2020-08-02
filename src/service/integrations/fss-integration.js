@@ -68,11 +68,12 @@ async function createPaymentMethod(merchantId, paymentMethodDetails, headers) {
 }
 
 function createPaymentMethodRequestBody(paymentMethodDetails) {
+    const validatedExpirationDate = formatDate(paymentMethodDetails);
     const requestBody = {
         payment_method_details: {
             payment_method_type: CREDIT_CARD_FSS_PAYMENT_METHOD_NAME,
             card_holder_name: paymentMethodDetails.holder_name,
-            expiration_date: formatDate(paymentMethodDetails.expiration_date),
+            expiration_date: validatedExpirationDate,
             card_number: paymentMethodDetails.card_number,
             card_identity: paymentMethodDetails.card_identity
         },

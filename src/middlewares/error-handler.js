@@ -1,7 +1,7 @@
 'use strict';
 
 const httpStatusCodes = require('http-status-codes');
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR, getStatusText } = httpStatusCodes;
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR, getStatusText, CONFLICT } = httpStatusCodes;
 const NOT_FOUND_ERROR_MESSAGE = getStatusText(NOT_FOUND);
 const { InputValidationError } = require('express-ajv-swagger-validation');
 const { HDR_X_ZOOZ_REQUEST_ID } = require('../service/common');
@@ -30,6 +30,11 @@ const _handleError = function (error, ctx) {
         details = error.details || error.message;
         moreInfo = error.more_info;
         errorType = getStatusText(BAD_REQUEST);
+    } if (errorStatus === CONFLICT) {
+        statusCode = CONFLICT;
+        details = error.details || error.message;
+        moreInfo = error.more_info;
+        errorType = getStatusText(CONFLICT);
     } else if (errorStatus) {
         statusCode = errorStatus;
         details = error.details || error.message;

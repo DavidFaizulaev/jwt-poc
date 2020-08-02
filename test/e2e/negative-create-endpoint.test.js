@@ -37,7 +37,7 @@ const sdkConfigurationPreparations = {
 };
 
 describe('Create risk analyses resource negative tests', function () {
-    let testsEnvs, paymentObject;
+    let testsEnvs, paymentObject, genericAddress, createPaymentRequest;
     before(async function(){
         paymentsOSClient.init({
             BASE_URL: PAYMENTS_OS_BASE_URL,
@@ -58,9 +58,9 @@ describe('Create risk analyses resource negative tests', function () {
 
         await paymentsOSsdkClient.init(sdkConfigurationPreparations, false);
 
-        const genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
+        genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
 
-        const createPaymentRequest = {
+        createPaymentRequest = {
             amount: 500,
             currency: 'PLN',
             shipping_address: genericAddress,
@@ -99,6 +99,19 @@ describe('Create risk analyses resource negative tests', function () {
             expect(error.message).to.equal('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
             expect(error.error.category).to.equal('api_request_error');
             expect(error.error.description).to.equal('One or more request parameters are invalid.');
+        }
+    });
+    it('Should return bad request response when create risk analyses is sent with invalid payment method expiration_date', async function () {
+        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+        copiedRequestBody.payment_method.expiration_date = '12]09';
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
         }
     });
     it('Should return bad request response when to create risk analyses with invalid payment method source_type', async function () {
@@ -203,5 +216,183 @@ describe('Create risk analyses resource negative tests', function () {
             expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
             expect(errorResponse.more_info).to.equal('Missing private_key header');
         }
+    });
+    it('should return 404 - payment not found when create risk is called with app-id header different than payment app-id', async function () {
+        testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+        const createApplicationResponse = await paymentsOSsdkClient.createApplication({
+            app_name: `some_app_id${(new Date().getTime())}`,
+            account_id: testsEnvs.merchant.merchant_id,
+            default_provider: testsEnvs.configurations.id,
+            description: 'some_app_description',
+            session_token: testsEnvs.merchant.session_token
+        });
+        const getAppKeysResponse = await paymentsOSsdkClient.getApplicationKeys({
+            app_name: createApplicationResponse.body.id,
+            account_id: testsEnvs.merchant.merchant_id,
+            session_token: testsEnvs.merchant.session_token
+        });
+        testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({
+                payment_id: paymentObject.id,
+                request_body: fullRiskRequestBody,
+                is_internal: true,
+                internal_headers: {
+                    'private-key': getAppKeysResponse.body[0].key,
+                    'app-id': createApplicationResponse.body.id
+                }
+            });
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(404);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('The resource was not found.');
+            expect(errorResponse.more_info).to.equal('App_id that is related to the payment was not found');
+        }
+    });
+    describe('payment state validation tests', function () {
+        let paymentMethod, credoraxProviderId, payURiskProviderId, createConfigurationResponseCrodorax, createConfigurationResponsePayuRisk, paymentStateValidationPaymentObject;
+        before(async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+            const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });
+            paymentStateValidationPaymentObject = createPaymentResponse.body;
+            console.log('successfully created payment');
+            credoraxProviderId = await paymentsOSsdkClient.getProviderId({
+                processor: 'processor',
+                provider_name: 'Credorax',
+                session_token: testsEnvs.merchant.session_token
+            });
+            payURiskProviderId = await paymentsOSsdkClient.getProviderId({
+                provider_type: 'risk_provider',
+                processor: 'processor',
+                provider_name: 'PayU-Fraud',
+                session_token: testsEnvs.merchant.session_token
+            });
+            createConfigurationResponseCrodorax = await paymentsOSsdkClient.createConfiguration({
+                account_id: testsEnvs.merchant.merchant_id,
+                session_token: testsEnvs.merchant.session_token,
+                provider_id: credoraxProviderId,
+                configuration_data: {
+                    merchant_id: '97876392',
+                    signature_key: '49790687'
+                },
+                name: `mynameis${(new Date().getTime())}`
+            });
+            createConfigurationResponsePayuRisk = await paymentsOSsdkClient.createConfiguration({
+                account_id: testsEnvs.merchant.merchant_id,
+                session_token: testsEnvs.merchant.session_token,
+                provider_id: payURiskProviderId,
+                configuration_data: {
+                    name: 'merchant_key',
+                    tenant_id: 'payu',
+                    region: 'latam',
+                    isRequired: true,
+                    isHidden: false,
+                    description: 'key used to identify the merchant in the fraud system'
+                },
+                name: `mynameis${(new Date().getTime())}`
+            });
+        });
+        it('should successfully create risk resource', async function () {
+            const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
+                payment_id: paymentStateValidationPaymentObject.id,
+                request_body: fullRiskRequestBody
+            });
+            expect(createRiskResponse.statusCode).to.equal(201);
+            const createRiskAnalysesResource = createRiskResponse.body;
+            expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
+            expect(createRiskAnalysesResource.transaction_type).to.equal(fullRiskRequestBody.transaction_type);
+            expect(createRiskAnalysesResource.device_id).to.equal(fullRiskRequestBody.device_id);
+            expect(createRiskAnalysesResource.session_id).to.equal(fullRiskRequestBody.session_id);
+        });
+        it('should successfully authorize payment', async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+
+            await paymentsOSsdkClient.updateApplication({
+                app_name: testsEnvs.application.id,
+                account_id: testsEnvs.merchant.merchant_id,
+                default_provider: createConfigurationResponseCrodorax.body.id,
+                description: 'some_app_description',
+                session_token: testsEnvs.merchant.session_token
+            });
+
+            const genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
+
+            const createPaymentMethodToken = {
+                token_type: 'credit_card',
+                holder_name: 'holder_name',
+                expiration_date: '12/2025',
+                card_number: '5223450000000007',
+                billing_address: genericAddress
+            };
+            const tokenResponse = await paymentsOSsdkClient.createToken({ request_body: createPaymentMethodToken });
+
+            paymentMethod = paymentsOSsdkClient.createPaymentMethodObject({ type: 'tokenized', token: tokenResponse.body.token, credit_card_cvv: '234', vendor: 'MASTERCARD' });
+
+            const authorizeResponse = await paymentsOSsdkClient.postAuthorization({
+                payment_id: paymentStateValidationPaymentObject.id,
+                request_body: {
+                    payment_method: paymentMethod
+                }
+            });
+            expect(authorizeResponse.statusCode).to.equal(201);
+            expect(authorizeResponse.body.result.status).to.equal('Succeed');
+        });
+        it('should successfully create risk resource', async function () {
+            await paymentsOSsdkClient.updateApplication({
+                app_name: testsEnvs.application.id,
+                account_id: testsEnvs.merchant.merchant_id,
+                default_provider: createConfigurationResponsePayuRisk.body.id,
+                description: 'some_app_description',
+                session_token: testsEnvs.merchant.session_token
+            });
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+            const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
+                payment_id: paymentStateValidationPaymentObject.id,
+                request_body: fullRiskRequestBody
+            });
+            expect(createRiskResponse.statusCode).to.equal(201);
+            const createRiskAnalysesResource = createRiskResponse.body;
+            expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
+            expect(createRiskAnalysesResource.transaction_type).to.equal(fullRiskRequestBody.transaction_type);
+            expect(createRiskAnalysesResource.device_id).to.equal(fullRiskRequestBody.device_id);
+            expect(createRiskAnalysesResource.session_id).to.equal(fullRiskRequestBody.session_id);
+        });
+        it('should successfully capture payment', async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+
+            await paymentsOSsdkClient.updateApplication({
+                app_name: testsEnvs.application.id,
+                account_id: testsEnvs.merchant.merchant_id,
+                default_provider: createConfigurationResponseCrodorax.body.id,
+                description: 'some_app_description',
+                session_token: testsEnvs.merchant.session_token
+            });
+            const captureResponse = await paymentsOSsdkClient.postCapture({ payment_id: paymentStateValidationPaymentObject.id });
+            expect(captureResponse.statusCode).to.equal(201);
+            const captureResponseBody = captureResponse.body;
+            expect(captureResponseBody.result.status).to.equal('Succeed');
+        });
+        it('should return 409 when create risk is applied to a captured payment', async function () {
+            await paymentsOSsdkClient.updateApplication({
+                app_name: testsEnvs.application.id,
+                account_id: testsEnvs.merchant.merchant_id,
+                default_provider: createConfigurationResponsePayuRisk.body.id,
+                description: 'some_app_description',
+                session_token: testsEnvs.merchant.session_token
+            });
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+            try {
+                await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRiskRequestBody, payment_id: paymentStateValidationPaymentObject.id });
+                throw new Error('Should have thrown error');
+            } catch (error) {
+                expect(error.statusCode).to.equal(409);
+                const errorResponse = error.response.body;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('There was conflict with the resource current state.');
+                expect(errorResponse.more_info).to.equal('There was conflict with payment resource current state.');
+            }
+        });
     });
 });
