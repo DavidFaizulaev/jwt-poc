@@ -11,6 +11,7 @@ stages:
   - deploy-qa
   - deploy-qa-kong
   - end-2-end-tests
+  - deploy-review-stop
   - deploy-mars
   - deploy-mars-kong
   - deploy-prd
@@ -210,7 +211,6 @@ test:end-2-end:qa:
     - source ./config/kong/set-kong-centralized-config-variables.sh
     - source ./config/kong/loadKongVariables.sh
     - DEPLOYMENT_TYPE=job k8s-deploy --helm-path=$PWD/kong-deployment-chart --display-values=true --status-check-timeout=180
-  when: manual
   only:
     - branches
 
@@ -240,7 +240,6 @@ deploy:review:kong:
     - branches
   environment:
     name: review/kong/$CI_BUILD_REF_SLUG
-    on_stop: deploy:review:kong:stop
   except:
     - master
     - tags
@@ -249,7 +248,7 @@ deploy:review:stop:k8s:
   image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v10-latest
   tags:
     - eks-dev-apps
-  stage: deploy-review
+  stage: deploy-review-stop
   variables:
     ENVIRONMENT: sandbox
     ENV: config
@@ -267,7 +266,6 @@ deploy:review:stop:k8s:
     - k8s-clear --resources=services,deployments
   only:
     - branches
-  when: manual
   except:
     - master
     - tags
@@ -276,12 +274,11 @@ deploy:review:kong:stop:
   <<: *clear-kong-template-ref
   tags:
     - eks-dev-apps
-  stage: deploy-review-kong
+  stage: deploy-review-stop
   only:
     - branches
   environment:
     name: review/kong/$CI_BUILD_REF_SLUG
-    action: stop
   except:
     - master
     - tags
@@ -351,6 +348,8 @@ deploy:mars:sandbox:k8s:
   tags:
     - eks-mars-pci
   stage: deploy-mars
+  environment:
+    name: mars-sandbox
   variables:
     ENVIRONMENT: sandbox
     ENV: config
@@ -362,6 +361,8 @@ deploy:mars:live:k8s:
   tags:
     - eks-mars-pci
   stage: deploy-mars
+  environment:
+    name: mars-live
   variables:
     ENVIRONMENT: live
     ENV: config
@@ -381,6 +382,8 @@ deploy:prd:sandbox:k8s:
   tags:
     - eks-prd-pci-apps
   stage: deploy-prd
+  environment:
+    name: prod-sandbox
   variables:
     ENVIRONMENT: sandbox
     ENV: config
@@ -393,6 +396,8 @@ deploy:prd:live:k8s:
   tags:
     - eks-prd-pci-apps
   stage: deploy-prd
+  environment:
+    name: prod-live
   variables:
     ENVIRONMENT: live
     ENV: config

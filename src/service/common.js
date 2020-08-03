@@ -13,6 +13,7 @@ module.exports = {
     HDR_X_ZOOZ_REQUEST_ID: 'x-zooz-request-id',
     HDR_X_ZOOZ_ACCESS_ENVIRONMENT: 'x-zooz-access-environment',
     HDR_X_ZOOZ_IDEPMOTENCY: 'x-zooz-proxy-request-id',
+    HDR_X_ZOOZ_API_PROXY_VERSION: 'x-zooz-risk-proxy-api-version',
 
     // Payment states
     NOT_VALID_STATE: 'not_valid',
