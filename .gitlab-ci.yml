@@ -247,7 +247,7 @@ deploy:review:kong:
 deploy:review:stop:k8s:
   image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v10-latest
   tags:
-    - eks-dev-apps
+    - eks-qa-apps
   stage: deploy-review-stop
   variables:
     ENVIRONMENT: sandbox
@@ -273,7 +273,7 @@ deploy:review:stop:k8s:
 deploy:review:kong:stop:
   <<: *clear-kong-template-ref
   tags:
-    - eks-dev-apps
+    - eks-qa-apps
   stage: deploy-review-stop
   only:
     - branches

@@ -10,7 +10,7 @@ const environmentPreparations = require('../helpers/environment-preparations');
 const testsCommonFunctions = require('../helpers/tests-common-functions');
 const commonSnips = require('../helpers/snips');
 
-const { fullRiskRequestBody } = commonSnips;
+const { fullRiskRequestBody, MOCK_DECLINE_RESPONSE_EMAIL, MOCK_REVIEW_RESPONSE_EMAIL } = commonSnips;
 
 const createLogger = () => {
     return bunyan.createLogger({
@@ -74,18 +74,19 @@ describe('Create risk analyses resource negative tests', function () {
         testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
     });
 
-    it.skip('Should return bad request response when to create risk analyses with non-existing payment method token', async function () {
-        // unskip when token validation is added
+    it('Should return bad request response when trying to create risk analyses with non-existing payment method token', async function () {
         const copiedRequestBody = cloneDeep(fullRiskRequestBody);
-        copiedRequestBody.payment_method = { token: uuid.v4() };
+        copiedRequestBody.payment_method = { token: uuid.v4(), type: 'tokenized' };
         try {
             await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(400);
-            expect(error.message).to.equal('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
-            expect(error.error.category).to.equal('api_request_error');
-            expect(error.error.description).to.equal('One or more request parameters are invalid.');
+            expect(error.response.body).to.eql({
+                category: 'api_request_error',
+                description: 'One or more request parameters are invalid.',
+                more_info: 'Token does not exist.'
+            });
         }
     });
     it('Should return bad request response when to create risk analyses with invalid transaction_type', async function () {
@@ -216,6 +217,96 @@ describe('Create risk analyses resource negative tests', function () {
             expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
             expect(errorResponse.more_info).to.equal('Missing private_key header');
         }
+    });
+    it('Should decline risk analyses request when sending email - MOCK_DECLINE_RESPONSE_EMAIL', async function () {
+        const genericAddress = paymentsOSsdkClient.createAddressObject({
+            country: 'ISR',
+            city: 'Tel-Aviv',
+            line1: '10705 Old Mill Rd',
+            line2: '10705 Old Mill Rd',
+            zip_code: '1111',
+            title: 'Mr',
+            first_name: 'Gordon',
+            last_name: 'Ramsey',
+            phone: '095090941',
+            email: MOCK_DECLINE_RESPONSE_EMAIL,
+            state: 'SD'
+        });
+
+        const createPaymentRequest = {
+            amount: 500,
+            currency: 'USD',
+            shipping_address: genericAddress,
+            billing_address: genericAddress
+        };
+
+        testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+
+        const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });
+        paymentObject = createPaymentResponse.body;
+        console.log('successfully created payment');
+
+        testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+
+        const createRiskAnalysesResponse = await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRiskRequestBody, payment_id: paymentObject.id });
+        expect(createRiskAnalysesResponse.statusCode).to.equal(201);
+
+        const riskAnalysesResource = createRiskAnalysesResponse.body;
+        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration');
+        expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
+        expect(riskAnalysesResource.result).to.eql({ status: 'Failed' });
+
+        const providerData = riskAnalysesResource.provider_data;
+        expect(providerData).to.have.all.keys('response_code', 'raw_response', 'provider_name', 'external_id', 'risk_analyses_result');
+        expect(providerData.response_code).to.equal('decline');
+        expect(providerData.provider_name).to.equal('PayU-Risk');
+
+        testsCommonFunctions.validateApiSchema(201, riskAnalysesResource);
+    });
+    it('Should decline risk analyses request when sending email - MOCK_REVIEW_RESPONSE_EMAIL', async function () {
+        const genericAddress = paymentsOSsdkClient.createAddressObject({
+            country: 'ISR',
+            city: 'Tel-Aviv',
+            line1: '10705 Old Mill Rd',
+            line2: '10705 Old Mill Rd',
+            zip_code: '1111',
+            title: 'Mr',
+            first_name: 'Gordon',
+            last_name: 'Ramsey',
+            phone: '095090941',
+            email: MOCK_REVIEW_RESPONSE_EMAIL,
+            state: 'SD'
+        });
+
+        const createPaymentRequest = {
+            amount: 500,
+            currency: 'USD',
+            shipping_address: genericAddress,
+            billing_address: genericAddress
+        };
+
+        testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+
+        const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });
+        paymentObject = createPaymentResponse.body;
+        console.log('successfully created payment');
+
+        testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+
+        const createRiskAnalysesResponse = await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRiskRequestBody, payment_id: paymentObject.id });
+        expect(createRiskAnalysesResponse.statusCode).to.equal(201);
+
+        const riskAnalysesResource = createRiskAnalysesResponse.body;
+        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration');
+        expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
+        expect(riskAnalysesResource.result).to.eql({ status: 'Pending' });
+
+        const providerData = riskAnalysesResource.provider_data;
+        expect(providerData).to.have.all.keys('response_code', 'raw_response', 'provider_name', 'external_id', 'risk_analyses_result');
+        expect(providerData.response_code).to.equal('review');
+        expect(providerData.provider_name).to.equal('PayU-Risk');
+
+        testsCommonFunctions.validateApiSchema(201, riskAnalysesResource);
     });
     it('should return 404 - payment not found when create risk is called with app-id header different than payment app-id', async function () {
         testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);

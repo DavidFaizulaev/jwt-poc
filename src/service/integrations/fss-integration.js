@@ -1,6 +1,6 @@
 const { get } = require('lodash');
 const { HttpMetricsCollector } = require('prometheus-api-metrics');
-const { OK, BAD_REQUEST } = require('http-status-codes');
+const { OK, BAD_REQUEST, NOT_FOUND } = require('http-status-codes');
 const fss = require('fss-integration').fss;
 const { FSS_URL, FSS_USERNAME, FSS_PASSWORD, FSS_REFRESH_TOKEN_INTERVAL, APP_NAME, SOUTHBOUND_BUCKETS, DEFAULT_REQUEST_RETRIES } = require('../config');
 const { logger } = require('../logger');
@@ -92,23 +92,27 @@ async function validateTokenState(merchantId, paymentMethodDetails, headers) {
     const paymentMethodToken = paymentMethodDetails.token;
     const getPaymentMethodResponse = await fss.getPaymentMethod({ merchant_id: merchantId, payment_method_token: paymentMethodToken, headers });
 
-    const paymentMethodState = get(getPaymentMethodResponse, 'body.payment_method_state.current_state');
-    switch (paymentMethodState) {
-    case EXPIRED_STATE_NAME:
+    if (getPaymentMethodResponse.statusCode === NOT_FOUND) {
         notValidStateErrorMessage = TOKEN_NOT_EXIST_ERROR;
-        break;
-    case USED_STATE_NAME:
-        notValidStateErrorMessage = TOKEN_USED_ERROR;
-        break;
-    case PENDING_STATE_NAME:
-        notValidStateErrorMessage = TOKEN_PENDING_ERROR;
-        break;
-    case CANCELED_STATE_NAME:
-        notValidStateErrorMessage = TOKEN_CANCELED_ERROR;
-        break;
-    case FAILED_STATE_NAME:
-        notValidStateErrorMessage = TOKEN_FAILED_ERROR;
-        break;
+    } else {
+        const paymentMethodState = get(getPaymentMethodResponse, 'body.payment_method_state.current_state');
+        switch (paymentMethodState) {
+        case EXPIRED_STATE_NAME:
+            notValidStateErrorMessage = TOKEN_NOT_EXIST_ERROR;
+            break;
+        case USED_STATE_NAME:
+            notValidStateErrorMessage = TOKEN_USED_ERROR;
+            break;
+        case PENDING_STATE_NAME:
+            notValidStateErrorMessage = TOKEN_PENDING_ERROR;
+            break;
+        case CANCELED_STATE_NAME:
+            notValidStateErrorMessage = TOKEN_CANCELED_ERROR;
+            break;
+        case FAILED_STATE_NAME:
+            notValidStateErrorMessage = TOKEN_FAILED_ERROR;
+            break;
+        }
     }
 
     if (notValidStateErrorMessage) {

@@ -142,7 +142,7 @@ describe('Create risk analyses flows', function () {
             paymentObject = await localPrep();
         });
         it.skip('Should successfully create risk resource with minimal request body (no request body)', async function () {
-            // flow not yet supported by feedzai, as payment method is expected
+            // TODO: pending payu risk fix
             const response = await paymentsOSsdkClient.postRiskAnalyses({ request_body: {}, payment_id: paymentObject.id });
             expect(response.statusCode).to.equal(201);
 
@@ -215,7 +215,7 @@ describe('Create risk analyses flows', function () {
             sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
         });
         it.skip('Should successfully create risk resource without sending payment method', async function () {
-            // flow not yet supported by feedzai
+            // TODO: pending payu risk fix
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
             delete copiedRequestBody.payment_method;
 

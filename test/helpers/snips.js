@@ -16,4 +16,7 @@ const fullRiskRequestBody = {
     }
 };
 
-module.exports = { fullRiskRequestBody };
+const MOCK_DECLINE_RESPONSE_EMAIL = 'reject-hub@email.com';
+const MOCK_REVIEW_RESPONSE_EMAIL = 'manual-review-hub@email.com';
+
+module.exports = { fullRiskRequestBody, MOCK_DECLINE_RESPONSE_EMAIL, MOCK_REVIEW_RESPONSE_EMAIL };
