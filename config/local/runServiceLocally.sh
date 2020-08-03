@@ -1,7 +1,7 @@
-cd config/cassandra/cassandra-scripts/
-npm i
-./do-migration.sh
-cd ../../..
+#cd config/cassandra/cassandra-scripts/
+#npm i
+#./do-migration.sh
+#cd ../../..
 
 echo "############### ENVIRONMENT VARIABLES ###############"
 echo "In what format would you like to print environment variables?"
@@ -75,6 +75,3 @@ read RUN_SERVICE
 if [ "$RUN_SERVICE" == "y" ]; then
   node ./src/server.js
 fi
-
-
-

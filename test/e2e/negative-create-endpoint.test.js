@@ -61,7 +61,7 @@ describe('Create risk analyses resource negative tests', function () {
         genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
 
         createPaymentRequest = {
-            amount: 500,
+            amount: 5500,
             currency: 'PLN',
             shipping_address: genericAddress,
             billing_address: genericAddress
@@ -252,30 +252,28 @@ describe('Create risk analyses resource negative tests', function () {
         }
     });
     describe('payment state validation tests', function () {
-        let paymentMethod, credoraxProviderId, payURiskProviderId, createConfigurationResponseCrodorax, createConfigurationResponsePayuRisk, paymentStateValidationPaymentObject;
+        let paymentMethod, mockProcessorProviderId, payURiskProviderId, createConfigurationResponseMockProcessor, createConfigurationResponsePayuRisk, paymentStateValidationPaymentObject;
         before(async function () {
             testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
             const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });
             paymentStateValidationPaymentObject = createPaymentResponse.body;
             console.log('successfully created payment');
-            credoraxProviderId = await paymentsOSsdkClient.getProviderId({
+            mockProcessorProviderId = await paymentsOSsdkClient.getProviderId({
                 processor: 'processor',
-                provider_name: 'Credorax',
+                provider_name: 'MockProcessor',
                 session_token: testsEnvs.merchant.session_token
             });
             payURiskProviderId = await paymentsOSsdkClient.getProviderId({
                 provider_type: 'risk_provider',
                 processor: 'processor',
-                provider_name: 'PayU-Fraud',
+                provider_name: 'PayU-Risk',
                 session_token: testsEnvs.merchant.session_token
             });
-            createConfigurationResponseCrodorax = await paymentsOSsdkClient.createConfiguration({
+            createConfigurationResponseMockProcessor = await paymentsOSsdkClient.createConfiguration({
                 account_id: testsEnvs.merchant.merchant_id,
                 session_token: testsEnvs.merchant.session_token,
-                provider_id: credoraxProviderId,
+                provider_id: mockProcessorProviderId,
                 configuration_data: {
-                    merchant_id: '97876392',
-                    signature_key: '49790687'
                 },
                 name: `mynameis${(new Date().getTime())}`
             });
@@ -295,6 +293,8 @@ describe('Create risk analyses resource negative tests', function () {
             });
         });
         it('should successfully create risk resource', async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+
             const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
                 payment_id: paymentStateValidationPaymentObject.id,
                 request_body: fullRiskRequestBody
@@ -312,7 +312,7 @@ describe('Create risk analyses resource negative tests', function () {
             await paymentsOSsdkClient.updateApplication({
                 app_name: testsEnvs.application.id,
                 account_id: testsEnvs.merchant.merchant_id,
-                default_provider: createConfigurationResponseCrodorax.body.id,
+                default_provider: createConfigurationResponseMockProcessor.body.id,
                 description: 'some_app_description',
                 session_token: testsEnvs.merchant.session_token
             });
@@ -323,7 +323,7 @@ describe('Create risk analyses resource negative tests', function () {
                 token_type: 'credit_card',
                 holder_name: 'holder_name',
                 expiration_date: '12/2025',
-                card_number: '5223450000000007',
+                card_number: '5105105105105111',
                 billing_address: genericAddress
             };
             const tokenResponse = await paymentsOSsdkClient.createToken({ request_body: createPaymentMethodToken });
@@ -365,7 +365,7 @@ describe('Create risk analyses resource negative tests', function () {
             await paymentsOSsdkClient.updateApplication({
                 app_name: testsEnvs.application.id,
                 account_id: testsEnvs.merchant.merchant_id,
-                default_provider: createConfigurationResponseCrodorax.body.id,
+                default_provider: createConfigurationResponseMockProcessor.body.id,
                 description: 'some_app_description',
                 session_token: testsEnvs.merchant.session_token
             });

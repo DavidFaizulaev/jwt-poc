@@ -1,7 +1,7 @@
 const { cloneDeep } = require('lodash');
 const uuid = require('uuid');
 const { HttpMetricsCollector } = require('prometheus-api-metrics');
-const { TOKENIZED_PAYMENT_METHOD_NAME, UNTOKENIZED_PAYMENT_METHOD_NAME, CREDIT_CARD_PAYMENT_METHOD_NAME, HDR_X_ZOOZ_REQUEST_ID, HDR_X_ZOOZ_IDEPMOTENCY } = require('../common');
+const { TOKENIZED_PAYMENT_METHOD_NAME, UNTOKENIZED_PAYMENT_METHOD_NAME, CREDIT_CARD_PAYMENT_METHOD_NAME, HDR_X_ZOOZ_REQUEST_ID, HDR_X_ZOOZ_IDEPMOTENCY, HDR_X_ZOOZ_API_PROXY_VERSION } = require('../common');
 const requestHelper = require('../request-sender');
 const { SOUTHBOUND_BUCKETS, FRAUD_SERVICE_URL, ENVIRONMENT, FEEDZAI_SERVICE_NAME } = require('../config');
 const { handleIntegrationError } = require('./helpers/integration-error-handler');
@@ -18,7 +18,8 @@ async function createRisk(paymentResource, requestBody, headers, providerConfigu
     const body = buildRequestBody(paymentResource, requestBody, providerConfigurationId, paymentMethod);
     const reqHeaders = {
         [HDR_X_ZOOZ_IDEPMOTENCY]: headers[HDR_X_ZOOZ_IDEPMOTENCY] || uuid.v4(),
-        [HDR_X_ZOOZ_REQUEST_ID]: headers[HDR_X_ZOOZ_REQUEST_ID]
+        [HDR_X_ZOOZ_REQUEST_ID]: headers[HDR_X_ZOOZ_REQUEST_ID],
+        [HDR_X_ZOOZ_API_PROXY_VERSION]: '1.0'
     };
     const requestOptions = {
         url: buildRequestUrl(paymentResource.id),

@@ -593,10 +593,10 @@ components:
             - type
           properties:
             type:
-                description: |
-                  The type of payment method. Possible value: `tokenized`.
-                type: string
-                enum: ['untokenized', 'tokenized']
+              description: |
+                The type of payment method. Possible value: `tokenized`.
+              type: string
+              enum: ['untokenized', 'tokenized']
           oneOf:
             - $ref: '#/components/schemas/untokenized_request'
             - $ref: '#/components/schemas/tokenized_request'
@@ -645,16 +645,6 @@ components:
             "Possible formats: mm-yyyy, mm-yy, mm.yyyy, mm.yy, mm/yy, mm/yyyy, mm yyyy, or mm yy."
           type: string
           pattern: '^(0?[1-9]|1[0-2])(\/|\-|\.| )\d{2,4}$'
-        card_identity:
-          description: "National identity document of the card holder."
-          properties:
-            identity_type:
-              description: "Identity document type."
-              type: string
-            number:
-              description: "Identity number."
-              type: string
-              example: "123456789"
         card_number:
           description: "Credit card number."
           type: string
@@ -672,16 +662,6 @@ components:
             "Possible formats: mm-yyyy, mm-yy, mm.yyyy, mm.yy, mm/yy, mm/yyyy, mm yyyy, or mm yy."
           type: string
           pattern: '^(0?[1-9]|1[0-2])(\/|\-|\.| )\d{2,4}$'
-        card_identity:
-          description: "National identity document of the card holder."
-          properties:
-            identity_type:
-              description: "Identity document type."
-              type: string
-            number:
-              description: "Identity number."
-              type: string
-              example: "123456789"
         last_4_digits:
           description: Masked credit card number (last four digits).
           type: string
@@ -747,8 +727,6 @@ components:
           pattern: '^[{(]?[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}[)}]?$'
         result:
           $ref: '#/components/schemas/result'
-        amount:
-          $ref: '#/components/schemas/amount'
         created:
           type: string
           description: The date and time that the authorization was created.
