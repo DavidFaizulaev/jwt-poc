@@ -99,6 +99,7 @@ describe('Create risk analyses flows', function () {
                 'fingerprint', 'created', 'token', 'token_type', 'billing_address', 'bin_number', 'card_type', 'country_code', 'expiration_date',
                 'issuer', 'level', 'vendor');
             expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
+            validateSelfHeader(createRiskResponse, paymentObject);
 
             expect(createRiskAnalysesResource.transaction_type).to.equal(copiedRequestBody.transaction_type);
             expect(createRiskAnalysesResource.device_id).to.equal(copiedRequestBody.device_id);
@@ -117,7 +118,7 @@ describe('Create risk analyses flows', function () {
             expect(riskAnalysesResource.id).to.equal(createRiskResponse.body.id);
             expect(riskAnalysesResource).to.have.all.keys('created', 'payment_method', 'provider_configuration', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'id', 'result');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
-
+            validateSelfHeader(response, paymentObject);
             testsCommonFunctions.validateApiSchema(200, riskAnalysesResource);
         });
         it('Should successfully create risk resource with untokenized payment method', async function () {
@@ -126,7 +127,7 @@ describe('Create risk analyses flows', function () {
             expect(createRiskResponse.body).to.have.all.keys('payment_method', 'provider_configuration', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(createRiskResponse.body.payment_method).to.have.all.keys('expiration_date', 'type', 'holder_name', 'last_4_digits', 'pass_luhn_validation', 'fingerprint', 'created', 'source_type');
             expect(createRiskResponse.body.result).to.eql({ status: 'Succeed' });
-
+            validateSelfHeader(createRiskResponse, paymentObject);
             testsCommonFunctions.validateApiSchema(201, createRiskResponse.body);
 
             sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(fullRiskRequestBody);
@@ -135,6 +136,9 @@ describe('Create risk analyses flows', function () {
             const response = await paymentsOSsdkClient.getAllRiskAnalyses({ payment_id: paymentObject.id });
             expect(response.statusCode).to.equal(200);
             expect(response.body.length).to.equal(2);
+            const risksHeaders = response.headers;
+            expect(risksHeaders).to.contain.keys('self');
+            expect(risksHeaders.self).to.equal(`${PAYMENTS_OS_BASE_URL}/payments/${paymentObject.id}/risk-analyses`);
         });
     });
     describe('Create risk resource with minimal requests and fields', function () {
@@ -161,7 +165,7 @@ describe('Create risk analyses flows', function () {
             expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result');
             expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'pass_luhn_validation', 'last_4_digits');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
-
+            validateSelfHeader(createRiskResponse, paymentObject);
             testsCommonFunctions.validateApiSchema(201, riskAnalysesResource);
 
             sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
@@ -260,4 +264,11 @@ async function localPrep () {
     testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
 
     return paymentObject;
+}
+
+function validateSelfHeader(riskResponse, paymentObject) {
+    const riskAnalysesResource = riskResponse.body;
+    const riskHeaders = riskResponse.headers;
+    expect(riskHeaders).to.contain.keys('self');
+    expect(riskHeaders.self).to.equal(`${PAYMENTS_OS_BASE_URL}/payments/${paymentObject.id}/risk-analyses/${riskAnalysesResource.id}`);
 }
