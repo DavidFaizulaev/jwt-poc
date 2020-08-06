@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const uuid = require('uuid');
 const bunyan = require('bunyan');
+const axios = require('axios');
 const paymentsOSClient = require('paymentsos-client').paymentsOSClient;
 const paymentsOSsdkClient = require('payments-os-sdk');
 const { PAYMENTS_OS_BASE_URL, EXTERNAL_ENVIRONMENT, ORIGIN_URL, API_VERSION, RISK_PROVIDER_CONFIGURATION, PAYMENTS_OS_BASE_URL_FOR_TESTS } = require('../helpers/test-config');
@@ -100,6 +101,157 @@ describe('Get risk analyses negative flows', function () {
                 category: 'api_request_error',
                 description: 'The resource was not found.'
             });
+        }
+    });
+    it('Get all risk analyses - Should return 400 with when request is sent with non supported api version', async () => {
+        try {
+            const createRiskRequestComplete = {
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': '1.2.0',
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key,
+                    accept: 'application/json'
+                },
+                responseType: 'json',
+                method: 'GET'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('API version is not supported');
+        }
+    });
+    it('Get all risk analyses - Should return 400 with when request is sent with non supported api version and no accept', async () => {
+        try {
+            const createRiskRequestComplete = {
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'app-id': testsEnvs.application.id,
+                    'api-version': '1.2.0',
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key,
+                    accept: 'application'
+                },
+                responseType: 'json',
+                method: 'GET'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('accept should be */* or application/json,API version is not supported');
+        }
+    });
+    it('Get all risk analyses - Should return 400 with when request is sent without private key', async () => {
+        try {
+            const createRiskRequestComplete = {
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': API_VERSION,
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    accept: 'application/json'
+                },
+                responseType: 'json',
+                method: 'GET'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('Missing private_key header');
+        }
+    });
+    it('Get risk analysis - Should return 400 with when request is sent with non supported api version', async () => {
+        try {
+            const createRiskRequestComplete = {
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses/22e97941-c0f1-41f6-986e-fc8f9f3a2217`,
+                headers: {
+                    'app-id': testsEnvs.application.id,
+                    'api-version': '1.2.0',
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key,
+                    accept: 'application/json'
+                },
+                responseType: 'json',
+                method: 'GET'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('API version is not supported');
+        }
+    });
+    it('Get risk analysis - Should return 400 with when request is sent with non supported api version and accept', async () => {
+        try {
+            const createRiskRequestComplete = {
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'app-id': testsEnvs.application.id,
+                    'api-version': '1.2.0',
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key,
+                    accept: 'application'
+                },
+                responseType: 'json',
+                method: 'GET'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('accept should be */* or application/json,API version is not supported');
+        }
+    });
+    it('Get risk analysis - Should return 400 with when request is sent without private key', async () => {
+        try {
+            const createRiskRequestComplete = {
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses/22e97941-c0f1-41f6-986e-fc8f9f3a2217`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': API_VERSION,
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    accept: 'application/json'
+                },
+                responseType: 'json',
+                method: 'GET'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('Missing private_key header');
         }
     });
 });

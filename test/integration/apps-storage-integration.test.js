@@ -13,7 +13,6 @@ describe('Integration test - Apps storage', function() {
     let merchantId, requestOptions, paymentId, serviceUrl;
 
     const requestBody = {
-        transaction_type: 'charge',
         payment_method: {
             type: 'untokenized',
             source_type: 'credit_card',
@@ -116,7 +115,10 @@ describe('Integration test - Apps storage', function() {
             headers: {
                 'x-zooz-request-id': uuid.v4(),
                 'x-zooz-account-id': merchantId,
-                'x-zooz-app-name': 'app_name'
+                'x-zooz-app-name': 'app_name',
+                'content-type': 'application/json',
+                'api-version': '1.3.0',
+                accept: '*/*'
             }
         };
 

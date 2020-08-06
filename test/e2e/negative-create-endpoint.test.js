@@ -89,19 +89,6 @@ describe('Create risk analyses resource negative tests', function () {
             });
         }
     });
-    it('Should return bad request response when to create risk analyses with invalid transaction_type', async function () {
-        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
-        copiedRequestBody.transaction_type = 'transaction_type';
-        try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
-            throw new Error('Should have thrown error');
-        } catch (error) {
-            expect(error.statusCode).to.equal(400);
-            expect(error.message).to.equal('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
-            expect(error.error.category).to.equal('api_request_error');
-            expect(error.error.description).to.equal('One or more request parameters are invalid.');
-        }
-    });
     it('Should return bad request response when create risk analyses is sent with invalid payment method expiration_date', async function () {
         const copiedRequestBody = cloneDeep(fullRiskRequestBody);
         copiedRequestBody.payment_method.expiration_date = '12]09';
@@ -164,6 +151,198 @@ describe('Create risk analyses resource negative tests', function () {
             expect(error.error.more_info).to.equal('Request body must be valid json');
         }
     });
+    it('Should return 400 with when request is sent with non supported content-type', async () => {
+        try {
+            const createRiskRequestComplete = {
+                data: fullRiskRequestBody,
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'Content-Type': 'application/json1',
+                    accept: 'application/json',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': API_VERSION,
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key
+                },
+                responseType: 'json',
+                method: 'POST'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('content-type should be application/json');
+        }
+    });
+    it('Should return 400 with when request is sent without content-type and charset', async () => {
+        const createRiskRequestComplete = {
+            url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+            headers: {
+                'app-id': testsEnvs.application.id,
+                'api-version': API_VERSION,
+                'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                private_key: testsEnvs.app_keys[0].key
+            },
+            method: 'POST'
+        };
+        try {
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('content-type should be application/json');
+
+            expect({
+                path: '/payments/{payment_id}/risk-analyses',
+                status: 400,
+                method: 'post',
+                body: errorResponse,
+                headers: {}
+            }).to.matchApiSchema();
+        }
+    });
+    it('Should return 400 with when request is sent with non supported accept', async () => {
+        try {
+            const createRiskRequestComplete = {
+                data: fullRiskRequestBody,
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/xml',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': API_VERSION,
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key
+                },
+                responseType: 'json',
+                method: 'POST'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('accept should be */* or application/json');
+        }
+    });
+    it('Should return 400 with when request is sent with non supported charset', async () => {
+        try {
+            const createRiskRequestComplete = {
+                data: fullRiskRequestBody,
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'Content-Type': 'application/json;charset=ISO-8859-1',
+                    accept: 'application/json',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': API_VERSION,
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key
+                },
+                responseType: 'json',
+                method: 'POST'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('content-type charset should be utf-8');
+        }
+    });
+    it('Should return 400 with when request is sent with non supported api version', async () => {
+        try {
+            const createRiskRequestComplete = {
+                data: fullRiskRequestBody,
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': '1.2.0',
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key
+                },
+                responseType: 'json',
+                method: 'POST'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('API version is not supported');
+        }
+    });
+    it('Should return 400 with when request is sent with non supported api version and content-type', async () => {
+        try {
+            const createRiskRequestComplete = {
+                data: fullRiskRequestBody,
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'Content-Type': 'application/json1',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': '1.2.0',
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key
+                },
+                responseType: 'json',
+                method: 'POST'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('content-type should be application/json,API version is not supported');
+        }
+    });
+    it('Should return 400 with when request is sent with non supported api version, accept and content-type', async () => {
+        try {
+            const createRiskRequestComplete = {
+                data: fullRiskRequestBody,
+                url: `${PAYMENTS_OS_BASE_URL_FOR_TESTS}/payments/${paymentObject.id}/risk-analyses`,
+                headers: {
+                    'Content-Type': 'application/json1',
+                    accept: 'application/xml',
+                    'app-id': testsEnvs.application.id,
+                    'api-version': '1.2.0',
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
+                    private_key: testsEnvs.app_keys[0].key
+                },
+                responseType: 'json',
+                method: 'POST'
+            };
+            const client = axios.create({ baseURL: createRiskRequestComplete.url });
+            await client(createRiskRequestComplete);
+            throw new Error('Error should have been thrown');
+        } catch (error) {
+            expect(error.response.status).to.equal(400);
+            const errorResponse = error.response.data;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('content-type should be application/json,accept should be */* or application/json,API version is not supported');
+        }
+    });
     it('Should return 400 with when request is sent without private key', async () => {
         try {
             const createRiskRequestComplete = {
@@ -173,8 +352,7 @@ describe('Create risk analyses resource negative tests', function () {
                     'Content-Type': 'application/json',
                     'app-id': testsEnvs.application.id,
                     'api-version': API_VERSION,
-                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
-                    accept: 'application/json'
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT
                 },
                 responseType: 'json',
                 method: 'POST'
@@ -201,8 +379,7 @@ describe('Create risk analyses resource negative tests', function () {
                     'Content-Type': 'application/json',
                     'app-id': testsEnvs.application.id,
                     'api-version': API_VERSION,
-                    'x-payments-os-env': EXTERNAL_ENVIRONMENT,
-                    accept: 'application/json'
+                    'x-payments-os-env': EXTERNAL_ENVIRONMENT
                 },
                 responseType: 'json',
                 method: 'POST'
@@ -252,16 +429,22 @@ describe('Create risk analyses resource negative tests', function () {
         expect(createRiskAnalysesResponse.statusCode).to.equal(201);
 
         const riskAnalysesResource = createRiskAnalysesResponse.body;
-        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration');
+        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration');
         expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
         expect(riskAnalysesResource.result).to.eql({ status: 'Failed' });
 
         const providerData = riskAnalysesResource.provider_data;
-        expect(providerData).to.have.all.keys('response_code', 'raw_response', 'provider_name', 'external_id', 'risk_analyses_result');
+        expect(providerData).to.have.all.keys('description', 'response_code', 'raw_response', 'provider_name', 'external_id', 'risk_analyses_result');
         expect(providerData.response_code).to.equal('decline');
         expect(providerData.provider_name).to.equal('PayU-Risk');
 
-        testsCommonFunctions.validateApiSchema(201, riskAnalysesResource);
+        expect({
+            path: '/payments/{payment_id}/risk-analyses',
+            status: 201,
+            method: 'post',
+            body: riskAnalysesResource,
+            headers: {}
+        }).to.matchApiSchema();
     });
     it('Should decline risk analyses request when sending email - MOCK_REVIEW_RESPONSE_EMAIL', async function () {
         const genericAddress = paymentsOSsdkClient.createAddressObject({
@@ -297,16 +480,22 @@ describe('Create risk analyses resource negative tests', function () {
         expect(createRiskAnalysesResponse.statusCode).to.equal(201);
 
         const riskAnalysesResource = createRiskAnalysesResponse.body;
-        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'transaction_type', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration');
+        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration');
         expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
         expect(riskAnalysesResource.result).to.eql({ status: 'Pending' });
 
         const providerData = riskAnalysesResource.provider_data;
-        expect(providerData).to.have.all.keys('response_code', 'raw_response', 'provider_name', 'external_id', 'risk_analyses_result');
+        expect(providerData).to.have.all.keys('description', 'response_code', 'raw_response', 'provider_name', 'external_id', 'risk_analyses_result');
         expect(providerData.response_code).to.equal('review');
         expect(providerData.provider_name).to.equal('PayU-Risk');
 
-        testsCommonFunctions.validateApiSchema(201, riskAnalysesResource);
+        expect({
+            path: '/payments/{payment_id}/risk-analyses',
+            status: 201,
+            method: 'post',
+            body: riskAnalysesResource,
+            headers: {}
+        }).to.matchApiSchema();
     });
     it('should return 404 - payment not found when create risk is called with app-id header different than payment app-id', async function () {
         testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
@@ -340,6 +529,13 @@ describe('Create risk analyses resource negative tests', function () {
             expect(errorResponse.category).to.equal('api_request_error');
             expect(errorResponse.description).to.equal('The resource was not found.');
             expect(errorResponse.more_info).to.equal('App_id that is related to the payment was not found');
+            expect({
+                path: '/payments/{payment_id}/risk-analyses',
+                status: 404,
+                method: 'post',
+                body: errorResponse,
+                headers: {}
+            }).to.matchApiSchema();
         }
     });
     describe('payment state validation tests', function () {
@@ -393,7 +589,6 @@ describe('Create risk analyses resource negative tests', function () {
             expect(createRiskResponse.statusCode).to.equal(201);
             const createRiskAnalysesResource = createRiskResponse.body;
             expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
-            expect(createRiskAnalysesResource.transaction_type).to.equal(fullRiskRequestBody.transaction_type);
             expect(createRiskAnalysesResource.device_id).to.equal(fullRiskRequestBody.device_id);
             expect(createRiskAnalysesResource.session_id).to.equal(fullRiskRequestBody.session_id);
         });
@@ -446,7 +641,6 @@ describe('Create risk analyses resource negative tests', function () {
             expect(createRiskResponse.statusCode).to.equal(201);
             const createRiskAnalysesResource = createRiskResponse.body;
             expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
-            expect(createRiskAnalysesResource.transaction_type).to.equal(fullRiskRequestBody.transaction_type);
             expect(createRiskAnalysesResource.device_id).to.equal(fullRiskRequestBody.device_id);
             expect(createRiskAnalysesResource.session_id).to.equal(fullRiskRequestBody.session_id);
         });
@@ -483,6 +677,13 @@ describe('Create risk analyses resource negative tests', function () {
                 expect(errorResponse.category).to.equal('api_request_error');
                 expect(errorResponse.description).to.equal('There was conflict with the resource current state.');
                 expect(errorResponse.more_info).to.equal('There was conflict with payment resource current state.');
+                expect({
+                    path: '/payments/{payment_id}/risk-analyses',
+                    status: 409,
+                    method: 'post',
+                    body: errorResponse,
+                    headers: {}
+                }).to.matchApiSchema();
             }
         });
     });
