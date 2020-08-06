@@ -32,7 +32,12 @@ module.exports = {
     TOKEN_CANCELED_ERROR: 'This token cannot be used as it was cancelled by the merchant',
     // Payment Not found error
     APP_ID_OF_PAYMENT_NOT_FOUND: 'App_id that is related to the payment was not found',
-
+    // Header errors
+    ACCEPT_HEADER_INVALID: 'accept should be */* or application/json',
+    CONTENT_TYPE_HEADER_INVALID: 'content-type should be application/json',
+    CONTENT_TYPE_HEADER_MISSING: 'content-type is missing and should be application/json',
+    CHARSET_HEADER_INVALID: 'content-type charset should be utf-8',
+    API_VERSION_INVALID: 'API version is not supported',
     // FSS
     CREDIT_CARD_FSS_PAYMENT_METHOD_NAME: 'CreditCard',
     UNTOKENIZED_PAYMENT_METHOD_NAME: 'untokenized',

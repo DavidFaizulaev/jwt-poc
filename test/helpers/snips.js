@@ -1,5 +1,4 @@
 const fullRiskRequestBody = {
-    transaction_type: 'charge',
     payment_method: {
         type: 'untokenized',
         source_type: 'credit_card',

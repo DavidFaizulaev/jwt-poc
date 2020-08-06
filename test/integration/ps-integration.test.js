@@ -13,7 +13,6 @@ describe('Integration test - Payment storage', function() {
     let merchantId, requestOptions, paymentId, serviceUrl;
 
     const requestBody = {
-        transaction_type: 'charge',
         payment_method: {
             type: 'untokenized',
             source_type: 'credit_card',
@@ -77,7 +76,10 @@ describe('Integration test - Payment storage', function() {
             body: requestBody,
             headers: {
                 'x-zooz-request-id': uuid.v4(),
-                'x-zooz-account-id': merchantId
+                'x-zooz-account-id': merchantId,
+                'content-type': 'application/json',
+                'api-version': '1.3.0',
+                accept: '*/*'
             }
         };
     });

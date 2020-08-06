@@ -584,8 +584,6 @@ components:
       type: object
       description: Risk analyses object
       properties:
-        transaction_type:
-          $ref: '#/components/schemas/transaction_type'
         payment_method:
           type: object
           description: This represents the Payment Method selected by the customer to pay.
@@ -889,14 +887,3 @@ components:
           type: string
           description: Indicates the outcome of Feedzai’s fraud analysis by indicating a recommendation based on the score. The decision can be approve, review or decline.
           example: approve
-    transaction_type:
-      description: The type of transaction that was initiated, based on your specific business area.
-      type: string
-      enum:
-        - charge
-        - exchange
-        - money transfer
-        - topup
-        - withdrawal
-        - preauth charge
-      example: charge

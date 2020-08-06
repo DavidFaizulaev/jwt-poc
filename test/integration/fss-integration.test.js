@@ -13,7 +13,6 @@ describe('Integration test - FSS', function() {
     let merchantId, requestOptions, paymentId, serviceUrl;
 
     const requestBody = {
-        transaction_type: 'charge',
         payment_method: {
             type: 'untokenized',
             source_type: 'credit_card',
@@ -78,7 +77,10 @@ describe('Integration test - FSS', function() {
             headers: {
                 'x-zooz-request-id': uuid.v4(),
                 'x-zooz-account-id': merchantId,
-                'x-zooz-app-name': appId
+                'x-zooz-app-name': appId,
+                'content-type': 'application/json',
+                'api-version': '1.3.0',
+                accept: '*/*'
             }
         };
 
