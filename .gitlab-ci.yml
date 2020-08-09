@@ -178,7 +178,7 @@ test:end-2-end:mars:
   stage: end-2-end-tests-mars
   image: docker-registry.zooz.co:4567/cd/ci-runners/runners:gitlab-node-12-docker-comopose-install-kubectl
   tags:
-    - eks-mars-apps-apps
+    - eks-mars-pci-apps
   variables:
     CLUSTER: mars
     ENVIRONMENT: sandbox
