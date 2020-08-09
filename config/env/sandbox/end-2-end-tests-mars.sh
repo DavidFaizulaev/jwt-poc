@@ -1,7 +1,7 @@
 # External Services:
 export PAYMENTS_OS_BASE_URL=https://api-mars.paymentsos.com
 export EXTERNAL_ENVIRONMENT=test
-export ORIGIN_URL=https://control-mars.paymentsos.com/
+export ORIGIN_URL=https://control-mars.paymentsos.com
 export PAYMENTS_OS_BASE_URL_FOR_TESTS=https://api-mars.paymentsos.com/$BRANCH_NAME
 export TOKEN_STATE_MACHINE_URL=http://internal.eks-mars-apps.zooz.co/sandbox-token-state-machine
 
