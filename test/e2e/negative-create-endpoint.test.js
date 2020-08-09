@@ -283,11 +283,20 @@ describe('Create risk analyses resource negative tests', function () {
             await client(createRiskRequestComplete);
             throw new Error('Error should have been thrown');
         } catch (error) {
-            expect(error.response.status).to.equal(400);
-            const errorResponse = error.response.data;
-            expect(errorResponse.category).to.equal('api_request_error');
-            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
-            expect(errorResponse.more_info).to.equal('API version is not supported');
+            const { CLUSTER } = process.env;
+            if (CLUSTER === 'mars') {
+                expect(error.response.status).to.equal(404);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('The resource was not found.');
+                expect(errorResponse.more_info).to.equal('Path not found');
+            } else {
+                expect(error.response.status).to.equal(400);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+                expect(errorResponse.more_info).to.equal('API version is not supported');
+            }
         }
     });
     it('Should return 400 with when request is sent with non supported api version and content-type', async () => {
@@ -309,11 +318,20 @@ describe('Create risk analyses resource negative tests', function () {
             await client(createRiskRequestComplete);
             throw new Error('Error should have been thrown');
         } catch (error) {
-            expect(error.response.status).to.equal(400);
-            const errorResponse = error.response.data;
-            expect(errorResponse.category).to.equal('api_request_error');
-            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
-            expect(errorResponse.more_info).to.equal('content-type should be application/json,API version is not supported');
+            const { CLUSTER } = process.env;
+            if (CLUSTER === 'mars') {
+                expect(error.response.status).to.equal(404);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('The resource was not found.');
+                expect(errorResponse.more_info).to.equal('Path not found');
+            } else {
+                expect(error.response.status).to.equal(400);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+                expect(errorResponse.more_info).to.equal('content-type should be application/json,API version is not supported');
+            }
         }
     });
     it('Should return 400 with when request is sent with non supported api version, accept and content-type', async () => {
@@ -336,11 +354,20 @@ describe('Create risk analyses resource negative tests', function () {
             await client(createRiskRequestComplete);
             throw new Error('Error should have been thrown');
         } catch (error) {
-            expect(error.response.status).to.equal(400);
-            const errorResponse = error.response.data;
-            expect(errorResponse.category).to.equal('api_request_error');
-            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
-            expect(errorResponse.more_info).to.equal('content-type should be application/json,accept should be */* or application/json,API version is not supported');
+            const { CLUSTER } = process.env;
+            if (CLUSTER === 'mars') {
+                expect(error.response.status).to.equal(404);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('The resource was not found.');
+                expect(errorResponse.more_info).to.equal('Path not found');
+            } else {
+                expect(error.response.status).to.equal(400);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+                expect(errorResponse.more_info).to.equal('content-type should be application/json,accept should be */* or application/json,API version is not supported');
+            }
         }
     });
     it('Should return 400 with when request is sent without private key', async () => {

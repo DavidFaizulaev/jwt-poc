@@ -122,11 +122,20 @@ describe('Get risk analyses negative flows', function () {
             await client(createRiskRequestComplete);
             throw new Error('Error should have been thrown');
         } catch (error) {
-            expect(error.response.status).to.equal(400);
-            const errorResponse = error.response.data;
-            expect(errorResponse.category).to.equal('api_request_error');
-            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
-            expect(errorResponse.more_info).to.equal('API version is not supported');
+            const { CLUSTER } = process.env;
+            if (CLUSTER === 'mars') {
+                expect(error.response.status).to.equal(404);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('The resource was not found.');
+                expect(errorResponse.more_info).to.equal('Path not found');
+            } else {
+                expect(error.response.status).to.equal(400);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+                expect(errorResponse.more_info).to.equal('API version is not supported');
+            }
         }
     });
     it('Get all risk analyses - Should return 400 with when request is sent with non supported api version and no accept', async () => {
@@ -147,11 +156,20 @@ describe('Get risk analyses negative flows', function () {
             await client(createRiskRequestComplete);
             throw new Error('Error should have been thrown');
         } catch (error) {
-            expect(error.response.status).to.equal(400);
-            const errorResponse = error.response.data;
-            expect(errorResponse.category).to.equal('api_request_error');
-            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
-            expect(errorResponse.more_info).to.equal('accept should be */* or application/json,API version is not supported');
+            const { CLUSTER } = process.env;
+            if (CLUSTER === 'mars') {
+                expect(error.response.status).to.equal(404);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('The resource was not found.');
+                expect(errorResponse.more_info).to.equal('Path not found');
+            } else {
+                expect(error.response.status).to.equal(400);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+                expect(errorResponse.more_info).to.equal('accept should be */* or application/json,API version is not supported');
+            }
         }
     });
     it('Get all risk analyses - Should return 400 with when request is sent without private key', async () => {
@@ -197,11 +215,20 @@ describe('Get risk analyses negative flows', function () {
             await client(createRiskRequestComplete);
             throw new Error('Error should have been thrown');
         } catch (error) {
-            expect(error.response.status).to.equal(400);
-            const errorResponse = error.response.data;
-            expect(errorResponse.category).to.equal('api_request_error');
-            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
-            expect(errorResponse.more_info).to.equal('API version is not supported');
+            const { CLUSTER } = process.env;
+            if (CLUSTER === 'mars') {
+                expect(error.response.status).to.equal(404);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('The resource was not found.');
+                expect(errorResponse.more_info).to.equal('Path not found');
+            } else {
+                expect(error.response.status).to.equal(400);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+                expect(errorResponse.more_info).to.equal('API version is not supported');
+            }
         }
     });
     it('Get risk analysis - Should return 400 with when request is sent with non supported api version and accept', async () => {
@@ -222,11 +249,20 @@ describe('Get risk analyses negative flows', function () {
             await client(createRiskRequestComplete);
             throw new Error('Error should have been thrown');
         } catch (error) {
-            expect(error.response.status).to.equal(400);
-            const errorResponse = error.response.data;
-            expect(errorResponse.category).to.equal('api_request_error');
-            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
-            expect(errorResponse.more_info).to.equal('accept should be */* or application/json,API version is not supported');
+            const { CLUSTER } = process.env;
+            if (CLUSTER === 'mars') {
+                expect(error.response.status).to.equal(404);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('The resource was not found.');
+                expect(errorResponse.more_info).to.equal('Path not found');
+            } else {
+                expect(error.response.status).to.equal(400);
+                const errorResponse = error.response.data;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+                expect(errorResponse.more_info).to.equal('accept should be */* or application/json,API version is not supported');
+            }
         }
     });
     it('Get risk analysis - Should return 400 with when request is sent without private key', async () => {
