@@ -699,12 +699,20 @@ components:
       properties:
         mcc:
           type: string
+          pattern: '^[0-9]{4}$'
         merchant_name:
           type: string
         merchant_country_code:
           type: string
           maxLength: 3
           example: 'USA'
+          pattern: '^[A-Z]{3}$'
+        merchant_email:
+          type: string
+        merchant_zip_code:
+          type: string 
+        merchant_city:
+          type: string  
     provider_specific_data:
       description: |
         This object contains provider specific objects, which contain data

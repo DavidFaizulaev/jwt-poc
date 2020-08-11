@@ -456,7 +456,7 @@ describe('Create risk analyses resource negative tests', function () {
         expect(createRiskAnalysesResponse.statusCode).to.equal(201);
 
         const riskAnalysesResource = createRiskAnalysesResponse.body;
-        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration');
+        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration', 'merchant');
         expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
         expect(riskAnalysesResource.result).to.eql({ status: 'Failed' });
 
@@ -507,7 +507,7 @@ describe('Create risk analyses resource negative tests', function () {
         expect(createRiskAnalysesResponse.statusCode).to.equal(201);
 
         const riskAnalysesResource = createRiskAnalysesResponse.body;
-        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration');
+        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration', 'merchant');
         expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
         expect(riskAnalysesResource.result).to.eql({ status: 'Pending' });
 
@@ -563,6 +563,45 @@ describe('Create risk analyses resource negative tests', function () {
                 body: errorResponse,
                 headers: {}
             }).to.matchApiSchema();
+        }
+    });
+    it('Should return bad request response when create risk analyses is sent with mcc shorter then 4 digits', async function () {
+        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+        copiedRequestBody.merchant.mcc = '123';
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+        }
+    });
+    it('Should return bad request response when create risk analyses is sent with mcc longer then 4 digits', async function () {
+        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+        copiedRequestBody.merchant.mcc = '12345';
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+        }
+    });
+    it('Should return bad request response when create risk analyses is sent with mcc not in digits', async function () {
+        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+        copiedRequestBody.merchant.mcc = 'xxxx';
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
         }
     });
     describe('payment state validation tests', function () {

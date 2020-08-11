@@ -31,7 +31,12 @@ describe('Integration test - Apps storage', function() {
             number_of_installments: 1
         },
         merchant: {
-            mcc: '123'
+            mcc: '1234',
+            merchant_name: 'Rak Bibi',
+            merchant_country_code: 'USA',
+            merchant_email: 'bibi_loves_sarah@gmail.com',
+            merchant_zip_code: '12345',
+            merchant_city: 'New York'
         },
         acquirer: {
             id: 'id',
