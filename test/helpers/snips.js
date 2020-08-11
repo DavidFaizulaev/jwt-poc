@@ -9,9 +9,12 @@ const fullRiskRequestBody = {
     session_id: 'session_id',
     device_id: 'device_id',
     merchant: {
-        mcc: '123',
+        mcc: '1234',
         merchant_name: 'merchant_name',
-        merchant_country_code: 'USA'
+        merchant_country_code: 'USA',
+        merchant_email: 'some_email@gmail.com',
+        merchant_zip_code: '12345',
+        merchant_city: 'New York'
     }
 };
 

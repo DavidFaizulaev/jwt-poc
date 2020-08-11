@@ -39,7 +39,7 @@
     "koa-express": "^1.1.0",
     "koa-router": "^9.1.0",
     "lodash": "^4.17.19",
-    "logger-helper": "^4.7.5",
+    "logger-helper": "^4.7.6",
     "prom-client": "^11.5.3",
     "prometheus-api-metrics": "^2.2.7",
     "secrets-generator": "^1.2.10",
