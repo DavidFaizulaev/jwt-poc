@@ -191,6 +191,24 @@ test:end-2-end:mars:
   only:
     - master
 
+test:end-2-end:mars:live:
+  <<: *test_definition
+  stage: end-2-end-tests-mars
+  image: docker-registry.zooz.co:4567/cd/ci-runners/runners:gitlab-node-12-docker-comopose-install-kubectl
+  tags:
+    - eks-mars-pci-apps
+  variables:
+    CLUSTER: mars
+    ENVIRONMENT: live
+  script:
+    - npm run test:e2e
+    - DEPLOYMENT_NAME=$(kubectl get pods -n apps | grep $CHART_NAME | awk '{print $1}')
+    - echo $DEPLOYMENT_NAME
+    - kubectl logs $DEPLOYMENT_NAME -n apps -c $CHART_NAME > ./logs/$CHART_NAME.log
+    - $(npm bin)/data-sentry -f ./logs/data-sentry-values.txt -d ./logs/$CHART_NAME.log
+  only:
+    - master
+
 # -------------- k8s Deployments -------------- #
 .deploy-template: &deploy-template-ref
   image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v10-latest
