@@ -35,6 +35,7 @@ include:
   - project: paymentsos/quality-clan/gitlab-quality-template
     file: template.yaml
     ref: v2
+  - local: /.gitlab-ci/security-test.yml
 
 before_script:
   - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
