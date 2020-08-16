@@ -261,7 +261,7 @@ deploy:review:k8s:
     ENVIRONMENT: sandbox
     ENV: config
   environment:
-    name: review/$CI_BUILD_REF_SLUG
+    name: dev-review/$CI_BUILD_REF_SLUG
     on_stop: deploy:review:stop:k8s
   only:
     - branches
@@ -293,7 +293,7 @@ deploy:review:stop:k8s:
     NAMESPACE: apps
     GIT_STRATEGY: none
   environment:
-    name: review/$CI_BUILD_REF_SLUG
+    name: dev-review/$CI_BUILD_REF_SLUG
     action: stop
   before_script:
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
@@ -326,6 +326,8 @@ deploy:dev:sandbox:k8s:
   tags:
     - eks-dev-apps
   stage: deploy-dev
+  environment:
+    name: dev-sandbox
   variables:
     ENVIRONMENT: sandbox
     ENV: config
@@ -340,6 +342,8 @@ deploy:dev:live:k8s:
   variables:
     ENVIRONMENT: live
     ENV: config
+  environment:
+    name: dev-live
   only:
     - master
 
@@ -359,6 +363,8 @@ deploy:qa:sandbox:k8s:
   variables:
     ENVIRONMENT: sandbox
     ENV: config
+  environment:
+    name: qa-sandbox
   only:
     - master
 
@@ -370,6 +376,8 @@ deploy:qa:live:k8s:
   variables:
     ENVIRONMENT: live
     ENV: config
+  environment:
+    name: qa-live
   only:
     - master
 
@@ -387,7 +395,7 @@ deploy:mars:sandbox:k8s:
     - eks-mars-pci
   stage: deploy-mars
   environment:
-    name: mars-sandbox
+    name: mars-pci-sandbox
   variables:
     ENVIRONMENT: sandbox
     ENV: config
@@ -400,7 +408,7 @@ deploy:mars:live:k8s:
     - eks-mars-pci
   stage: deploy-mars
   environment:
-    name: mars-live
+    name: mars-pci-live
   variables:
     ENVIRONMENT: live
     ENV: config
@@ -421,7 +429,7 @@ deploy:prd:sandbox:k8s:
     - eks-prd-pci-apps
   stage: deploy-prd
   environment:
-    name: prod-sandbox
+    name: prod-pci-sandbox
   variables:
     ENVIRONMENT: sandbox
     ENV: config
@@ -435,7 +443,7 @@ deploy:prd:live:k8s:
     - eks-prd-pci-apps
   stage: deploy-prd
   environment:
-    name: prod-live
+    name: prod-pci-live
   variables:
     ENVIRONMENT: live
     ENV: config
