@@ -84,6 +84,36 @@ describe('Create risk analyses flows', function () {
 
     describe('Successfully create risk resource with tokenized and untokenized payment_method', function () {
         let createRiskResponse;
+        it('Payment should contain risk in posibble_next_events', function () {
+            const expectedPossibleNextEvents = [
+                {
+                    action: 'Credit',
+                    href: `${PAYMENTS_OS_BASE_URL}/payments/${paymentObject.id}/credits`
+                },
+                {
+                    action: 'Charge',
+                    href: `${PAYMENTS_OS_BASE_URL}/payments/${paymentObject.id}/charges`
+                },
+                {
+                    action: 'Authorization',
+                    href: `${PAYMENTS_OS_BASE_URL}/payments/${paymentObject.id}/authorizations`
+                },
+                {
+                    action: 'Update Payment',
+                    href: `${PAYMENTS_OS_BASE_URL}/payments/${paymentObject.id}`
+                },
+                {
+                    action: 'Authentication',
+                    href: `${PAYMENTS_OS_BASE_URL}/payments/${paymentObject.id}/authentications`
+                },
+                {
+                    action: 'Risk analysis',
+                    href: `${PAYMENTS_OS_BASE_URL}/payments/${paymentObject.id}/risk-analyses`
+                }
+            ];
+            expect(paymentObject.status).to.equal('Initialized');
+            expect(paymentObject.possible_next_actions).to.eql(expectedPossibleNextEvents);
+        });
         it('Should successfully create risk resource', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
             copiedRequestBody.payment_method = {
