@@ -604,7 +604,7 @@ describe('Create risk analyses resource negative tests', function () {
             expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
         }
     });
-    describe('payment state validation tests', function () {
+    ((EXTERNAL_ENVIRONMENT === 'test') ? describe : describe.skip)('payment state validation tests', function () {
         let paymentMethod, mockProcessorProviderId, payURiskProviderId, createConfigurationResponseMockProcessor, createConfigurationResponsePayuRisk, paymentStateValidationPaymentObject;
         before(async function () {
             testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
