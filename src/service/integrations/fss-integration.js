@@ -37,23 +37,27 @@ async function loginToFss() {
 }
 
 async function handlePaymentMethodToken(merchantId, paymentMethodDetails, headers) {
-    if (isUntokenizedCreditCardRequest(paymentMethodDetails)) {
-        const createPaymentMethodResponse = await createPaymentMethod(merchantId, paymentMethodDetails, headers);
-        createPaymentMethodResponse.payment_method_details.token = createPaymentMethodResponse.payment_method_token;
-        createPaymentMethodResponse.payment_method_details.type = 'tokenized';
-        return createPaymentMethodResponse.payment_method_details;
+    const paymentMethodType = get(paymentMethodDetails, 'type');
+    if (paymentMethodType === UNTOKENIZED_PAYMENT_METHOD_NAME){
+        if (isFullCard(paymentMethodDetails)){
+            const createPaymentMethodResponse = await createPaymentMethod(merchantId, paymentMethodDetails, headers);
+            createPaymentMethodResponse.payment_method_details.token = createPaymentMethodResponse.payment_method_token;
+            createPaymentMethodResponse.payment_method_details.type = 'tokenized';
+            return createPaymentMethodResponse.payment_method_details;
+        } else {
+            return paymentMethodDetails;
+        }
     } else if (paymentMethodDetails) {
         await validateTokenState(merchantId, paymentMethodDetails, headers);
     }
     return paymentMethodDetails;
 }
 
-function isUntokenizedCreditCardRequest(paymentMethod) {
-    const isUntokenized = get(paymentMethod, 'type') === UNTOKENIZED_PAYMENT_METHOD_NAME;
+function isFullCard(paymentMethod) {
     const isCreditCard = get(paymentMethod, 'source_type') === CREDIT_CARD_PAYMENT_METHOD_NAME;
-    const isWithFullNumber = get(paymentMethod, 'card_number');
-
-    return isUntokenized && isCreditCard && isWithFullNumber;
+    const cardNumber = get(paymentMethod, 'card_number');
+    const isFullCard = cardNumber && cardNumber.length > 0;
+    return isCreditCard && isFullCard;
 }
 
 async function createPaymentMethod(merchantId, paymentMethodDetails, headers) {

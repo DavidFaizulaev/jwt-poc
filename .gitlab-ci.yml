@@ -213,6 +213,7 @@ test:end-2-end:mars:live:
 # -------------- k8s Deployments -------------- #
 .deploy-template: &deploy-template-ref
   image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v10-latest
+  dependencies: []
   script:
     - source ./config/set-centralized-config-variables.sh
     # - DEPLOYMENT_TYPE=job k8s-deploy --helm-path=$PWD/cassandra-migration-chart --display-values=true
@@ -225,6 +226,7 @@ test:end-2-end:mars:live:
 
 .kong-deploy-template: &deploy-kong-template-ref
   image: docker-registry.zooz.co:4567/payu-clan-sre/utils/k8s-deployment/releases:v10-latest
+  dependencies: []
   variables:
     ENV: config
     ENVIRONMENT: kong

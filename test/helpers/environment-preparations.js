@@ -1,6 +1,7 @@
 const Chance = require('chance');
 const testConfig = require('../helpers/test-config');
 const chance = new Chance();
+const { EXTERNAL_ENVIRONMENT } = require('../helpers/test-config');
 
 module.exports = {
     prepareTestEnvironment: prepareTestEnvironment,
@@ -9,46 +10,51 @@ module.exports = {
 };
 
 async function prepareTestEnvironment(paymentsOsClient, paymentsOSsdkClient, configurations) {
-    const createMerchantResponse = await createMerchantConfiguration(paymentsOsClient, paymentsOSsdkClient, configurations);
-    const providerId = await paymentsOSsdkClient.getProviderId({
-        provider_type: 'risk_provider',
-        processor: 'processor',
-        provider_name: 'PayU-Risk',
-        session_token: createMerchantResponse.session_token
-    });
-    const createConfigurationResponse = await paymentsOSsdkClient.createConfiguration({
-        account_id: createMerchantResponse.merchant_id,
-        session_token: createMerchantResponse.session_token,
-        provider_id: providerId,
-        configuration_data: {
-            name: 'merchant_key',
-            tenant_id: 'payu',
-            region: 'latam',
-            isRequired: true,
-            isHidden: false,
-            description: 'key used to identify the merchant in the fraud system'
-        },
-        name: `mynameis${(new Date().getTime())}`
-    });
-    const createApplicationResponse = await paymentsOSsdkClient.createApplication({
-        app_name: `some_app_id${(new Date().getTime())}`,
-        account_id: createMerchantResponse.merchant_id,
-        default_provider: createConfigurationResponse.body.id,
-        description: 'some_app_description',
-        session_token: createMerchantResponse.session_token
-    });
-    const getAppKeysResponse = await paymentsOSsdkClient.getApplicationKeys({
-        app_name: createApplicationResponse.body.id,
-        account_id: createMerchantResponse.merchant_id,
-        session_token: createMerchantResponse.session_token
-    });
-    const data = {
-        merchant: createMerchantResponse,
-        configurations: createConfigurationResponse.body,
-        application: createApplicationResponse.body,
-        app_keys: getAppKeysResponse.body
-    };
-    return data;
+    try {
+        const createMerchantResponse = await createMerchantConfiguration(paymentsOsClient, paymentsOSsdkClient, configurations);
+        const providerId = await paymentsOSsdkClient.getProviderId({
+            provider_type: 'risk_provider',
+            processor: 'processor',
+            provider_name: 'PayU-Risk',
+            session_token: createMerchantResponse.session_token
+        });
+        const createConfigurationResponse = await paymentsOSsdkClient.createConfiguration({
+            account_id: createMerchantResponse.merchant_id,
+            session_token: createMerchantResponse.session_token,
+            provider_id: providerId,
+            configuration_data: {
+                name: 'merchant_key',
+                tenant_id: 'payu',
+                region: 'latam',
+                isRequired: true,
+                isHidden: false,
+                description: 'key used to identify the merchant in the fraud system'
+            },
+            name: `mynameis${(new Date().getTime())}`
+        });
+        const createApplicationResponse = await paymentsOSsdkClient.createApplication({
+            app_name: `some_app_id${(new Date().getTime())}`,
+            account_id: createMerchantResponse.merchant_id,
+            default_provider: createConfigurationResponse.body.id,
+            description: 'some_app_description',
+            session_token: createMerchantResponse.session_token
+        });
+        const getAppKeysResponse = await paymentsOSsdkClient.getApplicationKeys({
+            app_name: createApplicationResponse.body.id,
+            account_id: createMerchantResponse.merchant_id,
+            session_token: createMerchantResponse.session_token
+        });
+        const data = {
+            merchant: createMerchantResponse,
+            configurations: createConfigurationResponse.body,
+            application: createApplicationResponse.body,
+            app_keys: getAppKeysResponse.body
+        };
+        return data;
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
 }
 
 async function preparePaymentMethodToken(paymentsOSsdkClient) {
@@ -112,7 +118,9 @@ async function createMerchantConfiguration(paymentsOsClient, paymentsOSsdkClient
         merchantName: merchantConfiguration.merchant_name
     };
 
-    await paymentsOsClient.activateAccount(activateAccountOptions);
+    if (EXTERNAL_ENVIRONMENT === 'live') {
+        await paymentsOsClient.activateAccount(activateAccountOptions);
+    }
 
     const createSessionResponse = await paymentsOSsdkClient.createUserSession({
         email: merchantConfiguration.user_email,

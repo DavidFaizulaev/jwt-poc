@@ -2,18 +2,19 @@ const entitiesMapper = require('entities-mapper-v130').Payment;
 const fssIntegration = require('../service/integrations/fss-integration');
 const { logger, entitiesMapperLogger } = require('../service/logger');
 const config = require('../service/config');
-const swagger = require('express-ajv-swagger-validation');
 const { SWAGGER_PATH } = require('../service/common');
+const openApiValidator = require('openapi-validator-middleware');
+
+const validatorOptions = {
+    framework: 'koa',
+    beautifyErrors: true
+};
 
 async function init() {
     try {
         await fssIntegration.loginToFss();
 
-        swagger.init(SWAGGER_PATH, {
-            framework: 'koa',
-            beautifyErrors: true,
-            formats: []
-        });
+        await openApiValidator.init(SWAGGER_PATH, validatorOptions);
 
         await entitiesMapper.init({
             resultsMappingUrl: config.RESULT_MAPPING_URL,
