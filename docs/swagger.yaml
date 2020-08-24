@@ -409,6 +409,7 @@ components:
         last_4_digits:
           description: Masked credit card number (last four digits).
           type: string
+          pattern: '^\d{4}$'
         pass_luhn_validation:
           $ref: '#/components/schemas/pass_luhn_validation'
         bin_number:
@@ -478,6 +479,7 @@ components:
         last_4_digits:
           description: Masked credit card number (last four digits).
           type: string
+          pattern: '^\d{4}$'
         pass_luhn_validation:
           $ref: '#/components/schemas/pass_luhn_validation'
         bin_number:
@@ -622,7 +624,6 @@ components:
         - source_type
       anyOf:
         - $ref: '#/components/schemas/credit_card_request'
-        - $ref: '#/components/schemas/partial_credit_card_request'
       properties:
         source_type:
           description: |
@@ -647,22 +648,10 @@ components:
           description: "Credit card number."
           type: string
           pattern: '\d{8}|\d{12,19}'
-    partial_credit_card_request:
-      description: An object representing a tokenized payment method in a request.
-      type: object
-      properties:
-        holder_name:
-          description: "Name of the credit card holder."
-          type: string
-        expiration_date:
-          description: |
-            "Credit card expiration date."
-            "Possible formats: mm-yyyy, mm-yy, mm.yyyy, mm.yy, mm/yy, mm/yyyy, mm yyyy, or mm yy."
-          type: string
-          pattern: '^(0?[1-9]|1[0-2])(\/|\-|\.| )\d{2,4}$'
         last_4_digits:
           description: Masked credit card number (last four digits).
           type: string
+          pattern: '^\d{4}$'
         bin_number:
           description: |
             "The first six digits of the credit card number."
@@ -710,9 +699,9 @@ components:
         merchant_email:
           type: string
         merchant_zip_code:
-          type: string 
+          type: string
         merchant_city:
-          type: string  
+          type: string
     provider_specific_data:
       description: |
         This object contains provider specific objects, which contain data

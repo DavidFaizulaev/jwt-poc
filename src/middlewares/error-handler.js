@@ -3,7 +3,7 @@
 const httpStatusCodes = require('http-status-codes');
 const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR, getStatusText, CONFLICT } = httpStatusCodes;
 const NOT_FOUND_ERROR_MESSAGE = getStatusText(NOT_FOUND);
-const { InputValidationError } = require('express-ajv-swagger-validation');
+const { InputValidationError } = require('openapi-validator-middleware');
 const { HDR_X_ZOOZ_REQUEST_ID } = require('../service/common');
 const { logger } = require('../service/logger');
 

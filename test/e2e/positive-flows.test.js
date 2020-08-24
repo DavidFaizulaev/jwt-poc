@@ -186,10 +186,35 @@ describe('Create risk analyses flows', function () {
 
             sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(fullRiskRequestBody);
         });
+        it('Should successfully create risk resource with untokenized payment method and partial card details', async function () {
+            const fullRequestPartial = cloneDeep(fullRiskRequestBody);
+            fullRequestPartial.payment_method = {
+                type: 'untokenized',
+                source_type: 'credit_card',
+                holder_name: 'tamara',
+                last_4_digits: '4444',
+                bin_number: '123456'
+            };
+            createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRequestPartial, payment_id: paymentObject.id });
+            expect(createRiskResponse.statusCode).to.equal(201);
+            expect(createRiskResponse.body).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'merchant');
+            expect(createRiskResponse.body.payment_method).to.have.all.keys('type', 'source_type', 'holder_name', 'last_4_digits', 'bin_number');
+            expect(createRiskResponse.body.result).to.eql({ status: 'Succeed' });
+            validateSelfHeader(createRiskResponse, paymentObject);
+            expect({
+                path: '/payments/{payment_id}/risk-analyses',
+                status: 201,
+                method: 'post',
+                body: createRiskResponse,
+                headers: {}
+            }).to.matchApiSchema();
+
+            sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(fullRiskRequestBody);
+        });
         it('Should successfully get all risk resources', async function () {
             const response = await paymentsOSsdkClient.getAllRiskAnalyses({ payment_id: paymentObject.id });
             expect(response.statusCode).to.equal(200);
-            expect(response.body.length).to.equal(2);
+            expect(response.body.length).to.equal(3);
             const risksHeaders = response.headers;
             expect(risksHeaders).to.contain.keys('self');
             expect(risksHeaders.self).to.equal(`${PAYMENTS_OS_BASE_URL}/payments/${paymentObject.id}/risk-analyses`);

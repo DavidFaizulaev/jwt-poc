@@ -38,7 +38,7 @@ const sdkConfigurationPreparations = {
 
 describe('Create risk analyses resource negative tests', function () {
     let testsEnvs, paymentObject, genericAddress, createPaymentRequest;
-    before(async function(){
+    before(async function () {
         paymentsOSClient.init({
             BASE_URL: PAYMENTS_OS_BASE_URL,
             env: EXTERNAL_ENVIRONMENT,
@@ -76,9 +76,15 @@ describe('Create risk analyses resource negative tests', function () {
 
     it('Should return bad request response when trying to create risk analyses with non-existing payment method token', async function () {
         const copiedRequestBody = cloneDeep(fullRiskRequestBody);
-        copiedRequestBody.payment_method = { token: uuid.v4(), type: 'tokenized' };
+        copiedRequestBody.payment_method = {
+            token: uuid.v4(),
+            type: 'tokenized'
+        };
         try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
+            });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(400);
@@ -93,7 +99,10 @@ describe('Create risk analyses resource negative tests', function () {
         const copiedRequestBody = cloneDeep(fullRiskRequestBody);
         copiedRequestBody.payment_method.expiration_date = '12]09';
         try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
+            });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(400);
@@ -106,7 +115,10 @@ describe('Create risk analyses resource negative tests', function () {
         const copiedRequestBody = cloneDeep(fullRiskRequestBody);
         copiedRequestBody.payment_method.source_type = 'invalid_source_type';
         try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
+            });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(400);
@@ -119,7 +131,10 @@ describe('Create risk analyses resource negative tests', function () {
         const copiedRequestBody = cloneDeep(fullRiskRequestBody);
         copiedRequestBody.merchant.merchant_country_code = 'VVVV';
         try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
+            });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(400);
@@ -130,7 +145,10 @@ describe('Create risk analyses resource negative tests', function () {
     });
     it('Should return not found response when trying to create risk analyses with non-existing payment id', async function () {
         try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRiskRequestBody, payment_id: uuid.v4() });
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: fullRiskRequestBody,
+                payment_id: uuid.v4()
+            });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(404);
@@ -141,7 +159,10 @@ describe('Create risk analyses resource negative tests', function () {
     });
     it('Should return bad request response when send malformed json', async function () {
         try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: 'malformed json', payment_id: paymentObject.id });
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: 'malformed json',
+                payment_id: paymentObject.id
+            });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(400);
@@ -452,7 +473,10 @@ describe('Create risk analyses resource negative tests', function () {
 
         testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
 
-        const createRiskAnalysesResponse = await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRiskRequestBody, payment_id: paymentObject.id });
+        const createRiskAnalysesResponse = await paymentsOSsdkClient.postRiskAnalyses({
+            request_body: fullRiskRequestBody,
+            payment_id: paymentObject.id
+        });
         expect(createRiskAnalysesResponse.statusCode).to.equal(201);
 
         const riskAnalysesResource = createRiskAnalysesResponse.body;
@@ -503,7 +527,10 @@ describe('Create risk analyses resource negative tests', function () {
 
         testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
 
-        const createRiskAnalysesResponse = await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRiskRequestBody, payment_id: paymentObject.id });
+        const createRiskAnalysesResponse = await paymentsOSsdkClient.postRiskAnalyses({
+            request_body: fullRiskRequestBody,
+            payment_id: paymentObject.id
+        });
         expect(createRiskAnalysesResponse.statusCode).to.equal(201);
 
         const riskAnalysesResource = createRiskAnalysesResponse.body;
@@ -569,7 +596,10 @@ describe('Create risk analyses resource negative tests', function () {
         const copiedRequestBody = cloneDeep(fullRiskRequestBody);
         copiedRequestBody.merchant.mcc = '123';
         try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
+            });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(400);
@@ -582,7 +612,10 @@ describe('Create risk analyses resource negative tests', function () {
         const copiedRequestBody = cloneDeep(fullRiskRequestBody);
         copiedRequestBody.merchant.mcc = '12345';
         try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
+            });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(400);
@@ -595,7 +628,10 @@ describe('Create risk analyses resource negative tests', function () {
         const copiedRequestBody = cloneDeep(fullRiskRequestBody);
         copiedRequestBody.merchant.mcc = 'xxxx';
         try {
-            await paymentsOSsdkClient.postRiskAnalyses({ request_body: copiedRequestBody, payment_id: paymentObject.id });
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
+            });
             throw new Error('Should have thrown error');
         } catch (error) {
             expect(error.statusCode).to.equal(400);
@@ -604,153 +640,251 @@ describe('Create risk analyses resource negative tests', function () {
             expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
         }
     });
-    ((EXTERNAL_ENVIRONMENT === 'test') ? describe : describe.skip)('payment state validation tests', function () {
-        let paymentMethod, mockProcessorProviderId, payURiskProviderId, createConfigurationResponseMockProcessor, createConfigurationResponsePayuRisk, paymentStateValidationPaymentObject;
-        before(async function () {
-            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
-            const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });
-            paymentStateValidationPaymentObject = createPaymentResponse.body;
-            console.log('successfully created payment');
-            mockProcessorProviderId = await paymentsOSsdkClient.getProviderId({
-                processor: 'processor',
-                provider_name: 'MockProcessor',
-                session_token: testsEnvs.merchant.session_token
+    it('Should return bad request response when create risk analyses is sent with bin number longer than 6 digits', async function () {
+        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+        copiedRequestBody.payment_method = {
+            type: 'untokenized',
+            source_type: 'credit_card',
+            holder_name: 'tamara',
+            last_4_digits: '4444',
+            bin_number: '123456789'
+        };
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
             });
-            payURiskProviderId = await paymentsOSsdkClient.getProviderId({
-                provider_type: 'risk_provider',
-                processor: 'processor',
-                provider_name: 'PayU-Risk',
-                session_token: testsEnvs.merchant.session_token
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+        }
+    });
+    it('Should return bad request response when create risk analyses is sent with bin number shorter than 6 digits', async function () {
+        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+        copiedRequestBody.payment_method = {
+            type: 'untokenized',
+            source_type: 'credit_card',
+            holder_name: 'tamara',
+            last_4_digits: '4444',
+            bin_number: '1234'
+        };
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
             });
-            createConfigurationResponseMockProcessor = await paymentsOSsdkClient.createConfiguration({
-                account_id: testsEnvs.merchant.merchant_id,
-                session_token: testsEnvs.merchant.session_token,
-                provider_id: mockProcessorProviderId,
-                configuration_data: {
-                },
-                name: `mynameis${(new Date().getTime())}`
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+        }
+    });
+    it('Should return bad request response when create risk analyses is sent with last 4 digits shorter than 4 digits', async function () {
+        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+        copiedRequestBody.payment_method = {
+            type: 'untokenized',
+            source_type: 'credit_card',
+            holder_name: 'tamara',
+            last_4_digits: '44',
+            bin_number: '123456'
+        };
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
             });
-            createConfigurationResponsePayuRisk = await paymentsOSsdkClient.createConfiguration({
-                account_id: testsEnvs.merchant.merchant_id,
-                session_token: testsEnvs.merchant.session_token,
-                provider_id: payURiskProviderId,
-                configuration_data: {
-                    name: 'merchant_key',
-                    tenant_id: 'payu',
-                    region: 'latam',
-                    isRequired: true,
-                    isHidden: false,
-                    description: 'key used to identify the merchant in the fraud system'
-                },
-                name: `mynameis${(new Date().getTime())}`
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+        }
+    });
+    it('Should return bad request response when create risk analyses is sent with last 4 digits longer than 4 digits', async function () {
+        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+        copiedRequestBody.payment_method = {
+            type: 'untokenized',
+            source_type: 'credit_card',
+            holder_name: 'tamara',
+            last_4_digits: '444444',
+            bin_number: '123456'
+        };
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
             });
-        });
-        it('should successfully create risk resource', async function () {
-            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
-
-            const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
-                payment_id: paymentStateValidationPaymentObject.id,
-                request_body: fullRiskRequestBody
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+        }
+    });
+    describe('payment state validation tests', function () {
+        ((EXTERNAL_ENVIRONMENT === 'test') ? describe : describe.skip)('payment state validation tests', function () {
+            let paymentMethod, mockProcessorProviderId, payURiskProviderId, createConfigurationResponseMockProcessor,
+                createConfigurationResponsePayuRisk, paymentStateValidationPaymentObject;
+            before(async function () {
+                testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+                const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });
+                paymentStateValidationPaymentObject = createPaymentResponse.body;
+                console.log('successfully created payment');
+                mockProcessorProviderId = await paymentsOSsdkClient.getProviderId({
+                    processor: 'processor',
+                    provider_name: 'MockProcessor',
+                    session_token: testsEnvs.merchant.session_token
+                });
+                payURiskProviderId = await paymentsOSsdkClient.getProviderId({
+                    provider_type: 'risk_provider',
+                    processor: 'processor',
+                    provider_name: 'PayU-Risk',
+                    session_token: testsEnvs.merchant.session_token
+                });
+                createConfigurationResponseMockProcessor = await paymentsOSsdkClient.createConfiguration({
+                    account_id: testsEnvs.merchant.merchant_id,
+                    session_token: testsEnvs.merchant.session_token,
+                    provider_id: mockProcessorProviderId,
+                    configuration_data: {},
+                    name: `mynameis${(new Date().getTime())}`
+                });
+                createConfigurationResponsePayuRisk = await paymentsOSsdkClient.createConfiguration({
+                    account_id: testsEnvs.merchant.merchant_id,
+                    session_token: testsEnvs.merchant.session_token,
+                    provider_id: payURiskProviderId,
+                    configuration_data: {
+                        name: 'merchant_key',
+                        tenant_id: 'payu',
+                        region: 'latam',
+                        isRequired: true,
+                        isHidden: false,
+                        description: 'key used to identify the merchant in the fraud system'
+                    },
+                    name: `mynameis${(new Date().getTime())}`
+                });
             });
-            expect(createRiskResponse.statusCode).to.equal(201);
-            const createRiskAnalysesResource = createRiskResponse.body;
-            expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
-            expect(createRiskAnalysesResource.device_id).to.equal(fullRiskRequestBody.device_id);
-            expect(createRiskAnalysesResource.session_id).to.equal(fullRiskRequestBody.session_id);
-        });
-        it('should successfully authorize payment', async function () {
-            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+            it('should successfully create risk resource', async function () {
+                testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
 
-            await paymentsOSsdkClient.updateApplication({
-                app_name: testsEnvs.application.id,
-                account_id: testsEnvs.merchant.merchant_id,
-                default_provider: createConfigurationResponseMockProcessor.body.id,
-                description: 'some_app_description',
-                session_token: testsEnvs.merchant.session_token
+                const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
+                    payment_id: paymentStateValidationPaymentObject.id,
+                    request_body: fullRiskRequestBody
+                });
+                expect(createRiskResponse.statusCode).to.equal(201);
+                const createRiskAnalysesResource = createRiskResponse.body;
+                expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
+                expect(createRiskAnalysesResource.device_id).to.equal(fullRiskRequestBody.device_id);
+                expect(createRiskAnalysesResource.session_id).to.equal(fullRiskRequestBody.session_id);
             });
+            it('should successfully authorize payment', async function () {
+                testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
 
-            const genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
+                await paymentsOSsdkClient.updateApplication({
+                    app_name: testsEnvs.application.id,
+                    account_id: testsEnvs.merchant.merchant_id,
+                    default_provider: createConfigurationResponseMockProcessor.body.id,
+                    description: 'some_app_description',
+                    session_token: testsEnvs.merchant.session_token
+                });
 
-            const createPaymentMethodToken = {
-                token_type: 'credit_card',
-                holder_name: 'holder_name',
-                expiration_date: '12/2025',
-                card_number: '5105105105105111',
-                billing_address: genericAddress
-            };
-            const tokenResponse = await paymentsOSsdkClient.createToken({ request_body: createPaymentMethodToken });
+                const genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
 
-            paymentMethod = paymentsOSsdkClient.createPaymentMethodObject({ type: 'tokenized', token: tokenResponse.body.token, credit_card_cvv: '234', vendor: 'MASTERCARD' });
+                const createPaymentMethodToken = {
+                    token_type: 'credit_card',
+                    holder_name: 'holder_name',
+                    expiration_date: '12/2025',
+                    card_number: '5105105105105111',
+                    billing_address: genericAddress
+                };
+                const tokenResponse = await paymentsOSsdkClient.createToken({ request_body: createPaymentMethodToken });
 
-            const authorizeResponse = await paymentsOSsdkClient.postAuthorization({
-                payment_id: paymentStateValidationPaymentObject.id,
-                request_body: {
-                    payment_method: paymentMethod
+                paymentMethod = paymentsOSsdkClient.createPaymentMethodObject({
+                    type: 'tokenized',
+                    token: tokenResponse.body.token,
+                    credit_card_cvv: '234',
+                    vendor: 'MASTERCARD'
+                });
+
+                const authorizeResponse = await paymentsOSsdkClient.postAuthorization({
+                    payment_id: paymentStateValidationPaymentObject.id,
+                    request_body: {
+                        payment_method: paymentMethod
+                    }
+                });
+                expect(authorizeResponse.statusCode).to.equal(201);
+                expect(authorizeResponse.body.result.status).to.equal('Succeed');
+            });
+            it('should successfully create risk resource', async function () {
+                await paymentsOSsdkClient.updateApplication({
+                    app_name: testsEnvs.application.id,
+                    account_id: testsEnvs.merchant.merchant_id,
+                    default_provider: createConfigurationResponsePayuRisk.body.id,
+                    description: 'some_app_description',
+                    session_token: testsEnvs.merchant.session_token
+                });
+                testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+                const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
+                    payment_id: paymentStateValidationPaymentObject.id,
+                    request_body: fullRiskRequestBody
+                });
+                expect(createRiskResponse.statusCode).to.equal(201);
+                const createRiskAnalysesResource = createRiskResponse.body;
+                expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
+                expect(createRiskAnalysesResource.device_id).to.equal(fullRiskRequestBody.device_id);
+                expect(createRiskAnalysesResource.session_id).to.equal(fullRiskRequestBody.session_id);
+            });
+            it('should successfully capture payment', async function () {
+                testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+
+                await paymentsOSsdkClient.updateApplication({
+                    app_name: testsEnvs.application.id,
+                    account_id: testsEnvs.merchant.merchant_id,
+                    default_provider: createConfigurationResponseMockProcessor.body.id,
+                    description: 'some_app_description',
+                    session_token: testsEnvs.merchant.session_token
+                });
+                const captureResponse = await paymentsOSsdkClient.postCapture({ payment_id: paymentStateValidationPaymentObject.id });
+                expect(captureResponse.statusCode).to.equal(201);
+                const captureResponseBody = captureResponse.body;
+                expect(captureResponseBody.result.status).to.equal('Succeed');
+            });
+            it('should return 409 when create risk is applied to a captured payment', async function () {
+                await paymentsOSsdkClient.updateApplication({
+                    app_name: testsEnvs.application.id,
+                    account_id: testsEnvs.merchant.merchant_id,
+                    default_provider: createConfigurationResponsePayuRisk.body.id,
+                    description: 'some_app_description',
+                    session_token: testsEnvs.merchant.session_token
+                });
+                testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+                try {
+                    await paymentsOSsdkClient.postRiskAnalyses({
+                        request_body: fullRiskRequestBody,
+                        payment_id: paymentStateValidationPaymentObject.id
+                    });
+                    throw new Error('Should have thrown error');
+                } catch (error) {
+                    expect(error.statusCode).to.equal(409);
+                    const errorResponse = error.response.body;
+                    expect(errorResponse.category).to.equal('api_request_error');
+                    expect(errorResponse.description).to.equal('There was conflict with the resource current state.');
+                    expect(errorResponse.more_info).to.equal('There was conflict with payment resource current state.');
+                    expect({
+                        path: '/payments/{payment_id}/risk-analyses',
+                        status: 409,
+                        method: 'post',
+                        body: errorResponse,
+                        headers: {}
+                    }).to.matchApiSchema();
                 }
             });
-            expect(authorizeResponse.statusCode).to.equal(201);
-            expect(authorizeResponse.body.result.status).to.equal('Succeed');
-        });
-        it('should successfully create risk resource', async function () {
-            await paymentsOSsdkClient.updateApplication({
-                app_name: testsEnvs.application.id,
-                account_id: testsEnvs.merchant.merchant_id,
-                default_provider: createConfigurationResponsePayuRisk.body.id,
-                description: 'some_app_description',
-                session_token: testsEnvs.merchant.session_token
-            });
-            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
-            const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
-                payment_id: paymentStateValidationPaymentObject.id,
-                request_body: fullRiskRequestBody
-            });
-            expect(createRiskResponse.statusCode).to.equal(201);
-            const createRiskAnalysesResource = createRiskResponse.body;
-            expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
-            expect(createRiskAnalysesResource.device_id).to.equal(fullRiskRequestBody.device_id);
-            expect(createRiskAnalysesResource.session_id).to.equal(fullRiskRequestBody.session_id);
-        });
-        it('should successfully capture payment', async function () {
-            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
-
-            await paymentsOSsdkClient.updateApplication({
-                app_name: testsEnvs.application.id,
-                account_id: testsEnvs.merchant.merchant_id,
-                default_provider: createConfigurationResponseMockProcessor.body.id,
-                description: 'some_app_description',
-                session_token: testsEnvs.merchant.session_token
-            });
-            const captureResponse = await paymentsOSsdkClient.postCapture({ payment_id: paymentStateValidationPaymentObject.id });
-            expect(captureResponse.statusCode).to.equal(201);
-            const captureResponseBody = captureResponse.body;
-            expect(captureResponseBody.result.status).to.equal('Succeed');
-        });
-        it('should return 409 when create risk is applied to a captured payment', async function () {
-            await paymentsOSsdkClient.updateApplication({
-                app_name: testsEnvs.application.id,
-                account_id: testsEnvs.merchant.merchant_id,
-                default_provider: createConfigurationResponsePayuRisk.body.id,
-                description: 'some_app_description',
-                session_token: testsEnvs.merchant.session_token
-            });
-            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
-            try {
-                await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRiskRequestBody, payment_id: paymentStateValidationPaymentObject.id });
-                throw new Error('Should have thrown error');
-            } catch (error) {
-                expect(error.statusCode).to.equal(409);
-                const errorResponse = error.response.body;
-                expect(errorResponse.category).to.equal('api_request_error');
-                expect(errorResponse.description).to.equal('There was conflict with the resource current state.');
-                expect(errorResponse.more_info).to.equal('There was conflict with payment resource current state.');
-                expect({
-                    path: '/payments/{payment_id}/risk-analyses',
-                    status: 409,
-                    method: 'post',
-                    body: errorResponse,
-                    headers: {}
-                }).to.matchApiSchema();
-            }
         });
     });
 });
