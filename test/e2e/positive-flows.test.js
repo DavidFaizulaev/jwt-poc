@@ -186,19 +186,20 @@ describe('Create risk analyses flows', function () {
 
             sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(fullRiskRequestBody);
         });
-        it('Should successfully create risk resource with untokenized payment method and partial card details', async function () {
+        it('Should successfully create risk resource with untokenized payment method and all partial card details', async function () {
             const fullRequestPartial = cloneDeep(fullRiskRequestBody);
             fullRequestPartial.payment_method = {
                 type: 'untokenized',
                 source_type: 'credit_card',
                 holder_name: 'tamara',
                 last_4_digits: '4444',
-                bin_number: '123456'
+                bin_number: '123456',
+                expiration_date: '12/2030'
             };
             createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRequestPartial, payment_id: paymentObject.id });
             expect(createRiskResponse.statusCode).to.equal(201);
             expect(createRiskResponse.body).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'merchant');
-            expect(createRiskResponse.body.payment_method).to.have.all.keys('type', 'source_type', 'holder_name', 'last_4_digits', 'bin_number');
+            expect(createRiskResponse.body.payment_method).to.have.all.keys('type', 'source_type', 'holder_name', 'last_4_digits', 'bin_number', 'expiration_date');
             expect(createRiskResponse.body.result).to.eql({ status: 'Succeed' });
             validateSelfHeader(createRiskResponse, paymentObject);
             expect({
@@ -231,14 +232,21 @@ describe('Create risk analyses flows', function () {
         before(async function () {
             paymentObject = await localPrep();
         });
-        it.skip('Should successfully create risk resource with minimal request body (no request body)', async function () {
-            // TODO: pending payu risk fix - make sure the test is good and validating the relevant
-            const response = await paymentsOSsdkClient.postRiskAnalyses({ request_body: {}, payment_id: paymentObject.id });
-            expect(response.statusCode).to.equal(201);
+        it('Should successfully create risk resource with minimal request body (no request body)', async function () {
+            const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({ request_body: {}, payment_id: paymentObject.id });
+            const riskAnalysesResource = createRiskResponse.body;
 
-            expect(response.body).to.have.all.keys('provider_data', 'created', 'id', 'result', 'provider_configuration');
-            expect(response.body.payment_method).to.have.all.keys('type', 'source_type');
-            expect(response.body.result).to.eql({ status: 'Succeed' });
+            expect(createRiskResponse.statusCode).to.equal(201);
+            expect(riskAnalysesResource).to.have.all.keys('provider_data', 'created', 'id', 'result', 'provider_configuration');
+            expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
+
+            expect({
+                path: '/payments/{payment_id}/risk-analyses',
+                status: 201,
+                method: 'post',
+                body: riskAnalysesResource,
+                headers: {}
+            }).to.matchApiSchema();
         });
         it('Should successfully create risk resource without sending session_id', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
@@ -315,20 +323,28 @@ describe('Create risk analyses flows', function () {
 
             sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
         });
-        it.skip('Should successfully create risk resource without sending payment method', async function () {
-            // TODO: pending payu risk fix
+        it('Should successfully create risk resource without sending payment method', async function () {
             const copiedRequestBody = cloneDeep(fullRiskRequestBody);
             delete copiedRequestBody.payment_method;
 
-            const response = await paymentsOSsdkClient.postRiskAnalyses({
+            const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
                 request_body: copiedRequestBody,
                 payment_id: paymentObject.id
             });
-            expect(response.statusCode).to.equal(201);
 
-            expect(response.body).to.have.all.keys('session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration');
-            expect(response.body.payment_method).to.have.all.keys('credit_card', 'type', 'source_type');
-            expect(response.body.result).to.eql({ status: 'Succeed' });
+            const riskAnalysesResource = createRiskResponse.body;
+
+            expect(createRiskResponse.statusCode).to.equal(201);
+            expect(riskAnalysesResource).to.have.all.keys('session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration', 'merchant');
+            expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
+
+            expect({
+                path: '/payments/{payment_id}/risk-analyses',
+                status: 201,
+                method: 'post',
+                body: riskAnalysesResource,
+                headers: {}
+            }).to.matchApiSchema();
 
             sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
         });
@@ -349,6 +365,37 @@ describe('Create risk analyses flows', function () {
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
             // TODO: pending entities mapper - verify partial merchant fields were indeed sent.
+
+            expect({
+                path: '/payments/{payment_id}/risk-analyses',
+                status: 201,
+                method: 'post',
+                body: riskAnalysesResource,
+                headers: {}
+            }).to.matchApiSchema();
+
+            sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
+        });
+        it('Should successfully create risk resource with partial payment method fields - only bin and last 4 digits', async function () {
+            const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+            const partialPaymentMethod = {
+                type: 'untokenized',
+                source_type: 'credit_card',
+                bin_number: '123456',
+                last_4_digits: '1234'
+            }
+            copiedRequestBody.payment_method = partialPaymentMethod;
+
+            const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
+            });
+            expect(createRiskResponse.statusCode).to.equal(201);
+
+            const riskAnalysesResource = createRiskResponse.body;
+            expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'merchant');
+            expect(riskAnalysesResource.payment_method).to.have.all.keys( 'type', 'source_type', 'bin_number', 'last_4_digits');
+            expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
             expect({
                 path: '/payments/{payment_id}/risk-analyses',
