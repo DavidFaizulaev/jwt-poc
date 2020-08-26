@@ -606,6 +606,38 @@ components:
           type: string
         merchant:
           $ref: "#/components/schemas/merchant"
+        authorization_code:
+          type: string
+        cvv_verification_code:
+          type: string
+          enum: ['M', 'N', 'P']
+          description: |
+            | M = match (passed)
+            | N = no match (unknown)
+            | P = not processed (disabled)
+        three_d_secure_authentication_status:
+          type: string
+          enum: ['R', 'N', 'U', 'A', 'Y']
+          description: |
+            | R = authentication / account verification rejected; Issuer is rejecting authentication/verification and requests that authorisation not be attempted.
+            | N = not authenticated / account not verified; Transaction denied
+            | U (eci: 7 or 0) = enrolment not queried, unavailable, enrolment query error
+            | A (eci: 6 or 1) = not enrolled, attempted authentication
+            | Y (eci: 5 or 2) = authenticated successfully.
+        acquirer:
+          $ref: "#/components/schemas/acquirer"
+        installments:
+          $ref: '#/components/schemas/RiskInstallments'
+        provider_specific_data:
+          $ref: '#/components/schemas/ProviderRequestSpecificData'
+        additional_details:
+          additionalProperties:
+            type: string
+
+
+
+
+
     tokenized_request:
       description: An object representing a tokenized payment method in a request.
       type: object
@@ -658,28 +690,20 @@ components:
             "'BIN' = Bank Identification Number. (Also known as 'IIN'=Issuer Identification Number.)"
           type: string
           pattern: '^\d{6}$'
-    installments:
-      description: >-
-        Installment details for the transaction. Note - If the provider of the
-        transaction does not support Installments, and the value is greater than
-        1, then the request will fail.
+    RiskInstallments:
       type: object
+      description: 'Installments description for payment.'
       required:
         - number_of_installments
       properties:
         number_of_installments:
-          description: Number of installments.
           type: integer
           minimum: 0
-        first_payment_amount:
-          $ref: '#/components/schemas/amount'
-        remaining_payments_amount:
-          $ref: '#/components/schemas/amount'
     acquirer:
       properties:
-        id:
+        acquirer_id:
           type: string
-        country:
+        acquirer_country_code:
           type: string
           maxLength: 3
           example: 'USA'
@@ -753,6 +777,33 @@ components:
         ip_address:
           type: string
           description: The IP address of the customer making the payment.
+        acquirer:
+          $ref: "#/components/schemas/acquirer"
+        installments:
+          $ref: '#/components/schemas/RiskInstallments'
+        provider_specific_data:
+          $ref: '#/components/schemas/ProviderRequestSpecificData'
+        authorization_code:
+          type: string
+        cvv_verification_code:
+          type: string
+          enum: ['M', 'N', 'P']
+          description: |
+            | M = match (passed)
+            | N = no match (unknown)
+            | P = not processed (disabled)
+        three_d_secure_authentication_status:
+          type: string
+          enum: ['R', 'N', 'U', 'A', 'Y']
+          description: |
+            | R = authentication / account verification rejected; Issuer is rejecting authentication/verification and requests that authorisation not be attempted.
+            | N = not authenticated / account not verified; Transaction denied
+            | U (eci: 7 or 0) = enrolment not queried, unavailable, enrolment query error
+            | A (eci: 6 or 1) = not enrolled, attempted authentication
+            | Y (eci: 5 or 2) = authenticated successfully.
+              merchant:
+          $ref: "#/components/schemas/merchant"
+
     result:
       description: Result of the transaction.
       type: object
@@ -884,3 +935,12 @@ components:
           type: string
           description: Indicates the outcome of Feedzai’s fraud analysis by indicating a recommendation based on the score. The decision can be approve, review or decline.
           example: approve
+    ProviderRequestSpecificData:
+      type: object
+      properties:
+        additional_details:
+          type: object
+          description: 'Values which are specific to provider, in Key-value pair format. For example, {key1: value1, key2: value2}.'
+          example: { key1: 'value1', key2: 'value2' }
+          additionalProperties:
+            type: string
