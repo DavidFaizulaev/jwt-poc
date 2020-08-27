@@ -444,7 +444,7 @@ describe('Create risk analyses resource negative tests', function () {
         }
     });
     it('Should decline risk analyses request when sending email - MOCK_DECLINE_RESPONSE_EMAIL', async function () {
-        const genericAddress = paymentsOSsdkClient.createAddressObject({
+        genericAddress = paymentsOSsdkClient.createAddressObject({
             country: 'ISR',
             city: 'Tel-Aviv',
             line1: '10705 Old Mill Rd',
@@ -458,7 +458,7 @@ describe('Create risk analyses resource negative tests', function () {
             state: 'SD'
         });
 
-        const createPaymentRequest = {
+        createPaymentRequest = {
             amount: 500,
             currency: 'USD',
             shipping_address: genericAddress,
@@ -498,7 +498,7 @@ describe('Create risk analyses resource negative tests', function () {
         }).to.matchApiSchema();
     });
     it('Should decline risk analyses request when sending email - MOCK_REVIEW_RESPONSE_EMAIL', async function () {
-        const genericAddress = paymentsOSsdkClient.createAddressObject({
+        genericAddress = paymentsOSsdkClient.createAddressObject({
             country: 'ISR',
             city: 'Tel-Aviv',
             line1: '10705 Old Mill Rd',
@@ -512,7 +512,7 @@ describe('Create risk analyses resource negative tests', function () {
             state: 'SD'
         });
 
-        const createPaymentRequest = {
+        createPaymentRequest = {
             amount: 500,
             currency: 'USD',
             shipping_address: genericAddress,
@@ -794,7 +794,7 @@ describe('Create risk analyses resource negative tests', function () {
                     session_token: testsEnvs.merchant.session_token
                 });
 
-                const genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
+                genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
 
                 const createPaymentMethodToken = {
                     token_type: 'credit_card',
@@ -885,6 +885,51 @@ describe('Create risk analyses resource negative tests', function () {
                     }).to.matchApiSchema();
                 }
             });
+        });
+    });
+    describe('request with invalid tenant id', function () {
+        let payURiskProviderId, createConfigurationResponsePayuRisk, paymentStateValidationPaymentObject;
+        before(async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+            const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });
+            paymentStateValidationPaymentObject = createPaymentResponse.body;
+            console.log('successfully created payment');
+
+            createConfigurationResponsePayuRisk = await paymentsOSsdkClient.createConfiguration({
+                account_id: testsEnvs.merchant.merchant_id,
+                session_token: testsEnvs.merchant.session_token,
+                provider_id: payURiskProviderId,
+                configuration_data: {
+                    name: 'merchant_key',
+                    tenant_id: 'nonexisting',
+                    region: 'latam',
+                    isRequired: true,
+                    isHidden: false,
+                    description: 'key used to identify the merchant in the fraud system'
+                },
+                name: `mynameis${(new Date().getTime())}`
+            });
+
+            await paymentsOSsdkClient.updateApplication({
+                app_name: testsEnvs.application.id,
+                account_id: testsEnvs.merchant.merchant_id,
+                default_provider: createConfigurationResponsePayuRisk.body.id,
+                description: 'some_app_description',
+                session_token: testsEnvs.merchant.session_token
+            });
+        });
+        it('should successfully create risk resource', async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+
+            const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
+                payment_id: paymentStateValidationPaymentObject.id,
+                request_body: fullRiskRequestBody
+            });
+            expect(createRiskResponse.statusCode).to.equal(201);
+            const createRiskAnalysesResource = createRiskResponse.body;
+            expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
+            expect(createRiskAnalysesResource.device_id).to.equal(fullRiskRequestBody.device_id);
+            expect(createRiskAnalysesResource.session_id).to.equal(fullRiskRequestBody.session_id);
         });
     });
 });
