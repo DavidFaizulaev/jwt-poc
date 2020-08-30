@@ -474,14 +474,12 @@ describe('Create risk analyses resource negative tests', function () {
         testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
 
         const createRiskAnalysesResponse = await paymentsOSsdkClient.postRiskAnalyses({
-            request_body: fullRiskRequestBody,
+            request_body: { } ,
             payment_id: paymentObject.id
         });
         expect(createRiskAnalysesResponse.statusCode).to.equal(201);
 
         const riskAnalysesResource = createRiskAnalysesResponse.body;
-        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration', 'merchant');
-        expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
         expect(riskAnalysesResource.result).to.eql({ status: 'Failed' });
 
         const providerData = riskAnalysesResource.provider_data;
@@ -528,14 +526,12 @@ describe('Create risk analyses resource negative tests', function () {
         testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
 
         const createRiskAnalysesResponse = await paymentsOSsdkClient.postRiskAnalyses({
-            request_body: fullRiskRequestBody,
+            request_body: { },
             payment_id: paymentObject.id
         });
         expect(createRiskAnalysesResponse.statusCode).to.equal(201);
 
         const riskAnalysesResource = createRiskAnalysesResponse.body;
-        expect(riskAnalysesResource).to.have.all.keys('payment_method', 'session_id', 'device_id', 'provider_data', 'created', 'id', 'result', 'provider_configuration', 'merchant');
-        expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
         expect(riskAnalysesResource.result).to.eql({ status: 'Pending' });
 
         const providerData = riskAnalysesResource.provider_data;
