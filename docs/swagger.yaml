@@ -700,6 +700,7 @@ components:
           type: integer
           minimum: 0
     acquirer:
+      type: object
       properties:
         acquirer_id:
           type: string
@@ -726,13 +727,6 @@ components:
           type: string
         merchant_city:
           type: string
-    provider_specific_data:
-      description: |
-        This object contains provider specific objects, which contain data
-        in key-value format. Use the <a href="https://developers.paymentsos.com/docs/bodybuilder.html" target="_blank">Bodybuilder</a> to generate a sample request that includes a
-        `provider_specific_data` object.
-      additionalProperties:
-        type: object
 
     risk_analyses_resource:
       description: Risk Analyses
@@ -801,9 +795,8 @@ components:
             | U (eci: 7 or 0) = enrolment not queried, unavailable, enrolment query error
             | A (eci: 6 or 1) = not enrolled, attempted authentication
             | Y (eci: 5 or 2) = authenticated successfully.
-              merchant:
+        merchant:
           $ref: "#/components/schemas/merchant"
-
     result:
       description: Result of the transaction.
       type: object
@@ -942,5 +935,3 @@ components:
           type: object
           description: 'Values which are specific to provider, in Key-value pair format. For example, {key1: value1, key2: value2}.'
           example: { key1: 'value1', key2: 'value2' }
-          additionalProperties:
-            type: string
