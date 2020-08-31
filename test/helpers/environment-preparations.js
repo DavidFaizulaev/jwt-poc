@@ -48,7 +48,8 @@ async function prepareTestEnvironment(paymentsOsClient, paymentsOSsdkClient, con
             merchant: createMerchantResponse,
             configurations: createConfigurationResponse.body,
             application: createApplicationResponse.body,
-            app_keys: getAppKeysResponse.body
+            app_keys: getAppKeysResponse.body,
+            provider_id: providerId
         };
         return data;
     } catch (e) {

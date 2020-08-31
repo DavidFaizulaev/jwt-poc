@@ -31,9 +31,9 @@ describe('Integration test - Payment storage', function() {
         },
         merchant: {
             mcc: '1234',
-            merchant_name: 'Rak Bibi',
+            merchant_name: 'merchant name',
             merchant_country_code: 'USA',
-            merchant_email: 'bibi_loves_sarah@gmail.com',
+            merchant_email: 'some_email@gmail.com',
             merchant_zip_code: '12345',
             merchant_city: 'New York'
         },

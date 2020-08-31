@@ -1,5 +1,5 @@
 const { get } = require('lodash');
-const { NOT_FOUND, INTERNAL_SERVER_ERROR } = require('http-status-codes');
+const { NOT_FOUND, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE, getStatusText } = require('http-status-codes');
 
 function handleIntegrationError(response, targetName) {
     let integrationError;
@@ -9,6 +9,14 @@ function handleIntegrationError(response, targetName) {
         integrationError = {
             statusCode: NOT_FOUND,
             more_info: get(body, 'message'),
+            source: targetName
+        };
+    } else if (response.status === SERVICE_UNAVAILABLE) {
+        const errorDetails = get(body, 'details') || getStatusText(SERVICE_UNAVAILABLE);
+        integrationError = {
+            statusCode: SERVICE_UNAVAILABLE,
+            details: errorDetails,
+            more_info: get(body, 'message') || getStatusText(SERVICE_UNAVAILABLE),
             source: targetName
         };
     } else if (response instanceof Error) {

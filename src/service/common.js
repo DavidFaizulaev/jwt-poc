@@ -49,5 +49,8 @@ module.exports = {
     USED_STATE_NAME: 'used',
     PENDING_STATE_NAME: 'pending',
     FAILED_STATE_NAME: 'failed',
-    CANCELED_STATE_NAME: 'canceled'
+    CANCELED_STATE_NAME: 'canceled',
+
+    SERVICE_UNAVAILABLE_DESCRIPTION: 'Unable to reach the provider network.',
+    SERVICE_UNAVAILABLE_CATEGORY: 'provider_network_error'
 };
