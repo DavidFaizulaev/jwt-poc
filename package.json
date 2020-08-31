@@ -13,6 +13,7 @@
     "test:integration-fss": "mocha test/integration/fss-integration.test.js",
     "test:integration-apps-storage": "mocha test/integration/apps-storage-integration.test.js",
     "test:integration-ps": "mocha test/integration/ps-integration.test.js",
+    "test:integration-provider": "mocha test/integration/provider-integration.test.js",
     "test:system": "mocha test/system/*.test.js",
     "test:e2e": "mocha test/e2e/*.test.js",
     "start": "source loadEnv-local.sh system-tests; nodemon --inspect src/server.js"

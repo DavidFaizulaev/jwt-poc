@@ -795,8 +795,6 @@ components:
             | U (eci: 7 or 0) = enrolment not queried, unavailable, enrolment query error
             | A (eci: 6 or 1) = not enrolled, attempted authentication
             | Y (eci: 5 or 2) = authenticated successfully.
-        merchant:
-          $ref: "#/components/schemas/merchant"
     result:
       description: Result of the transaction.
       type: object

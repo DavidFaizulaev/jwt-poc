@@ -6,7 +6,7 @@ const { requestLogger } = require('../../../src/service/logger');
 
 describe('Request sender tests', () => {
     let sandbox, loggerInfo, loggerError;
-    const url = 'http://url.com'
+    const url = 'http://url.com';
     const requestOptions = {
         url: url,
         method: 'get',
