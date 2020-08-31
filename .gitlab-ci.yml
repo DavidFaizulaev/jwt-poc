@@ -80,6 +80,10 @@ code_quality:
   variables:
     SOURCE_DIR: src
   stage: test
+  only:
+    changes:
+      - src/**/*
+    
 
 # ------- Build ------- #
 build:app:
