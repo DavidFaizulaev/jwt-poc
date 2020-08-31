@@ -474,7 +474,7 @@ describe('Create risk analyses resource negative tests', function () {
         testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
 
         const createRiskAnalysesResponse = await paymentsOSsdkClient.postRiskAnalyses({
-            request_body: { } ,
+            request_body: { },
             payment_id: paymentObject.id
         });
         expect(createRiskAnalysesResponse.statusCode).to.equal(201);
@@ -881,6 +881,63 @@ describe('Create risk analyses resource negative tests', function () {
                     }).to.matchApiSchema();
                 }
             });
+        });
+    });
+    describe.skip('request with invalid tenant id', function () {
+        before(async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+            const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });
+            paymentObject = createPaymentResponse.body;
+            console.log('successfully created payment');
+
+            const createConfigurationResponsePayuRisk = await paymentsOSsdkClient.createConfiguration({
+                account_id: testsEnvs.merchant.merchant_id,
+                session_token: testsEnvs.merchant.session_token,
+                provider_id: testsEnvs.provider_id,
+                configuration_data: {
+                    name: 'merchant_key',
+                    tenant_id: 'nonexisting',
+                    region: 'latam',
+                    isRequired: true,
+                    isHidden: false,
+                    description: 'key used to identify the merchant in the fraud system'
+                },
+                name: `mynameis${(new Date().getTime())}`
+            });
+
+            await paymentsOSsdkClient.updateApplication({
+                app_name: testsEnvs.application.id,
+                account_id: testsEnvs.merchant.merchant_id,
+                default_provider: createConfigurationResponsePayuRisk.body.id,
+                description: 'some_app_description',
+                session_token: testsEnvs.merchant.session_token
+            });
+        });
+        it('should return 503 response code when creating risk resource with invalid tenant id', async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+
+            try {
+                await paymentsOSsdkClient.postRiskAnalyses({
+                    payment_id: paymentObject.id,
+                    request_body: fullRiskRequestBody
+                });
+                throw new Error('Should have thrown error');
+            } catch (error) {
+                expect(error.statusCode).to.equal(503);
+                const errorResponse = error.response.body;
+                expect(errorResponse).to.deep.equal({
+                    category: 'provider_network_error',
+                    description: 'Unable to reach the provider network.',
+                    more_info: 'Service Unavailable'
+                });
+                expect({
+                    path: '/payments/{payment_id}/risk-analyses',
+                    status: 503,
+                    method: 'post',
+                    body: errorResponse,
+                    headers: {}
+                }).to.matchApiSchema();
+            }
         });
     });
 });

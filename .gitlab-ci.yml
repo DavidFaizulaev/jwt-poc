@@ -80,9 +80,6 @@ code_quality:
   variables:
     SOURCE_DIR: src
   stage: test
-  only:
-    changes:
-      - src/**/*
 
 # ------- Build ------- #
 build:app:
@@ -152,6 +149,17 @@ test:integration-apps:
     - branches
   except:
     - tags
+
+test:integration-provider:
+  <<: *test_definition
+  stage: integration-tests
+  script:
+    - npm run test:integration-provider
+  only:
+    - master
+    - branches
+  except:
+    - tags    
 
 # -------------- end-2-end tests qa -------------- #
 test:end-2-end:qa:
