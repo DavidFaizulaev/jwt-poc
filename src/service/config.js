@@ -32,7 +32,7 @@ const environmentVariables = createEnvObject({
     SOUTHBOUND_BUCKETS: [0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 16, 32, 64],
     NORTHBOUND_BUCKETS: [0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 16, 32, 64],
     DEFAULT_REQUEST_RETRIES: { default: 2 },
-    FEEDZAI_SERVICE_NAME: { mandatory },
+    RISK_PROVIDER_SERVICE_NAME: { mandatory },
 
     // Cassandra
     CASSANDRA_KEYSPACE: { mandatory },
