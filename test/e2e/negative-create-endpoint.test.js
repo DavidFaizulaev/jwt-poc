@@ -444,7 +444,7 @@ describe('Create risk analyses resource negative tests', function () {
         }
     });
     it('Should decline risk analyses request when sending email - MOCK_DECLINE_RESPONSE_EMAIL', async function () {
-        genericAddress = paymentsOSsdkClient.createAddressObject({
+        const genericAddress = paymentsOSsdkClient.createAddressObject({
             country: 'ISR',
             city: 'Tel-Aviv',
             line1: '10705 Old Mill Rd',
@@ -458,7 +458,7 @@ describe('Create risk analyses resource negative tests', function () {
             state: 'SD'
         });
 
-        createPaymentRequest = {
+        const createPaymentRequest = {
             amount: 500,
             currency: 'USD',
             shipping_address: genericAddress,
@@ -496,7 +496,7 @@ describe('Create risk analyses resource negative tests', function () {
         }).to.matchApiSchema();
     });
     it('Should decline risk analyses request when sending email - MOCK_REVIEW_RESPONSE_EMAIL', async function () {
-        genericAddress = paymentsOSsdkClient.createAddressObject({
+        const genericAddress = paymentsOSsdkClient.createAddressObject({
             country: 'ISR',
             city: 'Tel-Aviv',
             line1: '10705 Old Mill Rd',
@@ -510,7 +510,7 @@ describe('Create risk analyses resource negative tests', function () {
             state: 'SD'
         });
 
-        createPaymentRequest = {
+        const createPaymentRequest = {
             amount: 500,
             currency: 'USD',
             shipping_address: genericAddress,
@@ -790,7 +790,7 @@ describe('Create risk analyses resource negative tests', function () {
                     session_token: testsEnvs.merchant.session_token
                 });
 
-                genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
+                const genericAddress = environmentPreparations.generateGenericAddress(paymentsOSsdkClient);
 
                 const createPaymentMethodToken = {
                     token_type: 'credit_card',
