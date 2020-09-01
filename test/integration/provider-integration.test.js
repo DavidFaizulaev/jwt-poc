@@ -4,7 +4,7 @@ const nock = require('nock');
 const uuid = require('uuid');
 const serviceRequestSender = require('../helpers/service-request-sender');
 
-const { FSS_URL, PAYMENT_STORAGE_URL, RESULT_MAPPING_URL, COUNTRIES_SERVICE_URL, CURRENCIES_LOOKUP_URL, APPS_STORAGE_URL, FRAUD_SERVICE_URL, ENVIRONMENT, FEEDZAI_SERVICE_NAME } = require('../../src/service/config');
+const { FSS_URL, PAYMENT_STORAGE_URL, RESULT_MAPPING_URL, COUNTRIES_SERVICE_URL, CURRENCIES_LOOKUP_URL, APPS_STORAGE_URL, FRAUD_SERVICE_URL, ENVIRONMENT, RISK_PROVIDER_SERVICE_NAME } = require('../../src/service/config');
 
 const app = require('../../src/app');
 
@@ -136,7 +136,7 @@ describe('Integration test - Risk provider', function() {
     });
 
     it('Should return status code 503 with error message when provider returns 503', async () => {
-        const providerBaseUrl = FRAUD_SERVICE_URL.replace('{SERVICE_NAME}', `risk-${ENVIRONMENT}-${FEEDZAI_SERVICE_NAME}`);
+        const providerBaseUrl = FRAUD_SERVICE_URL.replace('{SERVICE_NAME}', `risk-${ENVIRONMENT}-${RISK_PROVIDER_SERVICE_NAME}`);
         const providerNock = nock(providerBaseUrl)
             .post(`/payments/${paymentId}/risk-analyses`)
             .times(3)
