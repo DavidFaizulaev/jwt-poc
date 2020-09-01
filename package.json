@@ -28,7 +28,7 @@
     "bunyan": "^1.8.14",
     "cassandra-helper": "^1.0.4",
     "content-type": "^1.0.4",
-    "entities-mapper-v130": "3.11.3",
+    "entities-mapper-v130": "3.11.4",
     "envboss": "^1.1.0",
     "fss-integration": "^3.1.2",
     "http-graceful-shutdown": "^2.3.2",
