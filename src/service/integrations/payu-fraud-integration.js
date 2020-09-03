@@ -3,7 +3,7 @@ const uuid = require('uuid');
 const { HttpMetricsCollector } = require('prometheus-api-metrics');
 const { TOKENIZED_PAYMENT_METHOD_NAME, UNTOKENIZED_PAYMENT_METHOD_NAME, CREDIT_CARD_PAYMENT_METHOD_NAME, HDR_X_ZOOZ_REQUEST_ID, HDR_X_ZOOZ_IDEPMOTENCY, HDR_X_CLIENT_IP_ADDRESS, HDR_X_ZOOZ_API_PROXY_VERSION } = require('../common');
 const requestHelper = require('../request-sender');
-const { SOUTHBOUND_BUCKETS, FRAUD_SERVICE_URL, ENVIRONMENT, FEEDZAI_SERVICE_NAME } = require('../config');
+const { SOUTHBOUND_BUCKETS, FRAUD_SERVICE_URL, ENVIRONMENT, RISK_PROVIDER_SERVICE_NAME } = require('../config');
 const { handleIntegrationError } = require('./helpers/integration-error-handler');
 HttpMetricsCollector.init({ durationBuckets: SOUTHBOUND_BUCKETS });
 
@@ -39,7 +39,7 @@ async function createRisk(paymentResource, requestBody, headers, providerConfigu
 }
 
 function buildRequestUrl(paymentId) {
-    const baseUrl = FRAUD_SERVICE_URL.replace('{SERVICE_NAME}', `risk-${ENVIRONMENT}-${FEEDZAI_SERVICE_NAME}`);
+    const baseUrl = FRAUD_SERVICE_URL.replace('{SERVICE_NAME}', `risk-${ENVIRONMENT}-${RISK_PROVIDER_SERVICE_NAME}`);
     return `${baseUrl}/payments/${paymentId}/risk-analyses`;
 }
 

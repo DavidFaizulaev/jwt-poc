@@ -924,7 +924,7 @@ components:
           example: 896
         decision:
           type: string
-          description: Indicates the outcome of Feedzai’s fraud analysis by indicating a recommendation based on the score. The decision can be approve, review or decline.
+          description: Indicates the outcome of provider's fraud analysis by indicating a recommendation based on the score. The decision can be approve, review or decline.
           example: approve
     ProviderRequestSpecificData:
       type: object
