@@ -83,7 +83,6 @@ code_quality:
   only:
     changes:
       - src/**/*
-    
 
 # ------- Build ------- #
 build:app:
@@ -163,7 +162,7 @@ test:integration-provider:
     - master
     - branches
   except:
-    - tags    
+    - tags
 
 # -------------- end-2-end tests qa -------------- #
 test:end-2-end:qa:
