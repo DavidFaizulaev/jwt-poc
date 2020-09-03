@@ -13,6 +13,21 @@ const createRisk = async (requestOptions) => {
     return request(completeRequest);
 };
 
+const healthCheck = async (serviceUrl) => {
+    const completeRequest = {
+        url: `${serviceUrl}/health`,
+        headers: {
+            'content-type': 'application/json',
+            accept: 'application/json'
+        },
+        responseType: 'json',
+        method: 'get'
+    };
+
+    return request(completeRequest);
+};
+
 module.exports = {
-    createRisk: createRisk
+    createRisk: createRisk,
+    healthCheck: healthCheck
 };
