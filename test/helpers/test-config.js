@@ -2,10 +2,11 @@ module.exports = {
     PAYMENTS_OS_BASE_URL: process.env.PAYMENTS_OS_BASE_URL || 'https://api-qa.paymentsos.com',
     EXTERNAL_ENVIRONMENT: process.env.EXTERNAL_ENVIRONMENT || 'test',
     ORIGIN_URL: process.env.ORIGIN_URL || 'https://control-qa.paymentsos.com/',
+    SERVICE_URL: process.env.SERVICE_URL,
     API_VERSION: '1.3.0',
     HDR_TEST: 'x-zooz-test',
     BRANCH_NAME: process.env.CI_COMMIT_REF_NAME,
-    PAYMENTS_OS_BASE_URL_FOR_TESTS: process.env.PAYMENTS_OS_BASE_URL_FOR_TESTS || 'https://api-qa.paymentsos.com/tamara',
+    PAYMENTS_OS_BASE_URL_FOR_TESTS: process.env.PAYMENTS_OS_BASE_URL_FOR_TESTS || 'https://api-qa.paymentsos.com/',
     RISK_PROVIDER_CONFIGURATION: {
         type: 'risk_provider',
         properties: [{
