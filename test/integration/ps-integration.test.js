@@ -4,7 +4,7 @@ const nock = require('nock');
 const uuid = require('uuid');
 const serviceRequestSender = require('../helpers/service-request-sender');
 
-const { FSS_URL, PAYMENT_STORAGE_URL, RESULT_MAPPING_URL, COUNTRIES_SERVICE_URL, CURRENCIES_LOOKUP_URL } = require('../../src/service/config');
+const { FSS_URL, PAYMENT_STORAGE_URL, RESULT_MAPPING_URL, COUNTRIES_SERVICE_URL, CURRENCIES_LOOKUP_URL, MAX_ACTIONS_FOR_PAYMENT } = require('../../src/service/config');
 
 const app = require('../../src/app');
 
@@ -121,7 +121,7 @@ describe('Integration test - Payment storage', function() {
             } catch (error) {
                 expect(error.response.status).to.equal(500);
                 const responseBody = error.response.data;
-                expect(responseBody.details).to.deep.equal(['\"INTERNAL SERVER ERROR\"']);
+                expect(responseBody.details).to.deep.equal(['"INTERNAL SERVER ERROR"']);
                 expect(psNock.isDone()).to.equal(true);
             }
         });
@@ -154,6 +154,107 @@ describe('Integration test - Payment storage', function() {
                 expect(error.response.status).to.equal(500);
                 const responseBody = error.response.data;
                 expect(responseBody.details).to.deep.equal(['ESOCKETTIMEDOUT']);
+                expect(psNock.isDone()).to.equal(true);
+            }
+        });
+    });
+    describe('Validation errors', function () {
+        it('Should return status code 400 with error message when number of actions in payment exceeds MAX_ACTIONS_FOR_PAYMENT', async () => {
+            const paymentResourceWithExceededNumActions = {
+                id: 'id',
+                payment_state: {
+                    current_state: 'payment_initial'
+                },
+                actions_by_type: {
+                    initial_state: {
+                        data: {
+                            id: '7ada11d5-3124-4283-87ee-396515ca5eec'
+                        },
+                        href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec'
+                    },
+                    risk_analyses: [
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        }
+                    ],
+                    authentications: [
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        }
+                    ],
+                    authorizations: [
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        }
+                    ]
+                },
+                merchant_id: merchantId
+            };
+
+            const psNock = nock(PAYMENT_STORAGE_URL)
+                .get(`/payments/${paymentId}`)
+                .reply(200, paymentResourceWithExceededNumActions);
+
+            try {
+                await serviceRequestSender.createRisk(requestOptions);
+                throw new Error('should have thrown error');
+            } catch (error) {
+                expect(error.response.status).to.equal(400);
+                const responseBody = error.response.data;
+                expect(responseBody).to.deep.equal({
+                    details: [`Too many actions were made on this payment. Number of actions allowed:  ${MAX_ACTIONS_FOR_PAYMENT}`]
+                });
                 expect(psNock.isDone()).to.equal(true);
             }
         });

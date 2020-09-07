@@ -1,4 +1,4 @@
-const { cloneDeep } = require('lodash');
+const { cloneDeep, get } = require('lodash');
 const uuid = require('uuid');
 const { HttpMetricsCollector } = require('prometheus-api-metrics');
 const { TOKENIZED_PAYMENT_METHOD_NAME, UNTOKENIZED_PAYMENT_METHOD_NAME, CREDIT_CARD_PAYMENT_METHOD_NAME, HDR_X_ZOOZ_REQUEST_ID, HDR_X_ZOOZ_IDEPMOTENCY, HDR_X_CLIENT_IP_ADDRESS, HDR_X_ZOOZ_API_PROXY_VERSION } = require('../common');
@@ -57,12 +57,23 @@ function buildRequestBody(paymentResource, requestBody, providerConfigurationId,
     }
 
     copiedRequestBody.ip_address = headers[HDR_X_CLIENT_IP_ADDRESS];
+    copiedRequestBody.provider_specific_data = mapProviderSpecificData(requestBody);
 
     return {
         risk_data: copiedRequestBody,
         payment_resource: paymentResource,
         provider_configuration_id: providerConfigurationId
     };
+}
+
+function mapProviderSpecificData(requestBody) {
+    const providerSpecificData = get(requestBody, 'provider_specific_data');
+
+    for (const providerName in providerSpecificData) {
+        if (providerName.replace(/_/g, '').toLowerCase() === RISK_PROVIDER_SERVICE_NAME.replace(/-/g, '').toLowerCase()) {
+            return providerSpecificData[providerName];
+        }
+    }
 }
 
 function isUntokenizedCreditCardRequest(paymentMethod) {

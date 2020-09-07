@@ -90,4 +90,8 @@ EnvironmentVariables:
     value: $CACHE_REFRESH_INTERVAL_SECONDS
   - name: MAX_ACTIONS_TO_EXPAND_IN_PAYMENT
     value: $MAX_ACTIONS_TO_EXPAND_IN_PAYMENT
-    
+  - name: MAX_ACTIONS_FOR_PAYMENT
+    valueFrom:
+      configMapKeyRef:
+        name: centralized-config
+        key: MAX_ACTIONS_FOR_PAYMENT  
