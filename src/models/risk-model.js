@@ -8,7 +8,7 @@ const fssIntegration = require('../service/integrations/fss-integration');
 const fraudService = require('../service/integrations/payu-fraud-integration');
 const psIntegration = require('../service/integrations/ps-integration');
 const appsIntegration = require('../service/integrations/apps-storage-integration');
-const { validatePaymentState, validateAppId } = require('../service/validations');
+const { validatePaymentState, validateAppId, checkMaxActionsOnPayment } = require('../service/validations');
 
 module.exports = {
     createRisk: createRisk,
@@ -25,6 +25,8 @@ async function createRisk(ctx) {
     const paymentResource = paymentStorageResponse.data;
     validateAppId(paymentResource, headers);
     validatePaymentState(paymentResource);
+
+    checkMaxActionsOnPayment(paymentResource);
 
     const requestPaymentMethod = get(request, 'body.payment_method');
     if (requestPaymentMethod){
@@ -50,7 +52,7 @@ async function getRiskAnalyses(ctx) {
         responseArray.push(mappedRiskAnalysisResource);
     }
     return responseArray;
-};
+}
 
 async function getRiskAnalysesById(ctx) {
     const { params, headers } = ctx;

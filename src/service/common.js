@@ -24,6 +24,8 @@ module.exports = {
     // Conflict errors
     PAYMENT_CONFLICT: 'Please check the current state of the payment.',
     PAYMENT_CONFLICT_DESCRIPTION: 'There was conflict with payment resource current state.',
+    // Payment resource bad request errors
+    PAYMENT_TOO_MANY_ACTIONS: 'Too many actions were made on this payment. Number of actions allowed: ',
     // payment method token state errors
     TOKEN_USED_ERROR: 'This token has already been used in a successful payment. Make sure the customer has given his consent to use his details again.',
     TOKEN_NOT_EXIST_ERROR: 'Token does not exist.',

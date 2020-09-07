@@ -21,6 +21,7 @@ const environmentVariables = createEnvObject({
     ENVIRONMENT: { mandatory },
     CLUSTER: { mandatory },
     APP_NAME: { mandatory },
+    MAX_ACTIONS_FOR_PAYMENT: { mandatory },
 
     // optional
     NEW_CONNECTIONS_TIMEOUT: { default: 7500 },

@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const { formatDate } = require('../../../src/service/commonFunctions');
-const { validateAppId } = require('../../../src/service/validations');
+const { validateAppId, checkMaxActionsOnPayment } = require('../../../src/service/validations');
+const { MAX_ACTIONS_FOR_PAYMENT } = require('../../../src/service/config');
 
 describe('Validations tests', function () {
     describe('Positive flows: all allowed formats are converted to MM/YYYY', function () {
@@ -129,6 +130,106 @@ describe('Validations tests', function () {
             } catch (error) {
                 expect(error.statusCode).to.eql(404);
                 expect(error.more_info).to.eql('App_id that is related to the payment was not found');
+            }
+        });
+    });
+    describe('checkMaxActionsOnPayment', function () {
+        it('Should return when number of actions in payment small than MAX_ACTIONS_FOR_PAYMENT', async function () {
+            const paymentResource = {
+                id: 'id',
+                actions_by_type: {
+                    initial_state: {
+                        data: {
+                            id: '7ada11d5-3124-4283-87ee-396515ca5eec'
+                        },
+                        href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec'
+                    },
+                    risk_analyses: [
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        }
+                    ]
+                }
+            };
+
+            const returnValue = checkMaxActionsOnPayment(paymentResource);
+            expect(returnValue).to.be.undefined;
+        });
+        it('Should throw error when number of actions in payment exceeds than MAX_ACTIONS_FOR_PAYMENT', async function () {
+            const paymentResource = {
+                id: 'id',
+                actions_by_type: {
+                    initial_state: {
+                        data: {
+                            id: '7ada11d5-3124-4283-87ee-396515ca5eec'
+                        },
+                        href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec'
+                    },
+                    risk_analyses: [
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        }
+                    ],
+                    authentications: [
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        },
+                        {
+                            data: {
+                                id: '2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                            },
+                            href: 'payments/7ada11d5-3124-4283-87ee-396515ca5eec/risk-analyses/2eece7b1-7e0c-4cdf-afdb-f6b0a8e0e4d8'
+                        }
+                    ]
+                }
+            };
+            try {
+                checkMaxActionsOnPayment(paymentResource);
+                throw new Error('should have gone to catch');
+            } catch (error) {
+                expect(error).to.deep.equal({
+                    statusCode: 400,
+                    details: [`Too many actions were made on this payment. Number of actions allowed:  ${MAX_ACTIONS_FOR_PAYMENT}`]
+                });
             }
         });
     });
