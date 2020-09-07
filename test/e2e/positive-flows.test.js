@@ -139,8 +139,16 @@ describe('Create risk analyses flows', function () {
             expect(createRiskAnalysesResource.acquirer).to.have.all.keys('acquirer_id', 'acquirer_country_code');
             expect(createRiskAnalysesResource.installments).to.have.all.keys('number_of_installments');
             expect(createRiskAnalysesResource.additional_details).to.have.all.keys('hello');
-            expect(createRiskAnalysesResource.provider_specific_data).to.have.all.keys('additional_details');
-            expect(createRiskAnalysesResource.provider_specific_data.additional_details).to.have.all.keys('payer_birthday', 'desc_extra1', 'desc_extra2', 'desc_extra3' );
+            expect(createRiskAnalysesResource.provider_specific_data).to.deep.equal(
+              {
+                  additional_details: {
+                      payer_birthday: '1990/12/12',
+                      desc_extra1: 'blabla',
+                      desc_extra2: 'nanana',
+                      desc_extra3: 'nonono'
+                  }
+              }
+            );
             expect(createRiskAnalysesResource.merchant).to.have.all.keys('mcc', 'merchant_name', 'merchant_country_code', 'merchant_email',
                 'merchant_zip_code', 'merchant_city');
             validateSelfHeader(createRiskResponse, paymentObject);
