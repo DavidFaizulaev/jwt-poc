@@ -90,7 +90,7 @@ describe('Integration test - Payment storage', function() {
     });
 
     describe('Errors from payment storage', function () {
-        it('Should return status code 500 with error message when PS returns 400', async () => {
+        it('Should return status code 400 with error message when PS returns 400 without error code', async () => {
             const psNock = nock(PAYMENT_STORAGE_URL)
                 .get(`/payments/${paymentId}`)
                 .reply(400, {
@@ -107,6 +107,87 @@ describe('Integration test - Payment storage', function() {
                 expect(error.response.status).to.equal(500);
                 const responseBody = error.response.data;
                 expect(responseBody.details).to.deep.equal(['{\"message\":\"Input validation error\",\"validation_errors\":[\"headers should have required property \\\"x-zooz-request-id\\\"\"]}']);
+                expect(psNock.isDone()).to.equal(true);
+            }
+        });
+        it('Should return status code 400 with error message when PS returns 400 with error_code "InvalidPaymentId"', async () => {
+            const psNock = nock(PAYMENT_STORAGE_URL)
+                .get(`/payments/${paymentId}`)
+                .reply(400, {
+                    error_code: 'InvalidPaymentId',
+                    details: [
+                        'df2d5881-1651-4757-805b-db992850149} should be UUID'
+                    ]
+                });
+
+            try {
+                await serviceRequestSender.createRisk(requestOptions);
+                throw new Error('should have thrown error');
+            } catch (error) {
+                expect(error.response.status).to.equal(400);
+                const responseBody = error.response.data;
+                expect(responseBody.details).to.deep.equal(['df2d5881-1651-4757-805b-db992850149} should be UUID']);
+                expect(psNock.isDone()).to.equal(true);
+            }
+        });
+        it('Should return status code 400 with error message when PS returns 404 with error_code "PaymentNotFound"', async () => {
+            const psNock = nock(PAYMENT_STORAGE_URL)
+                .get(`/payments/${paymentId}`)
+                .reply(404, {
+                    error_code: 'PaymentNotFound',
+                    details: [
+                        'payment not found, paymentId:df2d5881-1651-4757-805b-db9928501494'
+                    ]
+                });
+
+            try {
+                await serviceRequestSender.createRisk(requestOptions);
+                throw new Error('should have thrown error');
+            } catch (error) {
+                expect(error.response.status).to.equal(404);
+                const responseBody = error.response.data;
+                expect(responseBody.details).to.deep.equal(['payment not found, paymentId:df2d5881-1651-4757-805b-db9928501494']);
+                expect(psNock.isDone()).to.equal(true);
+            }
+        });
+        it('Should return status code 400 with error message when PS returns 404 with error_code "ActionNotFound"', async () => {
+            const psNock = nock(PAYMENT_STORAGE_URL)
+                .get(`/payments/${paymentId}`)
+                .reply(404, {
+                    error_code: 'ActionNotFound',
+                    details: [
+                        'action not found, paymentId:7d30c82f-674b-4224-beda-0aa5cf006e5a ,actionId: 7d30c82f-674b-4224-beda-0aa5cf006e5a'
+                    ]
+                });
+
+            try {
+                await serviceRequestSender.createRisk(requestOptions);
+                throw new Error('should have thrown error');
+            } catch (error) {
+                expect(error.response.status).to.equal(404);
+                const responseBody = error.response.data;
+                expect(responseBody.details).to.deep.equal(['action not found, paymentId:7d30c82f-674b-4224-beda-0aa5cf006e5a ,actionId: 7d30c82f-674b-4224-beda-0aa5cf006e5a']);
+                expect(psNock.isDone()).to.equal(true);
+            }
+        });
+        it('Should return status code 500 with error message when PS returns 404 without error code', async () => {
+            const psNock = nock(PAYMENT_STORAGE_URL)
+                .get(`/payments/${paymentId}`)
+                .reply(404, {
+                    timestamp: '2020-09-11T08:19:20.099Z',
+                    status: 404,
+                    error: 'Not Found',
+                    message: 'No message available',
+                    path: '/paymentse/df2d5881-1651-4757-805b-db9928501494'
+                });
+
+            try {
+                await serviceRequestSender.createRisk(requestOptions);
+                throw new Error('should have thrown error');
+            } catch (error) {
+                expect(error.response.status).to.equal(500);
+                const responseBody = error.response.data;
+                expect(responseBody.details).to.deep.equal(['Server Error']);
                 expect(psNock.isDone()).to.equal(true);
             }
         });

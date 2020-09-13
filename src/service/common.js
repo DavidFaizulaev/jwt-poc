@@ -53,6 +53,13 @@ module.exports = {
     FAILED_STATE_NAME: 'failed',
     CANCELED_STATE_NAME: 'canceled',
 
+    // PAYMENT STORAGE ERROR MAPPINGS
+    PAYMENT_STORAGE_ERROR_MAPPINGS: {
+        INVALID_PAYMENT_ID_ERROR_CODE: 'InvalidPaymentId',
+        PAYMENT_NOT_FOUND_ERROR_CODE: 'PaymentNotFound',
+        ACTION_NOT_FOUND_ERROR_CODE: 'ActionNotFound'
+    },
+
     SERVICE_UNAVAILABLE_DESCRIPTION: 'Unable to reach the provider network.',
     SERVICE_UNAVAILABLE_CATEGORY: 'provider_network_error'
 };

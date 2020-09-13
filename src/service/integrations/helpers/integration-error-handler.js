@@ -1,9 +1,15 @@
 const { get } = require('lodash');
-const { NOT_FOUND, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE, getStatusText } = require('http-status-codes');
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE, getStatusText } = require('http-status-codes');
+const { PAYMENT_STORAGE_ERROR_MAPPINGS } = require('../../common');
+const PS_TARGET_NAME = 'payment_storage';
 
 function handleIntegrationError(response, targetName) {
     let integrationError;
     const body = response.body || response.data;
+
+    if (targetName === PS_TARGET_NAME) {
+        paymentStorageErrorHandler(response, targetName);
+    }
 
     if (response.status === NOT_FOUND) {
         integrationError = {
@@ -35,6 +41,28 @@ function handleIntegrationError(response, targetName) {
     }
 
     throw integrationError;
+}
+
+function paymentStorageErrorHandler(response, targetName) {
+    let psIntegrationError;
+    const responseBody = response.body || response.data;
+    if ((response.status === BAD_REQUEST && responseBody.error_code === PAYMENT_STORAGE_ERROR_MAPPINGS.INVALID_PAYMENT_ID_ERROR_CODE) ||
+        (response.status === NOT_FOUND && (responseBody.error_code === PAYMENT_STORAGE_ERROR_MAPPINGS.PAYMENT_NOT_FOUND_ERROR_CODE ||
+            responseBody.error_code === PAYMENT_STORAGE_ERROR_MAPPINGS.ACTION_NOT_FOUND_ERROR_CODE))) {
+        psIntegrationError = {
+            statusCode: response.status,
+            details: get(responseBody, 'details'),
+            source: targetName
+        };
+    } else if (response.status === NOT_FOUND) {
+        psIntegrationError = {
+            statusCode: response.INTERNAL_SERVER_ERROR,
+            details: JSON.stringify(responseBody),
+            source: targetName
+        };
+    }
+
+    if (psIntegrationError) throw psIntegrationError;
 }
 
 module.exports = {
