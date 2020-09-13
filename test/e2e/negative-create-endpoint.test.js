@@ -157,6 +157,20 @@ describe('Create risk analyses resource negative tests', function () {
             expect(error.error.description).to.equal('The resource was not found.');
         }
     });
+    it('Should return not found response when trying to create risk analyses with non-uuid payment id', async function () {
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: fullRiskRequestBody,
+                payment_id: `${uuid.v4()}}`
+            });
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            expect(error.message).to.equal('400 - {"category":"api_request_error","description":"One or more request parameters are invalid."}');
+            expect(error.error.category).to.equal('api_request_error');
+            expect(error.error.description).to.equal('One or more request parameters are invalid.');
+        }
+    });
     it('Should return bad request response when send malformed json', async function () {
         try {
             await paymentsOSsdkClient.postRiskAnalyses({

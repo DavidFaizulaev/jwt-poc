@@ -13,7 +13,7 @@ async function getPaymentResource(params, headers) {
         const response = await requestSender.sendRequest(options);
         return response;
     } catch (error) {
-        handleIntegrationError(error.response || error);
+        handleIntegrationError(error.response || error, TARGET_NAME);
     }
 }
 
@@ -25,7 +25,7 @@ async function getRiskAnalyses(params, headers) {
         const response = await requestSender.sendRequest(options);
         return response;
     } catch (error) {
-        handleIntegrationError(error.response || error);
+        handleIntegrationError(error.response || error, TARGET_NAME);
     }
 }
 
@@ -38,7 +38,7 @@ async function getRiskAnalysis(params, headers) {
         const response = await requestSender.sendRequest(options);
         return response;
     } catch (error) {
-        handleIntegrationError(error.response || error);
+        handleIntegrationError(error.response || error, TARGET_NAME);
     }
 }
 
