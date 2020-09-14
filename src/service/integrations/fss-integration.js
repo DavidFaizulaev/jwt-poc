@@ -14,7 +14,7 @@ const { formatDate } = require('../commonFunctions');
 
 HttpMetricsCollector.init({ durationBuckets: SOUTHBOUND_BUCKETS });
 
-const fssCreatePaymentMethodMetricsPath = { target: FSS_URL, route: '/merchants/:merchant_id/payment-methods' };
+const fssCreatePaymentMethodMetricsPath = { target: 'FSS', route: '/merchants/:merchant_id/payment-methods' };
 let initialized = false;
 
 const fssIntegrationOptions = {
