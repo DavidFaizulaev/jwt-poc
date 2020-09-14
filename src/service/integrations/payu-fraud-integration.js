@@ -1,14 +1,13 @@
 const { cloneDeep, get } = require('lodash');
 const uuid = require('uuid');
-const { HttpMetricsCollector } = require('prometheus-api-metrics');
 const { TOKENIZED_PAYMENT_METHOD_NAME, UNTOKENIZED_PAYMENT_METHOD_NAME, CREDIT_CARD_PAYMENT_METHOD_NAME, HDR_X_ZOOZ_REQUEST_ID, HDR_X_ZOOZ_IDEPMOTENCY, HDR_X_CLIENT_IP_ADDRESS, HDR_X_ZOOZ_API_PROXY_VERSION } = require('../common');
 const requestHelper = require('../request-sender');
-const { SOUTHBOUND_BUCKETS, FRAUD_SERVICE_URL, ENVIRONMENT, RISK_PROVIDER_SERVICE_NAME } = require('../config');
+const { FRAUD_SERVICE_URL, ENVIRONMENT, RISK_PROVIDER_SERVICE_NAME } = require('../config');
 const { handleIntegrationError } = require('./helpers/integration-error-handler');
-HttpMetricsCollector.init({ durationBuckets: SOUTHBOUND_BUCKETS });
 
-const createRiskMetricsPath = { target: FRAUD_SERVICE_URL, route: '/payments/:payment_id/risk-analyses' };
 const TARGET_NAME = 'risk_provider';
+const METRICS_ROUTE = '/payments/:payment_id/risk-analyses';
+const COMPLETE_METRICS_ROUTE = { target: `${ENVIRONMENT}-${RISK_PROVIDER_SERVICE_NAME}`, route: METRICS_ROUTE };
 
 module.exports = {
     createRisk: createRisk
@@ -26,7 +25,8 @@ async function createRisk(paymentResource, requestBody, headers, providerConfigu
         data: body,
         headers: reqHeaders,
         method: 'post',
-        targetName: TARGET_NAME
+        targetName: TARGET_NAME,
+        metrics: COMPLETE_METRICS_ROUTE
     };
     let fraudResponse;
     try {
@@ -34,13 +34,17 @@ async function createRisk(paymentResource, requestBody, headers, providerConfigu
     } catch (error) {
         handleIntegrationError(error.response || error);
     }
-    collectSouthboundMetrics(fraudResponse, HttpMetricsCollector, createRiskMetricsPath);
     return fraudResponse.data;
 }
 
 function buildRequestUrl(paymentId) {
-    const baseUrl = FRAUD_SERVICE_URL.replace('{SERVICE_NAME}', `risk-${ENVIRONMENT}-${RISK_PROVIDER_SERVICE_NAME}`);
+    const baseUrl = buildBaseUrl();
     return `${baseUrl}/payments/${paymentId}/risk-analyses`;
+}
+
+function buildBaseUrl() {
+    const baseUrl = FRAUD_SERVICE_URL.replace('{SERVICE_NAME}', `risk-${ENVIRONMENT}-${RISK_PROVIDER_SERVICE_NAME}`);
+    return baseUrl;
 }
 
 function buildRequestBody(paymentResource, requestBody, providerConfigurationId, paymentMethod, headers) {
@@ -79,9 +83,4 @@ function mapProviderSpecificData(requestBody) {
 function isUntokenizedCreditCardRequest(paymentMethod) {
     return paymentMethod && paymentMethod.type === UNTOKENIZED_PAYMENT_METHOD_NAME &&
         paymentMethod.source_type === CREDIT_CARD_PAYMENT_METHOD_NAME;
-}
-
-function collectSouthboundMetrics(requestObject, httpMetricsCollector, requestPath) {
-    requestObject.request.metrics = requestPath;
-    httpMetricsCollector.collect(requestObject);
 }
