@@ -4,6 +4,7 @@ const { HDR_X_ZOOZ_REQUEST_ID } = require('../common');
 const { handleIntegrationError } = require('./helpers/integration-error-handler');
 
 const TARGET_NAME = 'application_storage';
+const METRICS_ROUTE = '/v1/applications/:application_name';
 
 async function getDefaultProviderId(appName, headers) {
     const url = `${APPS_STORAGE_URL}/v1/applications/${appName}`;
@@ -24,7 +25,8 @@ function buildRequestOptions(headers, url) {
         headers: {
             [HDR_X_ZOOZ_REQUEST_ID]: headers[HDR_X_ZOOZ_REQUEST_ID]
         },
-        targetName: TARGET_NAME
+        targetName: TARGET_NAME,
+        metrics: { target: TARGET_NAME, route: METRICS_ROUTE }
     };
     return options;
 }

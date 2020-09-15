@@ -84,6 +84,11 @@ code_quality:
     changes:
       - src/**/*
 
+package_radar:
+  stage: test
+  variables:
+    SLACK_NOTIFICATION_URL: https://hooks.slack.com/services/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
+
 # ------- Build ------- #
 build:app:
   tags:
@@ -93,6 +98,17 @@ build:app:
   script:
     - docker build --network host -t $APP_IMAGE .
     - docker push $APP_IMAGE
+  only:
+    refs:
+      - pushes
+    changes:
+      - package*.json
+      - Dockerfile
+      - config/**/*
+      - docs/*
+      - src/*
+      - src/**/*
+      - .gitlab-ci.yml
   except:
     - tags
 
@@ -194,10 +210,10 @@ test:system-tests:qa:
     CLUSTER: qa
     ENVIRONMENT: sandbox
   script:
-    - npm run test:system  
+    - npm run test:system
   only:
     - branches
-    - master    
+    - master
 
 # -------------- end-2-end tests mars -------------- #
 test:end-2-end:mars:
@@ -491,7 +507,7 @@ deploy:prd:kong:
 
 # -------------- Dashboards --------------- #
 .k8s-dashboard-template: &k8s-dashboards-ref
-  image: docker-registry.zooz.co:4567/payu-clan-sre/monitoring-projects/tools/hub-euler-executer/releases:1.0.16
+  image: docker-registry.zooz.co:4567/payu-clan-sre/monitoring-projects/tools/hub-euler-executer/releases:latest
   tags:
     - eks-dev-apps
   before_script:

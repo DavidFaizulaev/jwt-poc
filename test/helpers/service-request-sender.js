@@ -27,7 +27,22 @@ const healthCheck = async (serviceUrl) => {
     return request(completeRequest);
 };
 
+const getMetrics = async (serviceUrl) => {
+    const completeRequest = {
+        url: `${serviceUrl}/metrics.json`,
+        headers: {
+            'content-type': 'application/json',
+            accept: 'application/json'
+        },
+        responseType: 'json',
+        method: 'get'
+    };
+
+    return request(completeRequest);
+};
+
 module.exports = {
     createRisk: createRisk,
-    healthCheck: healthCheck
+    healthCheck: healthCheck,
+    getMetrics: getMetrics
 };
