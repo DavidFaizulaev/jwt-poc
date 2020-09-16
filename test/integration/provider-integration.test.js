@@ -105,7 +105,7 @@ describe('Integration test - Risk provider', function() {
             .reply(200, { default_provider: 'default_provider_id' });
     });
 
-    it('Should return status code 503 with error message when provider returns 503', async () => {
+    it('Should return status code 503 with error message when provider returns 504', async () => {
         const providerBaseUrl = FRAUD_SERVICE_URL.replace('{SERVICE_NAME}', `risk-${ENVIRONMENT}-${RISK_PROVIDER_SERVICE_NAME}`);
         const providerNock = nock(providerBaseUrl)
             .post(`/payments/${paymentId}/risk-analyses`)
@@ -115,13 +115,17 @@ describe('Integration test - Risk provider', function() {
             await serviceRequestSender.createRisk(requestOptions);
             throw new Error('should have thrown error');
         } catch (error) {
-            expect(error.response.status).to.equal(503);
+            expect(error.response.status).to.equal(504);
             const responseBody = error.response.data;
             expect(responseBody).to.deep.equal({
                 category: 'provider_network_error',
                 description: 'Unable to reach the provider network.',
                 more_info: 'Service Unavailable'
             });
+            const responseHeaders = error.response.headers;
+            expect(responseHeaders['x-override-status-code']).to.equal('503');
+            expect(responseHeaders['bypass-error-mapper']).to.equal('true');
+            expect(error.response.status).to.equal(504);
             expect(paymentStorageNock.isDone()).to.equal(true);
             expect(appStorageNock.isDone()).to.equal(true);
             expect(providerNock.isDone()).to.equal(true);

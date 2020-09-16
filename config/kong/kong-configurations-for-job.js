@@ -22,6 +22,9 @@ const configurations = {
         {
             name: process.env.APP_NAME,
             url: process.env.RISK_LIVE_URL,
+            write_timeout: 110000,
+            read_timeout: 110000,
+            connect_timeout: 110000,
             routes: [
                 {
                     name: `${branchRouteName}create-risk-analyses`,
