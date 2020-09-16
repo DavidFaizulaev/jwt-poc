@@ -15,6 +15,8 @@ module.exports = async () => {
 
     const app = new Koa();
 
+    // northbound request logger
+    app.use(requestLogger);
     // error handler
     app.use(handleError);
 
@@ -29,7 +31,6 @@ module.exports = async () => {
     }));
 
     app.use(apiMetrics({ durationBuckets: config.SOUTHBOUND_BUCKETS, excludeRoutes: ['/health', '/metrics'], includeQueryParams: false }));
-    app.use(requestLogger);
 
     // routers
     app.use(infraRoutes.routes());

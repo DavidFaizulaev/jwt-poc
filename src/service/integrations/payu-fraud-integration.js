@@ -2,7 +2,7 @@ const { cloneDeep, get } = require('lodash');
 const uuid = require('uuid');
 const { TOKENIZED_PAYMENT_METHOD_NAME, UNTOKENIZED_PAYMENT_METHOD_NAME, CREDIT_CARD_PAYMENT_METHOD_NAME, HDR_X_ZOOZ_REQUEST_ID, HDR_X_ZOOZ_IDEPMOTENCY, HDR_X_CLIENT_IP_ADDRESS, HDR_X_ZOOZ_API_PROXY_VERSION } = require('../common');
 const requestHelper = require('../request-sender');
-const { FRAUD_SERVICE_URL, ENVIRONMENT, RISK_PROVIDER_SERVICE_NAME } = require('../config');
+const { FRAUD_SERVICE_URL, ENVIRONMENT, RISK_PROVIDER_SERVICE_NAME, PROVIDER_TARGET_TIMEOUT } = require('../config');
 const { handleIntegrationError } = require('./helpers/integration-error-handler');
 
 const TARGET_NAME = 'risk_provider';
@@ -26,7 +26,8 @@ async function createRisk(paymentResource, requestBody, headers, providerConfigu
         headers: reqHeaders,
         method: 'post',
         targetName: TARGET_NAME,
-        metrics: COMPLETE_METRICS_ROUTE
+        metrics: COMPLETE_METRICS_ROUTE,
+        timeout: PROVIDER_TARGET_TIMEOUT
     };
     let fraudResponse;
     try {

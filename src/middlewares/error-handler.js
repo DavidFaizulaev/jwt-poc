@@ -1,7 +1,7 @@
 'use strict';
 
 const httpStatusCodes = require('http-status-codes');
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR, getStatusText, CONFLICT, SERVICE_UNAVAILABLE } = httpStatusCodes;
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR, getStatusText, CONFLICT, SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT } = httpStatusCodes;
 const NOT_FOUND_ERROR_MESSAGE = getStatusText(NOT_FOUND);
 const { InputValidationError } = require('openapi-validator-middleware');
 const { HDR_X_ZOOZ_REQUEST_ID, SERVICE_UNAVAILABLE_CATEGORY, SERVICE_UNAVAILABLE_DESCRIPTION } = require('../service/common');
@@ -31,7 +31,7 @@ const _handleError = function (error, ctx) {
         ctx.set('bypass-error-mapper', 'true');
         ctx.set('x-override-status-code', SERVICE_UNAVAILABLE);
 
-        statusCode = SERVICE_UNAVAILABLE;
+        statusCode = GATEWAY_TIMEOUT;
 
         responseBody = {
             category: SERVICE_UNAVAILABLE_CATEGORY,
