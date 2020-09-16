@@ -22,6 +22,7 @@ const environmentVariables = createEnvObject({
     CLUSTER: { mandatory },
     APP_NAME: { mandatory },
     MAX_ACTIONS_FOR_PAYMENT: { mandatory },
+    RISK_PROVIDER_SERVICE_NAME: { mandatory },
 
     // optional
     NEW_CONNECTIONS_TIMEOUT: { default: 7500 },
@@ -33,7 +34,7 @@ const environmentVariables = createEnvObject({
     SOUTHBOUND_BUCKETS: [0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 16, 32, 64],
     NORTHBOUND_BUCKETS: [0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 16, 32, 64],
     DEFAULT_REQUEST_RETRIES: { default: 2 },
-    RISK_PROVIDER_SERVICE_NAME: { mandatory },
+    PROVIDER_TARGET_TIMEOUT: { default: 85000 },
 
     // Cassandra
     CASSANDRA_KEYSPACE: { mandatory },
