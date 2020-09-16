@@ -98,17 +98,17 @@ build:app:
   script:
     - docker build --network host -t $APP_IMAGE .
     - docker push $APP_IMAGE
-  only:
-    refs:
-      - pushes
-    changes:
-      - package*.json
-      - Dockerfile
-      - config/**/*
-      - docs/*
-      - src/*
-      - src/**/*
-      - .gitlab-ci.yml
+  # only:
+  #   refs:
+  #     - pushes
+  #   changes:
+  #     - package*.json
+  #     - Dockerfile
+  #     - config/**/*
+  #     - docs/*
+  #     - src/*
+  #     - src/**/*
+  #     - .gitlab-ci.yml
   except:
     - tags
 
@@ -193,23 +193,9 @@ test:end-2-end:qa:
   script:
     - npm run test:e2e
     - DEPLOYMENT_NAME=$(kubectl get pods -n apps | grep $CHART_NAME | awk '{print $1}')
-    - echo $DEPLOYMENT_NAME
     - kubectl logs $DEPLOYMENT_NAME -n apps -c $CHART_NAME > ./logs/$CHART_NAME.log
     - $(npm bin)/data-sentry -f ./logs/data-sentry-values.txt -d ./logs/$CHART_NAME.log
-  only:
-    - branches
-    - master
-
-test:system-tests:qa:
-  <<: *test_definition
-  stage: end-2-end-tests
-  image: docker-registry.zooz.co:4567/cd/ci-runners/runners:gitlab-node-12-docker-comopose-install-kubectl
-  tags:
-    - eks-qa-apps
-  variables:
-    CLUSTER: qa
-    ENVIRONMENT: sandbox
-  script:
+    - echo "now running service infra system tests"
     - npm run test:system
   only:
     - branches
@@ -228,9 +214,10 @@ test:end-2-end:mars:
   script:
     - npm run test:e2e
     - DEPLOYMENT_NAME=$(kubectl get pods -n apps | grep $CHART_NAME | awk '{print $1}')
-    - echo $DEPLOYMENT_NAME
     - kubectl logs $DEPLOYMENT_NAME -n apps -c $CHART_NAME > ./logs/$CHART_NAME.log
     - $(npm bin)/data-sentry -f ./logs/data-sentry-values.txt -d ./logs/$CHART_NAME.log
+    - echo "now running service infra system tests"
+    - npm run test:system
   only:
     - master
 
@@ -249,6 +236,8 @@ test:end-2-end:mars:live:
     - echo $DEPLOYMENT_NAME
     - kubectl logs $DEPLOYMENT_NAME -n apps -c $CHART_NAME > ./logs/$CHART_NAME.log
     - $(npm bin)/data-sentry -f ./logs/data-sentry-values.txt -d ./logs/$CHART_NAME.log
+    - echo "now running service infra system tests"
+    - npm run test:system
   only:
     - master
 
@@ -507,24 +496,23 @@ deploy:prd:kong:
 
 # -------------- Dashboards --------------- #
 .k8s-dashboard-template: &k8s-dashboards-ref
-  image: docker-registry.zooz.co:4567/payu-clan-sre/monitoring-projects/tools/hub-euler-executer/releases:latest
+  image: docker-registry.zooz.co:4567/payu-clan-sre/monitoring-projects/tools/hub-euler-executer/releases:1.0.19
   tags:
     - eks-dev-apps
   before_script:
     - echo "override before_script"
   script:
-    - EULER_DEFINITION=$PWD/monitoring-dashboards/k8s-grafana-config.json FOLDER=risk-gateway build-dashboards
+    - EULER_DEFINITION=$PWD/monitoring-dashboards/$DASHBOARDS_CONFIGURATION_FILE FOLDER=risk-gateway build-dashboards
   when: manual
   except:
     - schedules
-  only:
-    - master
 
 deploy-mars-dashboards:
   <<: *k8s-dashboards-ref
   stage: deploy-mars
   variables:
     ENV: eks-mars-pci
+    DASHBOARDS_CONFIGURATION_FILE: grafana-config-mars-pci.json
 
 deploy-prd-dashboards:
   <<: *k8s-dashboards-ref
@@ -533,6 +521,7 @@ deploy-prd-dashboards:
   stage: deploy-prd
   variables:
     ENV: eks-prd-pci
+    DASHBOARDS_CONFIGURATION_FILE: grafana-config-production-pci.json
   only:
     - tags
 
