@@ -832,6 +832,7 @@ describe('Create risk analyses resource negative tests', function () {
                 expect(authorizeResponse.body.result.status).to.equal('Succeed');
             });
             it('should successfully create risk resource', async function () {
+                testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
                 await paymentsOSsdkClient.updateApplication({
                     app_name: testsEnvs.application.id,
                     account_id: testsEnvs.merchant.merchant_id,
@@ -897,6 +898,61 @@ describe('Create risk analyses resource negative tests', function () {
             });
         });
     });
+
+    describe('provider type validation tests', function () {
+        let mockProcessorProviderId, createConfigurationResponseMockProcessor, providerTypeValidationPaymentObject;
+        before(async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+            const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });
+            providerTypeValidationPaymentObject = createPaymentResponse.body;
+            console.log('successfully created payment');
+            mockProcessorProviderId = await paymentsOSsdkClient.getProviderId({
+                processor: 'processor',
+                provider_name: 'MockProcessor',
+                session_token: testsEnvs.merchant.session_token
+            });
+            createConfigurationResponseMockProcessor = await paymentsOSsdkClient.createConfiguration({
+                account_id: testsEnvs.merchant.merchant_id,
+                session_token: testsEnvs.merchant.session_token,
+                provider_id: mockProcessorProviderId,
+                configuration_data: {},
+                name: `mynameis${(new Date().getTime())}`
+            });
+        });
+        it('should fail create risk with provider type different than risk_provider', async function () {
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
+
+            await paymentsOSsdkClient.updateApplication({
+                app_name: testsEnvs.application.id,
+                account_id: testsEnvs.merchant.merchant_id,
+                default_provider: createConfigurationResponseMockProcessor.body.id,
+                description: 'some_app_description',
+                session_token: testsEnvs.merchant.session_token
+            });
+            testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
+            try {
+                await paymentsOSsdkClient.postRiskAnalyses({
+                    request_body: fullRiskRequestBody,
+                    payment_id: providerTypeValidationPaymentObject.id
+                });
+                throw new Error('Should have thrown error');
+            } catch (error) {
+                expect(error.statusCode).to.equal(400);
+                const errorResponse = error.response.body;
+                expect(errorResponse.category).to.equal('api_request_error');
+                expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+                expect(errorResponse.more_info).to.equal('The provider configuration MockProcessor must use a risk provider.');
+                expect({
+                    path: '/payments/{payment_id}/risk-analyses',
+                    status: 400,
+                    method: 'post',
+                    body: errorResponse,
+                    headers: {}
+                }).to.matchApiSchema();
+            }
+        });
+    });
+
     describe.skip('request with invalid tenant id', function () {
         before(async function () {
             testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);

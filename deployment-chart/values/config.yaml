@@ -29,8 +29,6 @@ EnvironmentVariables:
     value: $APP_NAME
   - name: CASSANDRA_KEYSPACE
     value: $CASSANDRA_KEYSPACE
-  - name: RISK_PROVIDER_SERVICE_NAME
-    value: $RISK_PROVIDER_SERVICE_NAME
   - name: CASSANDRA_REPLICATION_FACTOR
     value: $CASSANDRA_REPLICATION_FACTOR
   - name: SECRETS_FILE_PATH
@@ -94,4 +92,4 @@ EnvironmentVariables:
     valueFrom:
       configMapKeyRef:
         name: centralized-config
-        key: MAX_ACTIONS_FOR_PAYMENT  
+        key: MAX_ACTIONS_FOR_PAYMENT
