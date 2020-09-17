@@ -3,7 +3,7 @@ const testConfig = require('../helpers/test-config');
 const serviceRequestSender = require('../helpers/service-request-sender');
 
 const METRICS_ROUTES = ['/v1/applications/:application_name', '/merchants/:merchant_id/payment-methods', '/payments/:payment_id/risk-analyses',
-    'payments/:payment_id', 'payments/:payment_id/risk-analyses', 'payments/:payment_id/risk-analyses/:risk-analyses_id'];
+    'payments/:payment_id', 'payments/:payment_id/risk-analyses', 'payments/:payment_id/risk-analyses/:risk-analyses_id', 'v1/configurations/:configuration_id'];
 
 const NORTHBOUND_METRICS_ROUTES = ['/payments/:payment_id/risk-analyses', '/payments/:payment_id/risk-analyses', '/payments/:payment_id/risk-analyses/:risk_analyses_id', 'N/A'];
 // 'N/A' exists in all metrics calls

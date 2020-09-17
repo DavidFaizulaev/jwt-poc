@@ -5,6 +5,7 @@ const {
     PAYMENT_CONFLICT, PAYMENT_CONFLICT_DESCRIPTION, AUTHORIZED, APP_ID_OF_PAYMENT_NOT_FOUND, PAYMENT_TOO_MANY_ACTIONS
 } = require('../service/common');
 const { MAX_ACTIONS_FOR_PAYMENT } = require('../service/config');
+const { WRONG_PROVIDER_TYPE, WRONG_PROVIDER_TYPE_MORE_INFO, RISK_PROVIDER } = require('../service/common');
 
 function validatePaymentState(paymentResource) {
     const paymentState = get(paymentResource, 'payment_state.current_state');
@@ -52,8 +53,20 @@ function checkMaxActionsOnPayment(paymentResource){
     }
 }
 
+function validateProviderType(providerConfiguration) {
+    if (providerConfiguration.providerType !== RISK_PROVIDER){
+        const wrongProviderTypeError = {
+            statusCode: BAD_REQUEST,
+            details: [WRONG_PROVIDER_TYPE],
+            more_info: WRONG_PROVIDER_TYPE_MORE_INFO.replace('[name]', providerConfiguration.providerName)
+        };
+        throw wrongProviderTypeError;
+    }
+}
+
 module.exports = {
     validatePaymentState: validatePaymentState,
     validateAppId: validateAppId,
-    checkMaxActionsOnPayment: checkMaxActionsOnPayment
+    checkMaxActionsOnPayment: checkMaxActionsOnPayment,
+    validateProviderType: validateProviderType
 };

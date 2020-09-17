@@ -22,14 +22,13 @@ const environmentVariables = createEnvObject({
     CLUSTER: { mandatory },
     APP_NAME: { mandatory },
     MAX_ACTIONS_FOR_PAYMENT: { mandatory },
-    RISK_PROVIDER_SERVICE_NAME: { mandatory },
 
     // optional
-    NEW_CONNECTIONS_TIMEOUT: { default: 7500 },
+    NEW_CONNECTIONS_TIMEOUT: { wrappingFunction: Number, default: 7500 },
     LOG_LEVEL: { default: 'info' },
-    PORT: { default: 3000 },
-    KEEP_ALIVE_TIMEOUT: { default: 120000 },
-    SHUTDOWN_TIMEOUT: { default: 10000 },
+    PORT: { wrappingFunction: Number, default: 3000 },
+    KEEP_ALIVE_TIMEOUT: { wrappingFunction: Number, default: 120000 },
+    SHUTDOWN_TIMEOUT: { wrappingFunction: Number, default: 10000 },
     MAX_REQUEST_SIZE: { default: '1mb' },
     SOUTHBOUND_BUCKETS: [0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 16, 32, 64],
     NORTHBOUND_BUCKETS: [0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 16, 32, 64],
@@ -39,10 +38,10 @@ const environmentVariables = createEnvObject({
     // Cassandra
     CASSANDRA_KEYSPACE: { mandatory },
     CASSANDRA_ADDRESSES: { mandatory },
-    CASSANDRA_REPLICATION_FACTOR: { mandatory },
+    CASSANDRA_REPLICATION_FACTOR: { wrappingFunction: Number, mandatory },
 
     // Fss
-    FSS_REFRESH_TOKEN_INTERVAL: { default: 7200 },
+    FSS_REFRESH_TOKEN_INTERVAL: { wrappingFunction: Number, default: 7200 },
     FSS_URL: { mandatory },
 
     // Services urls
@@ -60,9 +59,10 @@ const environmentVariables = createEnvObject({
     CURRENCIES_LOOKUP_URL: { mandatory },
     BASE_API_PAYMENTSOS_URL: { mandatory },
     PROVIDER_CONFIGURATIONS_URL: { mandatory },
-    TARGET_TIMEOUT: { mandatory },
-    CACHE_REFRESH_INTERVAL_SECONDS: { mandatory },
-    MAX_ACTIONS_TO_EXPAND_IN_PAYMENT: { mandatory }
+    TARGET_TIMEOUT: { wrappingFunction: Number, mandatory },
+    CACHE_REFRESH_INTERVAL_SECONDS: { wrappingFunction: Number, mandatory },
+    MAX_ACTIONS_TO_EXPAND_IN_PAYMENT: { wrappingFunction: Number, mandatory }
+
 });
 
 environmentVariables.CASSANDRA_USERNAME = cassandraUserName;

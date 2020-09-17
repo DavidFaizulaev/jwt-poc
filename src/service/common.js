@@ -59,7 +59,17 @@ module.exports = {
         PAYMENT_NOT_FOUND_ERROR_CODE: 'PaymentNotFound',
         ACTION_NOT_FOUND_ERROR_CODE: 'ActionNotFound'
     },
+    PS_TARGET_NAME: 'payment_storage',
+
+    // PCS errors
+    WRONG_PROVIDER_TYPE: 'Unsupported provider type',
+    WRONG_PROVIDER_TYPE_MORE_INFO: 'The provider configuration [name] must use a risk provider.',
 
     SERVICE_UNAVAILABLE_DESCRIPTION: 'Unable to reach the provider network.',
-    SERVICE_UNAVAILABLE_CATEGORY: 'provider_network_error'
+    SERVICE_UNAVAILABLE_CATEGORY: 'provider_network_error',
+
+    // PCS
+    RISK_PROVIDER: 'risk_provider',
+    PCS_TARGET_NAME: 'provider_configuration',
+    PCS_NOT_FOUND_ERROR_MSG: 'No Configuration was found with the provided Id.'
 };
