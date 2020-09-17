@@ -517,6 +517,8 @@ deploy:prd:kong:
   when: manual
   except:
     - schedules
+  only:
+    - master
 
 deploy-mars-dashboards:
   <<: *k8s-dashboards-ref
