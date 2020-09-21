@@ -107,6 +107,9 @@ describe('Integration test - Payment storage', function() {
                 expect(error.response.status).to.equal(500);
                 const responseBody = error.response.data;
                 expect(responseBody.details).to.deep.equal(['{\"message\":\"Input validation error\",\"validation_errors\":[\"headers should have required property \\\"x-zooz-request-id\\\"\"]}']);
+
+                const paymentStorageRequestHeaders = psNock.interceptors[0].req.headers;
+                expect(paymentStorageRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-payment-service-api-version', 'x-zooz-request-id', 'accept', 'host', 'user-agent');
                 expect(psNock.isDone()).to.equal(true);
             }
         });

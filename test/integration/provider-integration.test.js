@@ -107,7 +107,7 @@ describe('Integration test - Risk provider', function() {
 
         nock(PROVIDER_CONFIGURATIONS_URL)
             .get('/v1/configurations/default_provider_id?ext_info=true&filterConfData=true')
-            .reply(200, { providerType: 'risk_provider' , providerName: RISK_PROVIDER_SERVICE_NAME} );
+            .reply(200, { providerType: 'risk_provider', providerName: RISK_PROVIDER_SERVICE_NAME });
     });
 
     it('Should return status code 503 with error message when provider returns 504', async () => {
@@ -166,5 +166,9 @@ describe('Integration test - Risk provider', function() {
                 desc_extra3: 'nonono'
             }
         });
+
+        const providerRequestHeaders = providerNock.interceptors[0].req.headers;
+        expect(providerRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-app-name', 'x-zooz-proxy-request-id', 'x-zooz-request-id', 'x-zooz-risk-proxy-api-version',
+            'accept', 'content-length', 'content-type', 'host', 'user-agent');
     });
 });

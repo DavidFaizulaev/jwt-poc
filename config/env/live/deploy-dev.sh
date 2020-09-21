@@ -7,7 +7,7 @@ export INSTANCES=1
 # K8S_SERVICE_URL
 export FRAUD_SERVICE_URL=http://internal.eks-qa.zooz.co/{SERVICE_NAME}
 
-echo MEMORY=$$MEMORY
+echo MEMORY=$MEMORY
 echo CPUS=$CPUS
 echo INSTANCES=$INSTANCES
 export CLUSTER=dev

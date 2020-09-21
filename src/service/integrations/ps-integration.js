@@ -1,6 +1,6 @@
 const requestSender = require('../request-sender');
 const { PAYMENT_STORAGE_URL } = require('../config');
-const { HDR_X_ZOOZ_PAYMENT_SERVICE_API_VERSION, HDR_X_ZOOZ_REQUEST_ID } = require('../common');
+const { HDR_X_ZOOZ_PAYMENT_SERVICE_API_VERSION } = require('../common');
 const { handleIntegrationError } = require('./helpers/integration-error-handler');
 
 const TARGET_NAME = 'payment_storage';
@@ -48,13 +48,12 @@ async function getRiskAnalysis(params, headers) {
 }
 
 function buildRequestOptions(headers, url, metricsRoute) {
+    const integrationHeaders = { [HDR_X_ZOOZ_PAYMENT_SERVICE_API_VERSION]: '1.0' };
+    Object.assign(integrationHeaders, headers);
     const options = {
         url: url,
         method: 'get',
-        headers: {
-            [HDR_X_ZOOZ_REQUEST_ID]: headers[HDR_X_ZOOZ_REQUEST_ID],
-            [HDR_X_ZOOZ_PAYMENT_SERVICE_API_VERSION]: '1.0'
-        },
+        headers: integrationHeaders,
         targetName: TARGET_NAME,
         metrics: { target: TARGET_NAME, route: metricsRoute }
     };
