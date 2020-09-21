@@ -154,6 +154,10 @@ describe('Integration test - Apps storage', function() {
                 expect(error.response.status).to.equal(500);
                 const responseBody = error.response.data;
                 expect(responseBody.details).to.deep.equal(['{\"message\":\"Input validation error\",\"validation_errors\":[\"headers should have required property \\\"x-zooz-request-id\\\"\"]}']);
+
+                const appsStorageRequestHeaders = appsNock.interceptors[0].req.headers;
+                expect(appsStorageRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-request-id', 'x-zooz-app-name', 'accept', 'host', 'user-agent');
+
                 expect(appsNock.isDone()).to.equal(true);
             }
         });

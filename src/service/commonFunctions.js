@@ -1,4 +1,5 @@
 const { get } = require('lodash');
+const { PASS_THROUGH_HEADERS } = require('./common');
 
 function formatDate(paymentMethod) {
     let expirationDate;
@@ -21,6 +22,22 @@ function formatDate(paymentMethod) {
     return month + '/' + year;
 }
 
+function getPassThroughHeaders(requestHeaders) {
+    const headers = requestHeaders || {};
+    const passHeaders = {};
+    Object.keys(headers)
+        .forEach(function (header) {
+            const headerToAdd = PASS_THROUGH_HEADERS.find(function (prefix) {
+                return (header.toLowerCase()).startsWith(prefix);
+            });
+            if (headerToAdd) {
+                passHeaders[header] = headers[header];
+            }
+        });
+    return passHeaders;
+}
+
 module.exports = {
-    formatDate: formatDate
+    formatDate: formatDate,
+    getPassThroughHeaders: getPassThroughHeaders
 };

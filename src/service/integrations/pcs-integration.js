@@ -1,6 +1,6 @@
 'use strict';
 const requestSender = require('../request-sender');
-const { HDR_X_ZOOZ_REQUEST_ID, HDR_X_ZOOZ_ACCESS_ENVIRONMENT, PCS_TARGET_NAME } = require('../common');
+const { HDR_X_ZOOZ_ACCESS_ENVIRONMENT, PCS_TARGET_NAME } = require('../common');
 const { handleIntegrationError } = require('./helpers/integration-error-handler');
 const { PROVIDER_CONFIGURATIONS_URL, ENVIRONMENT } = require('../config');
 
@@ -20,13 +20,12 @@ async function getConfiguration(providerConfigurationId, headers) {
 }
 
 function buildRequestOptions(headers, url, metricsRoute) {
+    const integrationHeaders = { [HDR_X_ZOOZ_ACCESS_ENVIRONMENT]: ENVIRONMENT };
+    Object.assign(integrationHeaders, headers);
     const options = {
         url: url,
         method: 'get',
-        headers: {
-            [HDR_X_ZOOZ_REQUEST_ID]: headers[HDR_X_ZOOZ_REQUEST_ID],
-            [HDR_X_ZOOZ_ACCESS_ENVIRONMENT]: ENVIRONMENT
-        },
+        headers: integrationHeaders,
         targetName: PCS_TARGET_NAME,
         metrics: { target: PCS_TARGET_NAME, route: metricsRoute }
     };

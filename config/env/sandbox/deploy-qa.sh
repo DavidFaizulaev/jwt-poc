@@ -8,7 +8,7 @@ export INSTANCES=1
 export FRAUD_SERVICE_URL=http://{SERVICE_NAME}-service
 
 
-echo MEMORY=$$MEMORY
+echo MEMORY=$MEMORY
 echo CPUS=$CPUS
 echo INSTANCES=$INSTANCES
 export CLUSTER=qa

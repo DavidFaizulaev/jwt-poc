@@ -156,6 +156,9 @@ describe('Integration test - PCS', function() {
                 expect(error.response.status).to.equal(500);
                 const responseBody = error.response.data;
                 expect(responseBody.details).to.deep.equal(['{"error_code":"40002","description":"Bad Request Error","message":"[{\\"message\\":\\"\\\\\\"x-zooz-request-id\\\\\\" is required (in headers).\\",\\"path\\":\\"x-zooz-request-id\\"}]"}']);
+
+                const appsStorageRequestHeaders = pcsNock.interceptors[0].req.headers;
+                expect(appsStorageRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-request-id', 'x-zooz-app-name', 'x-zooz-access-environment', 'accept', 'host', 'user-agent');
                 expect(pcsNock.isDone()).to.equal(true);
             }
         });

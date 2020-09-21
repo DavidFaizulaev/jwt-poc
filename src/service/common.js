@@ -15,6 +15,7 @@ module.exports = {
     HDR_X_ZOOZ_IDEPMOTENCY: 'x-zooz-proxy-request-id',
     HDR_X_CLIENT_IP_ADDRESS: 'x-client-ip-address',
     HDR_X_ZOOZ_API_PROXY_VERSION: 'x-zooz-risk-proxy-api-version',
+    PASS_THROUGH_HEADERS: ['x-zooz', 'idempotency_key', 'zooz-mock', 'test-mock', 'x-payments', 'x-envoy', 'x-client'],
 
     // Payment states
     NOT_VALID_STATE: 'not_valid',

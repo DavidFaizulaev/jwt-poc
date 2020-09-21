@@ -1,6 +1,6 @@
 const { cloneDeep, get } = require('lodash');
 const uuid = require('uuid');
-const { TOKENIZED_PAYMENT_METHOD_NAME, UNTOKENIZED_PAYMENT_METHOD_NAME, CREDIT_CARD_PAYMENT_METHOD_NAME, HDR_X_ZOOZ_REQUEST_ID, HDR_X_ZOOZ_IDEPMOTENCY, HDR_X_CLIENT_IP_ADDRESS, HDR_X_ZOOZ_API_PROXY_VERSION } = require('../common');
+const { TOKENIZED_PAYMENT_METHOD_NAME, UNTOKENIZED_PAYMENT_METHOD_NAME, CREDIT_CARD_PAYMENT_METHOD_NAME, HDR_X_ZOOZ_IDEPMOTENCY, HDR_X_CLIENT_IP_ADDRESS, HDR_X_ZOOZ_API_PROXY_VERSION } = require('../common');
 const requestHelper = require('../request-sender');
 const { FRAUD_SERVICE_URL, ENVIRONMENT, PROVIDER_TARGET_TIMEOUT } = require('../config');
 const { handleIntegrationError } = require('./helpers/integration-error-handler');
@@ -15,16 +15,15 @@ module.exports = {
 async function createRisk(paymentResource, requestBody, headers, providerConfigurationId, paymentMethod, providerName) {
     const COMPLETE_METRICS_ROUTE = { target: `${ENVIRONMENT}-${providerName}`, route: METRICS_ROUTE };
     const body = buildRequestBody(paymentResource, requestBody, providerConfigurationId, paymentMethod, headers, providerName);
-    const reqHeaders = {
+    const integrationHeaders = {
         [HDR_X_ZOOZ_IDEPMOTENCY]: headers[HDR_X_ZOOZ_IDEPMOTENCY] || uuid.v4(),
-        [HDR_X_ZOOZ_REQUEST_ID]: headers[HDR_X_ZOOZ_REQUEST_ID],
         [HDR_X_ZOOZ_API_PROXY_VERSION]: '1.0'
     };
-
+    Object.assign(integrationHeaders, headers);
     const requestOptions = {
         url: buildRequestUrl(paymentResource.id, providerName.toLowerCase()),
         data: body,
-        headers: reqHeaders,
+        headers: integrationHeaders,
         method: 'post',
         targetName: TARGET_NAME,
         metrics: COMPLETE_METRICS_ROUTE,
