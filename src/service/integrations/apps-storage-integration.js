@@ -1,6 +1,5 @@
 const requestSender = require('../request-sender');
 const { APPS_STORAGE_URL } = require('../config');
-const { HDR_X_ZOOZ_REQUEST_ID } = require('../common');
 const { handleIntegrationError } = require('./helpers/integration-error-handler');
 
 const TARGET_NAME = 'application_storage';
@@ -22,9 +21,7 @@ function buildRequestOptions(headers, url) {
     const options = {
         url: url,
         method: 'get',
-        headers: {
-            [HDR_X_ZOOZ_REQUEST_ID]: headers[HDR_X_ZOOZ_REQUEST_ID]
-        },
+        headers,
         targetName: TARGET_NAME,
         metrics: { target: TARGET_NAME, route: METRICS_ROUTE }
     };

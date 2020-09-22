@@ -112,6 +112,10 @@ describe('Integration test - FSS', function() {
                 expect(error.response.status).to.equal(500);
                 const responseBody = error.response.data;
                 expect(responseBody.details).to.deep.equal(['{\"message\":\"Input validation error\",\"validation_errors\":[\"headers should have required property \\\"x-zooz-request-id\\\"\"]}']);
+
+                const fssRequestHeaders = fssNock.interceptors[0].req.headers;
+                expect(fssRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-app-name', 'x-zooz-request-id', 'security_token',
+                    'accept', 'content-length', 'content-type', 'host');
                 expect(fssNock.isDone()).to.equal(true);
             }
         });

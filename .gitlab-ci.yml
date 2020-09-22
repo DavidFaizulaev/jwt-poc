@@ -180,6 +180,17 @@ test:integration-provider:
   except:
     - tags
 
+test:integration-pcs:
+  <<: *test_definition
+  stage: integration-tests
+  script:
+    - npm run test:integration-pcs
+  only:
+    - master
+    - branches
+  except:
+    - tags
+
 # -------------- end-2-end tests qa -------------- #
 test:end-2-end:qa:
   <<: *test_definition

@@ -4,9 +4,10 @@ const nock = require('nock');
 const uuid = require('uuid');
 const serviceRequestSender = require('../helpers/service-request-sender');
 
-const { FSS_URL, PAYMENT_STORAGE_URL, RESULT_MAPPING_URL, COUNTRIES_SERVICE_URL, CURRENCIES_LOOKUP_URL, APPS_STORAGE_URL, FRAUD_SERVICE_URL, ENVIRONMENT, RISK_PROVIDER_SERVICE_NAME } = require('../../src/service/config');
+const { FSS_URL, PAYMENT_STORAGE_URL, RESULT_MAPPING_URL, COUNTRIES_SERVICE_URL, CURRENCIES_LOOKUP_URL, APPS_STORAGE_URL, FRAUD_SERVICE_URL, ENVIRONMENT, PROVIDER_CONFIGURATIONS_URL } = require('../../src/service/config');
 
 const app = require('../../src/app');
+const RISK_PROVIDER_SERVICE_NAME = 'payu-risk';
 
 describe('Integration test - Risk provider', function() {
     let testApp, server;
@@ -103,6 +104,10 @@ describe('Integration test - Risk provider', function() {
         appStorageNock = nock(APPS_STORAGE_URL)
             .get(`/v1/applications/${appId}`)
             .reply(200, { default_provider: 'default_provider_id' });
+
+        nock(PROVIDER_CONFIGURATIONS_URL)
+            .get('/v1/configurations/default_provider_id?ext_info=true&filterConfData=true')
+            .reply(200, { providerType: 'risk_provider', providerName: RISK_PROVIDER_SERVICE_NAME });
     });
 
     it('Should return status code 503 with error message when provider returns 504', async () => {
@@ -161,5 +166,9 @@ describe('Integration test - Risk provider', function() {
                 desc_extra3: 'nonono'
             }
         });
+
+        const providerRequestHeaders = providerNock.interceptors[0].req.headers;
+        expect(providerRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-app-name', 'x-zooz-proxy-request-id', 'x-zooz-request-id', 'x-zooz-risk-proxy-api-version',
+            'accept', 'content-length', 'content-type', 'host', 'user-agent');
     });
 });
