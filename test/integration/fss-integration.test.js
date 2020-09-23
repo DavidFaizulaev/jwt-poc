@@ -85,6 +85,8 @@ describe('Integration test - FSS', function() {
                 'x-zooz-app-name': appId,
                 'content-type': 'application/json',
                 'api-version': '1.3.0',
+                host: 'tests',
+                'user-agent': 'test-agent',
                 accept: '*/*'
             }
         };
@@ -116,6 +118,8 @@ describe('Integration test - FSS', function() {
                 const fssRequestHeaders = fssNock.interceptors[0].req.headers;
                 expect(fssRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-app-name', 'x-zooz-request-id', 'security_token',
                     'accept', 'content-length', 'content-type', 'host');
+                expect(fssRequestHeaders.host).to.not.equal('tests');
+                expect(fssRequestHeaders['user-agent']).to.not.equal('test-agent');
                 expect(fssNock.isDone()).to.equal(true);
             }
         });

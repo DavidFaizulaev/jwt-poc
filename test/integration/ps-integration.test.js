@@ -84,6 +84,8 @@ describe('Integration test - Payment storage', function() {
                 'x-zooz-account-id': merchantId,
                 'content-type': 'application/json',
                 'api-version': '1.3.0',
+                host: 'tests',
+                'user-agent': 'test-agent',
                 accept: '*/*'
             }
         };
@@ -110,6 +112,8 @@ describe('Integration test - Payment storage', function() {
 
                 const paymentStorageRequestHeaders = psNock.interceptors[0].req.headers;
                 expect(paymentStorageRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-payment-service-api-version', 'x-zooz-request-id', 'accept', 'host', 'user-agent');
+                expect(paymentStorageRequestHeaders.host).to.not.equal('tests');
+                expect(paymentStorageRequestHeaders['user-agent']).to.not.equal('test-agent');
                 expect(psNock.isDone()).to.equal(true);
             }
         });
