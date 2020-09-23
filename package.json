@@ -27,7 +27,7 @@
     "axios-time": "^1.0.0",
     "body-parser": "^1.19.0",
     "bunyan": "^1.8.14",
-    "cassandra-helper": "^1.0.4",
+    "cassandra-helper": "^1.1.0",
     "content-type": "^1.0.4",
     "entities-mapper-v130": "^3.11.5",
     "envboss": "^1.1.0",
