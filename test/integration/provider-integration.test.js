@@ -95,6 +95,7 @@ describe('Integration test - Risk provider', function() {
                 'x-zooz-app-name': appId,
                 'content-type': 'application/json',
                 'api-version': '1.3.0',
+                host: 'tests',
                 accept: '*/*'
             }
         };
@@ -170,5 +171,7 @@ describe('Integration test - Risk provider', function() {
         const providerRequestHeaders = providerNock.interceptors[0].req.headers;
         expect(providerRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-app-name', 'x-zooz-proxy-request-id', 'x-zooz-request-id', 'x-zooz-risk-proxy-api-version',
             'accept', 'content-length', 'content-type', 'host', 'user-agent');
+        expect(providerRequestHeaders.host).to.not.equal('tests');
+        expect(providerRequestHeaders['user-agent']).to.not.equal('test-agent');
     });
 });
