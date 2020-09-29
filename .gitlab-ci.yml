@@ -224,9 +224,9 @@ test:end-2-end:mars:
     ENVIRONMENT: sandbox
   script:
     - npm run test:e2e
-    - DEPLOYMENT_NAME=$(kubectl get pods -n apps | grep $CHART_NAME | awk '{print $1}')
-    - kubectl logs $DEPLOYMENT_NAME -n apps -c $CHART_NAME > ./logs/$CHART_NAME.log
-    - $(npm bin)/data-sentry -f ./logs/data-sentry-values.txt -d ./logs/$CHART_NAME.log
+    # - DEPLOYMENT_NAME=$(kubectl get pods -n apps | grep $CHART_NAME | awk '{print $1}')
+    # - kubectl logs $DEPLOYMENT_NAME -n apps -c $CHART_NAME > ./logs/$CHART_NAME.log
+    # - $(npm bin)/data-sentry -f ./logs/data-sentry-values.txt -d ./logs/$CHART_NAME.log
     - echo "now running service infra system tests"
     - npm run test:system
   only:
