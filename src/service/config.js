@@ -31,7 +31,7 @@ const environmentVariables = createEnvObject({
     SHUTDOWN_TIMEOUT: { wrappingFunction: Number, default: 10000 },
     MAX_REQUEST_SIZE: { default: '1mb' },
     SOUTHBOUND_BUCKETS: [0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 16, 32, 64],
-    NORTHBOUND_BUCKETS: [0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 16, 32, 64],
+    NORTHBOUND_BUCKETS: [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 2, 4, 8, 16, 32, 64],
     DEFAULT_REQUEST_RETRIES: { default: 2 },
     PROVIDER_TARGET_TIMEOUT: { default: 85000 },
 

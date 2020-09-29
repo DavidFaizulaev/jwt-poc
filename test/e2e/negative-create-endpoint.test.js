@@ -953,7 +953,8 @@ describe('Create risk analyses resource negative tests', function () {
         });
     });
 
-    describe.skip('request with invalid tenant id', function () {
+    describe('request with invalid tenant id', function () {
+        this.timeout(85000);
         before(async function () {
             testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
             const createPaymentResponse = await paymentsOSsdkClient.postPayments({ request_body: createPaymentRequest });

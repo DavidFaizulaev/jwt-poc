@@ -47,9 +47,9 @@ describe('Integration test - Risk provider', function() {
             payu_risk: {
                 additional_details: {
                     payer_birthday: '1990/12/12',
-                    desc_extra1: 'blabla',
-                    desc_extra2: 'nanana',
-                    desc_extra3: 'nonono'
+                    product_desc_extra1: 'blabla',
+                    product_desc_extra2: 'nanana',
+                    product_desc_extra3: 'nonono'
                 }
             }
         }
@@ -95,6 +95,7 @@ describe('Integration test - Risk provider', function() {
                 'x-zooz-app-name': appId,
                 'content-type': 'application/json',
                 'api-version': '1.3.0',
+                host: 'tests',
                 accept: '*/*'
             }
         };
@@ -161,14 +162,16 @@ describe('Integration test - Risk provider', function() {
         expect(providerRequestBody.risk_data.provider_specific_data).to.deep.equal({
             additional_details: {
                 payer_birthday: '1990/12/12',
-                desc_extra1: 'blabla',
-                desc_extra2: 'nanana',
-                desc_extra3: 'nonono'
+                product_desc_extra1: 'blabla',
+                product_desc_extra2: 'nanana',
+                product_desc_extra3: 'nonono'
             }
         });
 
         const providerRequestHeaders = providerNock.interceptors[0].req.headers;
         expect(providerRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-app-name', 'x-zooz-proxy-request-id', 'x-zooz-request-id', 'x-zooz-risk-proxy-api-version',
             'accept', 'content-length', 'content-type', 'host', 'user-agent');
+        expect(providerRequestHeaders.host).to.not.equal('tests');
+        expect(providerRequestHeaders['user-agent']).to.not.equal('test-agent');
     });
 });

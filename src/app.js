@@ -30,7 +30,7 @@ module.exports = async () => {
         jsonLimit: config.MAX_REQUEST_SIZE
     }));
 
-    app.use(apiMetrics({ durationBuckets: config.SOUTHBOUND_BUCKETS, excludeRoutes: ['/health', '/metrics'], includeQueryParams: false }));
+    app.use(apiMetrics({ durationBuckets: config.NORTHBOUND_BUCKETS, excludeRoutes: ['/health', '/metrics'], includeQueryParams: false }));
 
     // routers
     app.use(infraRoutes.routes());

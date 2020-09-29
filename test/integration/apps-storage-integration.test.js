@@ -123,6 +123,8 @@ describe('Integration test - Apps storage', function() {
                 'x-zooz-app-name': 'app_name',
                 'content-type': 'application/json',
                 'api-version': '1.3.0',
+                host: 'tests',
+                'user-agent': 'test-agent',
                 accept: '*/*'
             }
         };
@@ -157,6 +159,8 @@ describe('Integration test - Apps storage', function() {
 
                 const appsStorageRequestHeaders = appsNock.interceptors[0].req.headers;
                 expect(appsStorageRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-request-id', 'x-zooz-app-name', 'accept', 'host', 'user-agent');
+                expect(appsStorageRequestHeaders.host).to.not.equal('tests');
+                expect(appsStorageRequestHeaders['user-agent']).to.not.equal('test-agent');
 
                 expect(appsNock.isDone()).to.equal(true);
             }

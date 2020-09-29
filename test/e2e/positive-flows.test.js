@@ -84,7 +84,7 @@ describe('Create risk analyses flows', function () {
 
     describe('Successfully create risk resource with tokenized and untokenized payment_method', function () {
         let createRiskResponse;
-        it('Payment should contain risk in posibble_next_events', function () {
+        it('Payment should contain risk in possible_next_events', function () {
             const expectedPossibleNextEvents = [
                 {
                     action: 'Credit',
@@ -130,27 +130,31 @@ describe('Create risk analyses flows', function () {
             const createRiskAnalysesResource = createRiskResponse.body;
             expect(createRiskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data',
                 'created', 'id', 'result', 'merchant', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data', 'ip_address' );
+                'installments', 'additional_details', 'provider_specific_data', 'ip_address');
 
             expect(createRiskAnalysesResource.payment_method).to.have.all.keys('type', 'holder_name', 'last_4_digits', 'pass_luhn_validation',
                 'fingerprint', 'created', 'token', 'token_type', 'billing_address', 'bin_number', 'card_type', 'country_code', 'expiration_date',
                 'issuer', 'level', 'vendor');
             expect(createRiskAnalysesResource.result).to.eql({ status: 'Succeed' });
             expect(createRiskAnalysesResource.acquirer).to.have.all.keys('acquirer_id', 'acquirer_country_code');
+            expect(createRiskAnalysesResource.acquirer).to.deep.equal(copiedRequestBody.acquirer);
+
             expect(createRiskAnalysesResource.installments).to.have.all.keys('number_of_installments');
-            expect(createRiskAnalysesResource.additional_details).to.have.all.keys('hello');
+            expect(createRiskAnalysesResource.installments).to.deep.equal(copiedRequestBody.installments);
+            expect(createRiskAnalysesResource.additional_details).to.deep.equal(copiedRequestBody.additional_details);
             expect(createRiskAnalysesResource.provider_specific_data).to.deep.equal(
-              {
-                  additional_details: {
-                      payer_birthday: '1990/12/12',
-                      desc_extra1: 'blabla',
-                      desc_extra2: 'nanana',
-                      desc_extra3: 'nonono'
-                  }
-              }
+                {
+                    additional_details: {
+                        payer_birthday: '1990/12/12',
+                        product_desc_extra1: 'blabla',
+                        product_desc_extra2: 'nanana',
+                        product_desc_extra3: 'nonono'
+                    }
+                }
             );
             expect(createRiskAnalysesResource.merchant).to.have.all.keys('mcc', 'merchant_name', 'merchant_country_code', 'merchant_email',
                 'merchant_zip_code', 'merchant_city');
+            expect(createRiskAnalysesResource.merchant).to.deep.equal(copiedRequestBody.merchant);
             validateSelfHeader(createRiskResponse, paymentObject);
 
             expect(createRiskAnalysesResource.device_id).to.equal(copiedRequestBody.device_id);
@@ -175,7 +179,10 @@ describe('Create risk analyses flows', function () {
             expect(riskAnalysesResource.id).to.equal(createRiskResponse.body.id);
             expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data',
                 'created', 'id', 'result', 'merchant', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data', 'ip_address' );
+                'installments', 'additional_details', 'provider_specific_data', 'ip_address');
+
+            expect(riskAnalysesResource).to.deep.equal(createRiskResponse.body);
+
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
             validateSelfHeader(response, paymentObject);
             expect({
@@ -195,7 +202,7 @@ describe('Create risk analyses flows', function () {
             expect(createRiskResponse.statusCode).to.equal(201);
             expect(createRiskResponse.body).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data',
                 'created', 'id', 'result', 'merchant', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data', 'ip_address' );
+                'installments', 'additional_details', 'provider_specific_data', 'ip_address');
             expect(createRiskResponse.body.payment_method).to.have.all.keys('expiration_date', 'type', 'holder_name', 'last_4_digits', 'pass_luhn_validation', 'fingerprint', 'created', 'source_type');
             expect(createRiskResponse.body.result).to.eql({ status: 'Succeed' });
             validateSelfHeader(createRiskResponse, paymentObject);
@@ -223,7 +230,7 @@ describe('Create risk analyses flows', function () {
             expect(createRiskResponse.statusCode).to.equal(201);
             expect(createRiskResponse.body).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data',
                 'created', 'id', 'result', 'merchant', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data', 'ip_address' );
+                'installments', 'additional_details', 'provider_specific_data', 'ip_address');
             expect(createRiskResponse.body.payment_method).to.have.all.keys('type', 'source_type', 'holder_name', 'last_4_digits', 'bin_number', 'expiration_date');
             expect(createRiskResponse.body.result).to.eql({ status: 'Succeed' });
             validateSelfHeader(createRiskResponse, paymentObject);
@@ -286,7 +293,7 @@ describe('Create risk analyses flows', function () {
             const riskAnalysesResource = createRiskResponse.body;
             expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'device_id', 'provider_data',
                 'created', 'id', 'result', 'merchant', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data' );
+                'installments', 'additional_details', 'provider_specific_data');
             expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'pass_luhn_validation', 'last_4_digits');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
@@ -313,7 +320,7 @@ describe('Create risk analyses flows', function () {
             const riskAnalysesResource = createRiskResponse.body;
             expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'provider_data',
                 'created', 'id', 'result', 'merchant', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data' );
+                'installments', 'additional_details', 'provider_specific_data');
             expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'pass_luhn_validation', 'last_4_digits');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
@@ -340,7 +347,7 @@ describe('Create risk analyses flows', function () {
             const riskAnalysesResource = createRiskResponse.body;
             expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data',
                 'created', 'id', 'result', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data' );
+                'installments', 'additional_details', 'provider_specific_data');
             expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
@@ -366,9 +373,9 @@ describe('Create risk analyses flows', function () {
             const riskAnalysesResource = createRiskResponse.body;
 
             expect(createRiskResponse.statusCode).to.equal(201);
-            expect(riskAnalysesResource).to.have.all.keys( 'provider_configuration', 'session_id', 'device_id', 'provider_data',
+            expect(riskAnalysesResource).to.have.all.keys('provider_configuration', 'session_id', 'device_id', 'provider_data',
                 'created', 'id', 'result', 'merchant', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data' );
+                'installments', 'additional_details', 'provider_specific_data');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
             expect({
@@ -395,7 +402,7 @@ describe('Create risk analyses flows', function () {
             const riskAnalysesResource = createRiskResponse.body;
             expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data',
                 'created', 'id', 'result', 'merchant', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data' );
+                'installments', 'additional_details', 'provider_specific_data');
             expect(riskAnalysesResource.payment_method).to.have.all.keys('created', 'type', 'source_type', 'expiration_date', 'fingerprint', 'holder_name', 'last_4_digits', 'pass_luhn_validation');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
             expect(riskAnalysesResource.merchant).to.have.all.keys('merchant_country_code', 'merchant_name', 'merchant_zip_code', 'merchant_city');
@@ -417,7 +424,7 @@ describe('Create risk analyses flows', function () {
                 source_type: 'credit_card',
                 bin_number: '123456',
                 last_4_digits: '1234'
-            }
+            };
             copiedRequestBody.payment_method = partialPaymentMethod;
 
             const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
@@ -429,8 +436,8 @@ describe('Create risk analyses flows', function () {
             const riskAnalysesResource = createRiskResponse.body;
             expect(riskAnalysesResource).to.have.all.keys('payment_method', 'provider_configuration', 'session_id', 'device_id', 'provider_data',
                 'created', 'id', 'result', 'merchant', 'authorization_code', 'cvv_verification_code', 'three_d_secure_authentication_status', 'acquirer',
-                'installments', 'additional_details', 'provider_specific_data' );
-            expect(riskAnalysesResource.payment_method).to.have.all.keys( 'type', 'source_type', 'bin_number', 'last_4_digits');
+                'installments', 'additional_details', 'provider_specific_data');
+            expect(riskAnalysesResource.payment_method).to.have.all.keys('type', 'source_type', 'bin_number', 'last_4_digits');
             expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
             expect({
@@ -443,7 +450,7 @@ describe('Create risk analyses flows', function () {
 
             sensitiveFieldValues.addExternalCreateRiskAnalysisRequest(copiedRequestBody);
         });
-        describe('Create risk with payment resource that includes addendums and line items',  function () {
+        describe('Create risk with payment resource that includes addendums and line items', function () {
             let paymentId;
             it('Should successfully create risk resource with no request body and payment resource with addendums and line item ', async function () {
                 testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
@@ -482,13 +489,13 @@ describe('Create risk analyses flows', function () {
                 testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL_FOR_TESTS);
 
                 const createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({
-                    request_body: {} ,
+                    request_body: {},
                     payment_id: paymentObjectAddendum.id
                 });
                 expect(createRiskResponse.statusCode).to.equal(201);
 
                 const riskAnalysesResource = createRiskResponse.body;
-                    expect(riskAnalysesResource).to.have.all.keys('provider_configuration',  'provider_data', 'created', 'id', 'result');
+                expect(riskAnalysesResource).to.have.all.keys('provider_configuration', 'provider_data', 'created', 'id', 'result');
                 expect(riskAnalysesResource.result).to.eql({ status: 'Succeed' });
 
                 expect({
@@ -498,7 +505,6 @@ describe('Create risk analyses flows', function () {
                     body: riskAnalysesResource,
                     headers: {}
                 }).to.matchApiSchema();
-
             });
             it('Should get payment by id and include all fields sent', async function () {
                 testsCommonFunctions.changeTestUrl(paymentsOSsdkClient, sdkConfigurationPreparations, PAYMENTS_OS_BASE_URL);
@@ -509,12 +515,12 @@ describe('Create risk analyses flows', function () {
                 expect(response.statusCode).to.equal(200);
                 const PaymentResource = response.body;
                 expect(PaymentResource).to.have.all.keys('id', 'currency', 'created', 'modified', 'addendums',
-                    'is_chargedback', 'status', 'related_resources', 'possible_next_actions', 'order', 'amount' );
+                    'is_chargedback', 'status', 'related_resources', 'possible_next_actions', 'order', 'amount');
                 expect(PaymentResource.addendums.airline_passenger_itinerary).to.exist;
                 expect(PaymentResource.addendums.airline_passenger_itinerary).to.have.all.keys('passenger_name', 'days_to_departure', 'round_trip', 'legs');
                 expect(PaymentResource.addendums.airline_passenger_itinerary.legs[0]).to.have.all.keys('departure_airport_code', 'destination_airport_code');
             });
-        })
+        });
     });
     describe('Headers validations', function () {
         before(async function () {

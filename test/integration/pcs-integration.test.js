@@ -122,6 +122,8 @@ describe('Integration test - PCS', function() {
                 'x-zooz-app-name': appId,
                 'content-type': 'application/json',
                 'api-version': '1.3.0',
+                host: 'tests',
+                'user-agent': 'test-agent',
                 accept: '*/*'
             }
         };
@@ -159,6 +161,8 @@ describe('Integration test - PCS', function() {
 
                 const appsStorageRequestHeaders = pcsNock.interceptors[0].req.headers;
                 expect(appsStorageRequestHeaders).to.have.all.keys('x-zooz-account-id', 'x-zooz-request-id', 'x-zooz-app-name', 'x-zooz-access-environment', 'accept', 'host', 'user-agent');
+                expect(appsStorageRequestHeaders.host).to.not.equal('tests');
+                expect(appsStorageRequestHeaders['user-agent']).to.not.equal('test-agent');
                 expect(pcsNock.isDone()).to.equal(true);
             }
         });
