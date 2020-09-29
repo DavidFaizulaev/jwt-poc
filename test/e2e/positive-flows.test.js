@@ -146,9 +146,9 @@ describe('Create risk analyses flows', function () {
                 {
                     additional_details: {
                         payer_birthday: '1990/12/12',
-                        desc_extra1: 'blabla',
-                        desc_extra2: 'nanana',
-                        desc_extra3: 'nonono'
+                        product_desc_extra1: 'blabla',
+                        product_desc_extra2: 'nanana',
+                        product_desc_extra3: 'nonono'
                     }
                 }
             );
