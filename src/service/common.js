@@ -72,5 +72,9 @@ module.exports = {
     // PCS
     RISK_PROVIDER: 'risk_provider',
     PCS_TARGET_NAME: 'provider_configuration',
-    PCS_NOT_FOUND_ERROR_MSG: 'No Configuration was found with the provided Id.'
+    PCS_NOT_FOUND_ERROR_MSG: 'No Configuration was found with the provided Id.',
+
+    // buckets
+    SOUTHBOUND_BUCKETS: [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 2, 4, 8, 16, 32, 64],
+    NORTHBOUND_BUCKETS: [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 2, 4, 8, 16, 32, 64]
 };

@@ -2,7 +2,8 @@ const { get } = require('lodash');
 const { HttpMetricsCollector } = require('prometheus-api-metrics');
 const { OK, BAD_REQUEST, NOT_FOUND } = require('http-status-codes');
 const fss = require('fss-integration').fss;
-const { FSS_URL, FSS_USERNAME, FSS_PASSWORD, FSS_REFRESH_TOKEN_INTERVAL, APP_NAME, SOUTHBOUND_BUCKETS, DEFAULT_REQUEST_RETRIES } = require('../config');
+const { FSS_URL, FSS_USERNAME, FSS_PASSWORD, FSS_REFRESH_TOKEN_INTERVAL, APP_NAME, DEFAULT_REQUEST_RETRIES } = require('../config');
+const { SOUTHBOUND_BUCKETS } = require('../common');
 const { logger } = require('../logger');
 const {
     CREDIT_CARD_FSS_PAYMENT_METHOD_NAME, UNTOKENIZED_PAYMENT_METHOD_NAME, CREDIT_CARD_PAYMENT_METHOD_NAME,
