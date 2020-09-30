@@ -8,6 +8,7 @@ const { init } = require('./initialization/init');
 const infraRoutes = require('./routes/service-infra');
 const riskRoutes = require('./routes/risk-routes');
 const config = require('./service/config');
+const { NORTHBOUND_BUCKETS } = require('./service/common');
 const { logger } = require('./service/logger');
 
 module.exports = async () => {
@@ -20,6 +21,8 @@ module.exports = async () => {
     // error handler
     app.use(handleError);
 
+    app.use(apiMetrics({ durationBuckets: NORTHBOUND_BUCKETS, excludeRoutes: ['/health', '/metrics'], includeQueryParams: false }));
+
     // common middlewares
     app.use(bodyParser({
         enableTypes: ['json'],
@@ -29,8 +32,6 @@ module.exports = async () => {
         },
         jsonLimit: config.MAX_REQUEST_SIZE
     }));
-
-    app.use(apiMetrics({ durationBuckets: config.NORTHBOUND_BUCKETS, excludeRoutes: ['/health', '/metrics'], includeQueryParams: false }));
 
     // routers
     app.use(infraRoutes.routes());

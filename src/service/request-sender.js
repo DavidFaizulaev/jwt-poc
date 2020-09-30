@@ -4,7 +4,8 @@ const requestRetry = require('axios-retry');
 const { HttpMetricsCollector } = require('prometheus-api-metrics');
 const { get } = require('lodash');
 const { requestLogger } = require('./logger');
-const { DEFAULT_REQUEST_RETRIES, SOUTHBOUND_BUCKETS } = require('./config');
+const { DEFAULT_REQUEST_RETRIES } = require('./config');
+const { SOUTHBOUND_BUCKETS } = require('./common');
 
 HttpMetricsCollector.init({ durationBuckets: SOUTHBOUND_BUCKETS, includeQueryParams: false });
 
