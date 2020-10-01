@@ -706,7 +706,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(http_request_duration_seconds_count{app=~\"$instance_path\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\", code=~\"5..\", route=~\"$route\"}[1m])) / sum(rate(http_request_duration_seconds_count{app=~\"$instance_path\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\", route=~\"$route\"}[1m]))",
+              "expr": "sum(rate(http_request_duration_seconds_count{app=~\"$instance_path\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\", status_code=~\"5..\", route=~\"$route\"}[1m])) / sum(rate(http_request_duration_seconds_count{app=~\"$instance_path\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\", route=~\"$route\"}[1m]))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Error Rate",
@@ -918,7 +918,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile(0.90, sum(rate(southbound_request_duration_seconds_bucket{app=~\"$instance_path\", target=~\"$southbound_target\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\"}[1d])) by (target, method, le))",
+          "expr": "histogram_quantile(0.90, sum(rate(southbound_request_duration_seconds_bucket{app=~\"$instance_path\", target=~\"$southbound_target\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\"}[1m])) by (target, method, le))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -926,7 +926,7 @@
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.95, sum(rate(southbound_request_duration_seconds_bucket{app=~\"$instance_path\", target=~\"$southbound_target\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\"}[1d])) by (target, method, le))",
+          "expr": "histogram_quantile(0.95, sum(rate(southbound_request_duration_seconds_bucket{app=~\"$instance_path\", target=~\"$southbound_target\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\"}[1m])) by (target, method, le))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -934,7 +934,7 @@
           "refId": "B"
         },
         {
-          "expr": "histogram_quantile(0.99, sum(rate(southbound_request_duration_seconds_bucket{app=~\"$instance_path\", target=~\"$southbound_target\", env=\"eks-mars-pci\"}[1d])) by (target, method,le))",
+          "expr": "histogram_quantile(0.99, sum(rate(southbound_request_duration_seconds_bucket{app=~\"$instance_path\", target=~\"$southbound_target\", env=\"eks-mars-pci\"}[1m])) by (target, method,le))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1031,7 +1031,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(southbound_request_duration_seconds_count{app=~\"$instance_path\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\", code=~\"5..\", route=~\"$route\", target=~\"$southbound_target\"}[1m])) / sum(rate(southbound_request_duration_seconds_count{app=~\"$instance_path\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\", route=~\"$route\", target=~\"$southbound_target\"}[1m]))",
+          "expr": "sum(rate(southbound_request_duration_seconds_count{app=~\"$instance_path\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\", status_code=~\"5..\", route=~\"$route\", target=~\"$southbound_target\"}[1m])) / sum(rate(southbound_request_duration_seconds_count{app=~\"$instance_path\", env=\"eks-mars-pci\", job=\"kubernetes-pods-istio-secure\", route=~\"$route\", target=~\"$southbound_target\"}[1m]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
