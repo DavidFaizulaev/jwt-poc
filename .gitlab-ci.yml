@@ -224,8 +224,6 @@ test:end-2-end:mars:
     ENVIRONMENT: sandbox
   script:
     - npm run test:e2e
-    - kubectl -n apps logs -f deployment/$CHART_NAME-deployment --all-containers=true > ./logs/$CHART_NAME.log
-    - $(npm bin)/data-sentry -f ./logs/data-sentry-values.txt -d ./logs/$CHART_NAME.log
     - echo "now running service infra system tests"
     - npm run test:system
   only:
