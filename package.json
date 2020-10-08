@@ -40,12 +40,12 @@
     "koa-express": "^1.1.0",
     "koa-router": "^9.4.0",
     "lodash": "^4.17.20",
-    "logger-helper": "^4.7.6",
+    "logger-helper": "^4.7.7",
     "openapi-validator-middleware": "^3.1.1",
     "prom-client": "^11.5.3",
     "prometheus-api-metrics": "^3.1.0",
     "secrets-generator": "^1.2.10",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "api-contract-validator": "^2.1.0",
@@ -68,7 +68,7 @@
     "request-promise-native": "^1.0.9",
     "sensitive-field-values": "^1.0.3",
     "should": "^13.2.3",
-    "sinon": "^9.0.3",
+    "sinon": "^9.1.0",
     "supertest": "^4.0.2"
   },
   "nyc": {

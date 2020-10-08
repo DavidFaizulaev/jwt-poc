@@ -379,6 +379,13 @@ components:
         - pass_luhn_validation
         - created
       properties:
+        href:
+          description: |
+            The href link to the associated Payment Method. Note - The href is only included here for a payment method that is associated with a customer.
+          type: string
+          pattern: >-
+            ^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w
+            \.-]*)*\/?$
         token_type:
           description: |
             The type of token. Possible values: `credit_card` or `billing_agreement`
@@ -508,6 +515,10 @@ components:
             Uniquely identifies this particular card number. You can use this
             attribute to check whether two tokens represent the same card
             number.
+        card_number:
+          description: "Credit card number."
+          type: string
+          pattern: '\d{8}|\d{12,19}'
 
     error_model:
       required:
@@ -594,7 +605,7 @@ components:
           properties:
             type:
               description: |
-                The type of payment method. Possible value: `tokenized`.
+                The type of payment method.
               type: string
               enum: ['untokenized', 'tokenized']
           oneOf:
@@ -749,13 +760,6 @@ components:
           required:
             - type
           properties:
-            href:
-              description: |
-                The href link to the associated Payment Method. Note - The href is only included here for a payment method that is associated with a customer.
-              type: string
-              pattern: >-
-                ^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w
-                \.-]*)*\/?$
             type:
               description: |
                 The type of payment method. Possible value: `tokenized`.
@@ -920,16 +924,17 @@ components:
       properties:
         score:
           type: number
-          description: The score attributed to this payment by our machine learning system, ranging from 0 (less likely to be fraud) to 1000 (more likely to be fraud)
+          description: The score attributed to this payment by our machine learning system, ranging from 0 (less likely to be fraud) to 100 (more likely to be fraud)
           example: 896
         decision:
           type: string
           description: Indicates the outcome of provider's fraud analysis by indicating a recommendation based on the score. The decision can be approve, review or decline.
           example: approve
     ProviderRequestSpecificData:
-      type: object
-      properties:
-        additional_details:
-          type: object
-          description: 'Values which are specific to provider, in Key-value pair format. For example, {key1: value1, key2: value2}.'
-          example: { key1: 'value1', key2: 'value2' }
+      description: 'Values which are specific to provider, in Key-value pair format. For example, {key1: value1, key2: value2}.'
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: boolean
+          - type: number
+          - type: object
