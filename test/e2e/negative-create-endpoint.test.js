@@ -143,6 +143,23 @@ describe('Create risk analyses resource negative tests', function () {
             expect(error.error.description).to.equal('One or more request parameters are invalid.');
         }
     });
+    it('Should return bad request response when expiration date has invalid format ', async function () {
+        const copiedRequestBody = cloneDeep(fullRiskRequestBody);
+        copiedRequestBody.payment_method.expiration_date = '2-2020';
+        try {
+            await paymentsOSsdkClient.postRiskAnalyses({
+                request_body: copiedRequestBody,
+                payment_id: paymentObject.id
+            });
+            throw new Error('Should have thrown error');
+        } catch (error) {
+            expect(error.statusCode).to.equal(400);
+            const errorResponse = error.response.body;
+            expect(errorResponse.category).to.equal('api_request_error');
+            expect(errorResponse.description).to.equal('One or more request parameters are invalid.');
+            expect(errorResponse.more_info).to.equal('expiration_date does not have a valid format');
+        }
+    });
     it('Should return not found response when trying to create risk analyses with non-existing payment id', async function () {
         try {
             await paymentsOSsdkClient.postRiskAnalyses({
