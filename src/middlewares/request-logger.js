@@ -9,8 +9,8 @@ const EXCLUDED_ROUTES = ['/health', '/metrics'];
 async function requestLogger(ctx, next) {
     if (!EXCLUDED_ROUTES.includes(ctx.url)) {
         const startTime = new Date();
-        const request = buildRequestObject(ctx, startTime);
         await next();
+        const request = buildRequestObject(ctx, startTime);
         const endTime = new Date();
         const response = buildResponseObject(ctx, startTime, endTime);
         const xZoozRequestId = ctx.request.headers[HDR_X_ZOOZ_REQUEST_ID];
@@ -24,7 +24,7 @@ function buildRequestObject(ctx, startTime) {
     return {
         method: ctx.method,
         body: ctx.request.body,
-        path: ctx.host,
+        host: ctx.host,
         'utc-timestamp': startTime.toISOString(),
         url: ctx.url,
         headers: ctx.headers,

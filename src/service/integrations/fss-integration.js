@@ -46,6 +46,7 @@ async function handlePaymentMethodToken(merchantId, paymentMethodDetails, header
             createPaymentMethodResponse.payment_method_details.type = 'tokenized';
             return createPaymentMethodResponse.payment_method_details;
         } else {
+            paymentMethodDetails.expiration_date = formatDate(paymentMethodDetails);
             return paymentMethodDetails;
         }
     } else if (paymentMethodDetails) {
