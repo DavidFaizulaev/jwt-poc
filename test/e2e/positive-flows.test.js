@@ -224,7 +224,7 @@ describe('Create risk analyses flows', function () {
                 holder_name: 'tamara',
                 last_4_digits: '4444',
                 bin_number: '123456',
-                expiration_date: '12/2030'
+                expiration_date: '12-2030'
             };
             createRiskResponse = await paymentsOSsdkClient.postRiskAnalyses({ request_body: fullRequestPartial, payment_id: paymentObject.id, request_headers: { x_client_ip_address: '1.1.1.1' } });
             expect(createRiskResponse.statusCode).to.equal(201);
