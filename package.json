@@ -1,96 +1,17 @@
 {
-  "name": "risk-gateway",
-  "version": "1.0.0",
-  "description": "Micro gateway for risk analyses",
+  "name": "jwt-poc",
+  "version": "0.0.0",
+  "description": "Generating private and public key and work with jwt, jwks",
   "repository": {
     "type": "git",
-    "url": "git@git.zooz.co:PaymentsOS/risk/risk-gateway.git"
+    "url": "https://github.com/DavidFaizulaev/jwt.git"
   },
   "main": "server.js",
-  "scripts": {
-    "lint": "eslint src/",
-    "test": "nyc mocha test/unit/*/*.test.js",
-    "test:integration-fss": "mocha test/integration/fss-integration.test.js",
-    "test:integration-apps-storage": "mocha test/integration/apps-storage-integration.test.js",
-    "test:integration-ps": "mocha test/integration/ps-integration.test.js",
-    "test:integration-provider": "mocha test/integration/provider-integration.test.js",
-    "test:integration-pcs": "mocha test/integration/pcs-integration.test.js",
-    "test:system": "mocha test/system/*.test.js",
-    "test:e2e": "mocha test/e2e/*.test.js",
-    "start": "source loadEnv-local.sh system-tests; nodemon --inspect src/server.js"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
-    "axios-retry": "^3.1.9",
-    "axios-time": "^1.0.0",
-    "body-parser": "^1.19.0",
-    "bunyan": "^1.8.14",
-    "cassandra-helper": "^1.1.0",
-    "content-type": "^1.0.4",
-    "entities-mapper-v130": "^3.13.2",
-    "envboss": "^1.1.0",
-    "fss-integration": "^3.1.2",
-    "http-graceful-shutdown": "^2.3.2",
-    "http-status-codes": "^1.4.0",
-    "idempotency-handler": "^0.1.8",
-    "koa": "^2.13.0",
-    "koa-bodyparser": "^4.3.0",
-    "koa-express": "^1.1.0",
-    "koa-router": "^9.4.0",
+    "jose": "^2.0.2",
     "lodash": "^4.17.20",
-    "logger-helper": "^4.7.7",
-    "openapi-validator-middleware": "^3.1.1",
-    "prom-client": "^11.5.3",
-    "prometheus-api-metrics": "^3.1.0",
     "uuid": "^8.3.1"
-  },
-  "devDependencies": {
-    "api-contract-validator": "^2.1.0",
-    "chai": "^4.2.0",
-    "chance": "^1.1.7",
-    "data-sentry": "^3.1.0",
-    "eslint": "^7.12.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.2",
-    "mocha": "^8.2.0",
-    "nock": "^13.0.4",
-    "node-mocks-http": "^1.9.0",
-    "nyc": "^15.1.0",
-    "payments-os-sdk": "^2.1.6",
-    "paymentsos-client": "^1.6.2",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.9",
-    "sensitive-field-values": "^1.0.3",
-    "should": "^13.2.3",
-    "sinon": "^9.2.0",
-    "supertest": "^4.0.2"
-  },
-  "nyc": {
-    "report-dir": "./coverage",
-    "lines": 100,
-    "statements": 100,
-    "functions": 100,
-    "branches": 100,
-    "include": [
-      "src"
-    ],
-    "exclude": [
-      "src/app.js",
-      "src/server.js",
-      "src/service/logger.js",
-      "src/service/shutdown.js",
-      "src/middlewares/logger.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ],
-    "cache": true,
-    "all": true
   }
 }
